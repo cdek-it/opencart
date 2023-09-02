@@ -25,9 +25,8 @@ class ControllerExtensionShippingCdekOfficial extends Controller {
         $cdekApi = new CdekApi($this);
         $status = $cdekApi->checkAuth();
 
-        $cdekTest = new CdekTest();
-        $cdekTest->test($this);
-
+        $cdekTest = new CdekTest($this);
+        $cdekTest->test();
 
         $data['status_auth'] = $status;
 
