@@ -17,4 +17,10 @@ cp "src/upload/catalog/language/en-gb/extension/shipping/cdek_official.php" "$1/
 cp "src/upload/catalog/model/extension/shipping/cdek_official.php" "$1/upload/catalog/model/extension/shipping"
 cp "src/upload/catalog/view/theme/default/template/extension/shipping/cdek_official.twig" "$1/upload/catalog/view/theme/default/template/extension/shipping"
 
+# Library files
+# rm -r ../opencart/upload/system/library/cdek_official/*
+# cp -r src/upload/system/library/cdek_official/* ../opencart/upload/system/library/cdek_official
+rm -r $1/upload/system/library/cdek_official/*
+cp -r src/upload/system/library/cdek_official/* $1/upload/system/library/cdek_official
+
 echo "Files have been copied successfully."
