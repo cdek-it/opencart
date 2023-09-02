@@ -32,7 +32,6 @@ class CdekApi
         ];
         $token = $this->httpClient->sendRequestAuth(self::API_URL . self::TOKEN_PATH, $data);
         $this->controller->config->set('cdek_official_api_access_token', $token);
-        var_dump($token);
         return $token;
     }
 
@@ -48,7 +47,7 @@ class CdekApi
     {
         $token = $this->controller->config->get('cdek_official_api_access_token');
         $response = $this->httpClient->sendRequest($url, $method, $token, $data);
-        if ($response->requests[0]->type === 'AUTH' && $response->requests[0]->state === 'INVALID') {
+        if (is_object($response) && property_exists($response, 'requests') && $response->requests[0]->type === 'AUTH' && $response->requests[0]->state === 'INVALID') {
             $this->getToken();
             $newToken = $this->controller->config->get('cdek_official_api_access_token');
             $response = $this->httpClient->sendRequest($url, $method, $newToken);
@@ -67,5 +66,11 @@ class CdekApi
     {
         $url = self::API_URL . self::ORDERS_PATH;
         return $this->sendRequestWithTokenRefresh($url, 'GET', ['cdek_number' => $number]);
+    }
+
+    public function getCity($city)
+    {
+        $url = self::API_URL . self::REGION_PATH;
+        return $this->sendRequestWithTokenRefresh($url, 'GET', ['city' => $city]);
     }
 }
