@@ -95,6 +95,8 @@ class CdekTest
     {
         $this->message[] = $message;
         var_dump($this->message);
-        exit();
+        if (!$this->cdekApi->testModeActive()) {
+            exit();
+        }
     }
 }

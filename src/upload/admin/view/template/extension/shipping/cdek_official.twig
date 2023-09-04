@@ -27,7 +27,7 @@
                 <h3 class="panel-title"><i class="fa fa-pencil"></i> <span>Статус</span> {{ cdek_edit }}</h3>
             </div>
             <div class="panel-body">
-                <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-shipping"
+                <form action="{{ action }}" method="post" id="form-shipping"
                       class="form-horizontal">
 
                     <fieldset>
@@ -59,9 +59,19 @@
                                     <div class="col-sm-2"></div>
                                     <div class="col-sm-2">
                                         <p style="margin: 0;">{{ cdek_auth__status }}
-                                            : {% if status_auth %} {{ cdek_auth__status_connected }} {% else %} {{ cdek_auth__status_unconnected }} {% endif %}</p>
+                                            : {% if cdek_official_auth__test_mode %} {{ cdek_auth__test_mode_label }} {% elseif status_auth %} {{ cdek_auth__status_connected }} {% else %} {{ cdek_auth__status_unconnected }} {% endif %}</p>
                                     </div>
-                                    <div class="col-sm-6"></div>
+                                    <div class="col-sm-6">
+                                        <div class="row" style="display: flex; align-items: center;">
+                                            <input type="checkbox"
+                                                   name="cdek_official_auth__test_mode"
+                                                   id="cdek_official_auth__test_mode"
+                                                   value="{{ cdek_official_auth__test_mode }}"
+                                                   {% if cdek_official_auth__test_mode %} checked {% endif %}
+                                                   class="form-control"/>
+                                            <p style="margin: 10px;">{{ cdek_auth__test_mode }}</p>
+                                        </div>
+                                    </div>
                                     <div class="col-sm-2">
                                         <div class="pull-right">
                                             <button type="submit" form="form-shipping" data-toggle="tooltip"
@@ -78,7 +88,7 @@
                         </div>
                     </fieldset>
 
-                    {% if status_auth %}
+                    {% if status_auth or cdek_official_auth__test_mode%}
                     <fieldset>
                         <legend>{{ cdek_seller }}</legend>
                         <div class="form-group">

@@ -51,7 +51,7 @@ class ControllerExtensionShippingCdekOfficial extends Controller {
         $data['cancel'] = $this->url->link('extension/shipping', 'user_token=' . $this->session->data['user_token']);
 
         $settings = new Settings();
-        $data = $settings->init($data, $this->config);
+        $data = $settings->init($this, $data);
 
         $data['header'] = $this->load->controller('common/header');
         $data['column_left'] = $this->load->controller('common/column_left');

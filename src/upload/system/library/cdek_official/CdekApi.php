@@ -12,6 +12,7 @@ class CdekApi
     protected const WAYBILL_PATH = "print/orders/";
     protected const CALL_COURIER = "intakes";
     protected const API_URL = "https://api.cdek.ru/v2/";
+    protected const API_TEST_URL = "https://api.edu.cdek.ru/v2/";
     protected CdekHttpClient $httpClient;
     protected array $settings;
     protected $controller;
@@ -25,12 +26,8 @@ class CdekApi
 
     protected function getToken()
     {
-        $data = [
-            'grant_type' => 'client_credentials',
-            'client_id' => $this->settings['cdek_official_auth_id'],
-            'client_secret' => $this->settings['cdek_official_auth_secret']
-        ];
-        $token = $this->httpClient->sendRequestAuth(self::API_URL . self::TOKEN_PATH, $data);
+        $data = $this->getData();
+        $token = $this->httpClient->sendRequestAuth($this->getAuthUrl() . self::TOKEN_PATH, $data);
         $this->controller->config->set('cdek_official_api_access_token', $token);
         return $token;
     }
@@ -38,6 +35,14 @@ class CdekApi
     public function checkAuth(): bool
     {
         if ($this->getToken() !== false) {
+            return true;
+        }
+        return false;
+    }
+
+    public function testModeActive(): bool
+    {
+        if (array_key_exists('cdek_official_auth__test_mode', $this->settings)) {
             return true;
         }
         return false;
@@ -58,25 +63,25 @@ class CdekApi
 
     public function getOrderByUuid($uuid)
     {
-        $url = self::API_URL . self::ORDERS_PATH . $uuid;
+        $url = $this->getAuthUrl() . self::ORDERS_PATH . $uuid;
         return $this->sendRequestWithTokenRefresh($url, 'GET');
     }
 
     public function getOrderByNumber($number)
     {
-        $url = self::API_URL . self::ORDERS_PATH;
+        $url = $this->getAuthUrl() . self::ORDERS_PATH;
         return $this->sendRequestWithTokenRefresh($url, 'GET', ['cdek_number' => $number]);
     }
 
     public function getCity($city)
     {
-        $url = self::API_URL . self::REGION_PATH;
+        $url = $this->getAuthUrl() . self::REGION_PATH;
         return $this->sendRequestWithTokenRefresh($url, 'GET', ['city' => $city]);
     }
 
     public function getPvz($cityCode, $weight = 0)
     {
-        $url = self::API_URL . self::PVZ_PATH;
+        $url = $this->getAuthUrl() . self::PVZ_PATH;
 
         $params['city_code'] = $cityCode;
         $params['weight_max'] = (int)ceil($weight);
@@ -100,7 +105,7 @@ class CdekApi
 
     public function calculate($data)
     {
-        $url = self::API_URL . self::CALC_PATH;
+        $url = $this->getAuthUrl() . self::CALC_PATH;
         $param = [
             'tariff_code' => $data['tariff'],
             'from_location' => [
@@ -117,5 +122,31 @@ class CdekApi
             ],
         ];
         return $this->sendRequestWithTokenRefresh($url, 'POST', $param);
+    }
+
+    private function getAuthUrl(): string
+    {
+        if ($this->testModeActive()) {
+            return self::API_TEST_URL;
+        }
+        return self::API_URL;
+    }
+
+    private function getData(): array
+    {
+        if ($this->testModeActive()) {
+            $data = [
+                'grant_type' => 'client_credentials',
+                'client_id' => 'EMscd6r9JnFiQ3bLoyjJY6eM78JrJceI',
+                'client_secret' => 'PjLZkKBHEiLK3YsjtNrt3TGNG0ahs3kG'
+            ];
+        } else {
+            $data = [
+                'grant_type' => 'client_credentials',
+                'client_id' => $this->settings['cdek_official_auth_id'],
+                'client_secret' => $this->settings['cdek_official_auth_secret']
+            ];
+        }
+        return $data;
     }
 }
