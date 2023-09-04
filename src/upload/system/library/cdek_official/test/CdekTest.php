@@ -27,6 +27,8 @@ class CdekTest
         $this->message[] = $this->testGetOrderByUuid();
         $this->message[] = $this->testGetOrderByNumber();
         $this->message[] = $this->testGetCity();
+        $this->message[] = $this->testGetPvz();
+        $this->message[] = $this->testCalculate();
 
         var_dump($this->message);
         return true;
@@ -60,6 +62,33 @@ class CdekTest
             $this->fail('Test GetCity was Fail');
         }
         return "Test GetCity was successful. ";
+    }
+
+    protected function testGetPvz()
+    {
+        $cityCode = 44;
+        $response = $this->cdekApi->getPvz($cityCode);
+        if (!is_array($response) || empty($response)) {
+            $this->fail('Test GetPvz was Fail');
+        }
+        return "Test GetPvz was successful.";
+    }
+
+    protected function testCalculate()
+    {
+        $data['tariff'] = 136;
+        $data['city_code_from'] = 44;
+        $data['city_code_to'] = 137;
+        $data['package_data']['weight'] = 2;
+        $data['package_data']['length'] = 12;
+        $data['package_data']['width'] = 12;
+        $data['package_data']['height'] = 12;
+
+        $response = $this->cdekApi->calculate($data);
+        if (!property_exists($response, 'delivery_sum')) {
+            $this->fail('Test Calculate was Fail');
+        }
+        return "Test Calculate was successful.";
     }
 
     protected function fail($message): void
