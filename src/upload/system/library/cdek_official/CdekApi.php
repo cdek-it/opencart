@@ -73,4 +73,49 @@ class CdekApi
         $url = self::API_URL . self::REGION_PATH;
         return $this->sendRequestWithTokenRefresh($url, 'GET', ['city' => $city]);
     }
+
+    public function getPvz($cityCode, $weight = 0)
+    {
+        $url = self::API_URL . self::PVZ_PATH;
+
+        $params['city_code'] = $cityCode;
+        $params['weight_max'] = (int)ceil($weight);
+
+        $result = $this->sendRequestWithTokenRefresh($url, 'GET', $params);
+        $pvz = [];
+        foreach ($result as $elem) {
+            if (isset($elem->code, $elem->type, $elem->location->longitude, $elem->location->latitude, $elem->location->address)) {
+                $pvz[] = [
+                    'code' => $elem->code,
+                    'type' => $elem->type,
+                    'longitude' => $elem->location->longitude,
+                    'latitude' => $elem->location->latitude,
+                    'address' => $elem->location->address
+                ];
+            }
+        }
+
+        return $pvz;
+    }
+
+    public function calculate($data)
+    {
+        $url = self::API_URL . self::CALC_PATH;
+        $param = [
+            'tariff_code' => $data['tariff'],
+            'from_location' => [
+                'code' => $data['city_code_from']
+            ],
+            'to_location' => [
+                'code' => $data['city_code_to'],
+            ],
+            'packages' => [
+                'weight' => $data['package_data']['weight'],
+                'length' => $data['package_data']['length'],
+                'width' => $data['package_data']['width'],
+                'height' => $data['package_data']['height'],
+            ],
+        ];
+        return $this->sendRequestWithTokenRefresh($url, 'POST', $param);
+    }
 }
