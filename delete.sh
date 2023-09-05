@@ -10,6 +10,7 @@ rm "$1/upload/admin/controller/extension/shipping/cdek_official.php"
 rm "$1/upload/admin/language/en-gb/extension/shipping/cdek_official.php"
 rm "$1/upload/admin/model/extension/shipping/cdek_official.php"
 rm "$1/upload/admin/view/template/extension/shipping/cdek_official.twig"
+rm "$1/upload/admin/view/javascript/cdek_official/settings_page.js"
 
 # Catalog files
 rm "$1/upload/catalog/controller/extension/shipping/cdek_official.php"

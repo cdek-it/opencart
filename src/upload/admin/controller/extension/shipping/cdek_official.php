@@ -1,13 +1,18 @@
 <?php
-class ControllerExtensionShippingCdekOfficial extends Controller {
-    public function index() {
-        require_once(DIR_SYSTEM . 'library/cdek_official/Settings.php');
-        require_once(DIR_SYSTEM . 'library/cdek_official/Tariffs.php');
-        require_once(DIR_SYSTEM . 'library/cdek_official/CdekApi.php');
-        require_once(DIR_SYSTEM . 'library/cdek_official/test/CdekTest.php');
+
+require_once(DIR_SYSTEM . 'library/cdek_official/Settings.php');
+require_once(DIR_SYSTEM . 'library/cdek_official/Tariffs.php');
+require_once(DIR_SYSTEM . 'library/cdek_official/CdekApi.php');
+require_once(DIR_SYSTEM . 'library/cdek_official/test/CdekTest.php');
+
+class ControllerExtensionShippingCdekOfficial extends Controller
+{
+    public function index()
+    {
         $this->load->language('extension/shipping/cdek_official');
         $this->document->setTitle($this->language->get('heading_title'));
         $this->load->model('setting/setting');
+        $this->document->addScript('admin/view/javascript/cdek_official/settings_page.js');
 
         if (isset($this->session->data['success'])) {
             $data['success'] = $this->session->data['success'];
@@ -16,19 +21,38 @@ class ControllerExtensionShippingCdekOfficial extends Controller {
             $data['success'] = '';
         }
 
-        if (($this->request->server['REQUEST_METHOD'] == 'POST')) {
-            $this->model_setting_setting->editSetting('cdek_official', $this->request->post);
-            $this->session->data['success'] = $this->language->get('text_success');
+        if (isset($this->session->data['error_warning'])) {
+            $data['error_warning'] = $this->session->data['error_warning'];
+            unset($this->session->data['error_warning']);
+        } else {
+            $data['error_warning'] = '';
+        }
 
+        $settings = new Settings();
+        if (($this->request->server['REQUEST_METHOD'] == 'POST')) {
+            $settings->init($this->request->post);
+            try {
+                $this->model_setting_setting->editSetting('cdek_official', $this->request->post);
+                $settings->validate();
+                $this->session->data['success'] = $this->language->get('text_success');
+            } catch (Exception $exception) {
+                $this->session->data['error_warning'] = $this->language->get('error_permission') . $this->language->get($exception->getMessage());
+            }
             $this->response->redirect($this->url->link('extension/shipping/cdek_official', 'user_token=' . $this->session->data['user_token']));
         }
-        $cdekApi = new CdekApi($this);
-        $status = $cdekApi->checkAuth();
 
-        $cdekTest = new CdekTest($this);
-        $cdekTest->test();
-
-        $data['status_auth'] = $status;
+        $settings->init($this->model_setting_setting->getSetting('cdek_official'));
+        $settings->updateData($data);
+        try {
+            $settings->validate();
+            $cdekApi = new CdekApi($this);
+            $status = $cdekApi->checkAuth();
+            $data['status_auth'] = $status;
+            $cdekTest = new CdekTest($this);
+            $cdekTest->test();
+        } catch (Exception $exception) {
+            $this->session->data['error_warning'] = $this->language->get('error_permission') . $this->language->get($exception->getMessage());
+        }
 
         $data['breadcrumbs'] = array();
 
@@ -50,9 +74,6 @@ class ControllerExtensionShippingCdekOfficial extends Controller {
         $data['action'] = $this->url->link('extension/shipping/cdek_official', 'user_token=' . $this->session->data['user_token']);
         $data['cancel'] = $this->url->link('extension/shipping', 'user_token=' . $this->session->data['user_token']);
 
-        $settings = new Settings();
-        $data = $settings->init($this, $data);
-
         $data['header'] = $this->load->controller('common/header');
         $data['column_left'] = $this->load->controller('common/column_left');
         $data['footer'] = $this->load->controller('common/footer');
@@ -60,16 +81,10 @@ class ControllerExtensionShippingCdekOfficial extends Controller {
         $this->response->setOutput($this->load->view('extension/shipping/cdek_official', $data));
     }
 
-    public function install() {
+    public function install()
+    {
         $this->load->model('setting/setting');
         $this->model_setting_setting->editSetting('cdek_official', ['cdek_official_code_status' => 1]);
     }
 
-    protected function validate() {
-        if (!$this->user->hasPermission('modify', 'extension/shipping/cdek_official')) {
-            $this->error['warning'] = $this->language->get('error_permission');
-        }
-
-        return !$this->error;
-    }
 }

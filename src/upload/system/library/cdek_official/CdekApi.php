@@ -124,6 +124,11 @@ class CdekApi
         return $this->sendRequestWithTokenRefresh($url, 'POST', $param);
     }
 
+    public function createOrder($order)
+    {
+        //нужен DTO клас для заказа и калькулятора
+    }
+
     private function getAuthUrl(): string
     {
         if ($this->testModeActive()) {
