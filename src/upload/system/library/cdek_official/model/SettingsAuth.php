@@ -17,7 +17,7 @@ class SettingsAuth extends AbstractSettings
      */
     public function validate()
     {
-        if ($this->authTestMode === '1') {
+        if ($this->authTestMode === 'on') {
             return;
         }
 

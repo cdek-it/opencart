@@ -23,24 +23,20 @@ class SettingsPrice extends AbstractSettings
      */
     public function validate()
     {
-        if ($this->priceExtraPrice === '') {
-            throw new Exception('cdek_error_price_extra_price_empty');
+        if (!is_numeric($this->priceExtraPrice) && $this->priceExtraPrice !== '') {
+            throw new Exception('cdek_error_price_extra_price_invalid');
         }
 
-        if ($this->pricePercentageIncrease === '') {
-            throw new Exception('cdek_error_price_percentage_increase_empty');
+        if (!is_numeric($this->pricePercentageIncrease) && $this->pricePercentageIncrease !== '') {
+            throw new Exception('cdek_error_price_percentage_increase_invalid');
         }
 
-        if ($this->priceFix === '') {
-            throw new Exception('cdek_error_price_fix_empty');
+        if (!is_numeric($this->priceFix) && $this->priceFix !== '') {
+            throw new Exception('cdek_error_price_fix_invalid');
         }
 
-        if ($this->priceFree === '') {
-            throw new Exception('cdek_error_price_free_empty');
-        }
-
-        if ($this->priceInsurance === '') {
-            throw new Exception('cdek_error_price_insurance_empty');
+        if (!is_numeric($this->priceFree) && $this->priceFree !== '') {
+            throw new Exception('cdek_error_price_free_invalid');
         }
     }
 }

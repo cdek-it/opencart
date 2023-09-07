@@ -58,10 +58,10 @@ $_['error_permission']      = 'Error: ';
 $_['cdek_error_auth_unconnected']    = 'Authorization failed. Check integration keys.';
 $_['cdek_error_auth_id_empty']    = 'Auth id empty';
 $_['cdek_error_auth_secret_empty']    = 'Auth secret empty';
-$_['cdek_error_price_extra_price_empty'] = 'Extra price is empty';
-$_['cdek_error_price_percentage_increase_empty'] = 'Percentage increase is empty';
-$_['cdek_error_price_fix_empty'] = 'Fix price is empty';
-$_['cdek_error_price_free_empty'] = 'Free price is empty';
+$_['cdek_error_price_extra_price_invalid'] = 'Extra Price must be a numeric value';
+$_['cdek_error_price_percentage_increase_invalid'] = 'Percentage Increase must be a numeric value';
+$_['cdek_error_price_fix_invalid'] = 'Fix must be a numeric value';
+$_['cdek_error_price_free_invalid'] = 'Free must be a numeric value';
 $_['cdek_error_price_insurance_empty'] = 'Insurance price is empty';
 $_['cdek_error_dimensions_length_empty'] = 'Dimensions length is empty';
 $_['cdek_error_dimensions_width_empty'] = 'Dimensions width is empty';
@@ -90,4 +90,11 @@ $_['cdek_error_seller_passport_issue_date_empty'] = 'Seller passport issue date 
 $_['cdek_error_seller_passport_issuing_authority_empty'] = 'Seller passport issuing authority is empty';
 $_['cdek_error_seller_tin_empty'] = 'Seller TIN is empty';
 $_['cdek_error_seller_date_of_birth_empty'] = 'Seller date of birth is empty';
+$_['cdek_error_dimensions_length_invalid'] = 'Length must be a numeric value';
+$_['cdek_error_dimensions_width_invalid'] = 'Width must be a numeric value';
+$_['cdek_error_dimensions_height_invalid'] = 'Height must be a numeric value';
+$_['cdek_error_dimensions_weight_invalid'] = 'Weight must be a numeric value';
+$_['cdek_error_dimensions_use_default_invalid'] = 'Use Default must be a numeric value';
+
+
 

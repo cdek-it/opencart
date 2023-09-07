@@ -40,21 +40,21 @@ class SettingsShipping extends AbstractSettings
             throw new Exception('cdek_error_shipping_tariffs_empty');
         }
 
-        if ($this->shippingTariffName === '') {
-            throw new Exception('cdek_error_shipping_tariff_name_empty');
-        }
+//        if ($this->shippingTariffName === '') {
+//            throw new Exception('cdek_error_shipping_tariff_name_empty');
+//        }
 
-        if ($this->shippingTariffPlug === '') {
-            throw new Exception('cdek_error_shipping_tariff_plug_empty');
-        }
+//        if ($this->shippingTariffPlug === '') {
+//            throw new Exception('cdek_error_shipping_tariff_plug_empty');
+//        }
 
-        if ($this->shippingManyPackages === '') {
-            throw new Exception('cdek_error_shipping_many_packages_empty');
-        }
+//        if ($this->shippingManyPackages === '') {
+//            throw new Exception('cdek_error_shipping_many_packages_empty');
+//        }
 
-        if ($this->shippingExtraDays === '') {
-            throw new Exception('cdek_error_shipping_extra_days_empty');
-        }
+//        if ($this->shippingExtraDays === '') {
+//            throw new Exception('cdek_error_shipping_extra_days_empty');
+//        }
 
         if ($this->shippingCity === '') {
             throw new Exception('cdek_error_shipping_city_empty');

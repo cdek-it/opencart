@@ -34,12 +34,12 @@ class CdekTest
         return true;
     }
 
-    protected function testGetOrderByUuid(): string
+    protected function testGetOrderByUuid()
     {
         $uuid = '72753034-15a6-46ab-906a-2a493b621414';
         $response = $this->cdekApi->getOrderByUuid($uuid);
         if ($response->requests[0]->state !== 'SUCCESSFUL') {
-            $this->fail('Test GetOrderByUuid was Fail');
+            return 'Test GetOrderByUuid was Fail';
         }
         return "Test GetOrderByUuid was successful. " . $response->entity->uuid;
     }
@@ -49,7 +49,7 @@ class CdekTest
         $number = '1461481873';
         $response = $this->cdekApi->getOrderByNumber($number);
         if ($response->requests[0]->state !== 'SUCCESSFUL') {
-            $this->fail('Test GetOrderByNumber was Fail');
+            return 'Test GetOrderByNumber was Fail';
         }
         return "Test GetOrderByNumber was successful. " . $response->entity->uuid;
     }
@@ -59,7 +59,7 @@ class CdekTest
         $city = 'Москва';
         $response = $this->cdekApi->getCity($city);
         if (!is_array($response)) {
-            $this->fail('Test GetCity was Fail');
+            return 'Test GetCity was Fail';
         }
         return "Test GetCity was successful. ";
     }
@@ -69,7 +69,7 @@ class CdekTest
         $cityCode = 44;
         $response = $this->cdekApi->getPvz($cityCode);
         if (!is_array($response) || empty($response)) {
-            $this->fail('Test GetPvz was Fail');
+            return 'Test GetPvz was Fail';
         }
         return "Test GetPvz was successful.";
     }
@@ -86,17 +86,8 @@ class CdekTest
 
         $response = $this->cdekApi->calculate($data);
         if (!property_exists($response, 'delivery_sum')) {
-            $this->fail('Test Calculate was Fail');
+            return 'Test Calculate was Fail';
         }
         return "Test Calculate was successful.";
-    }
-
-    protected function fail($message): void
-    {
-        $this->message[] = $message;
-        var_dump($this->message);
-        if (!$this->cdekApi->testModeActive()) {
-            exit();
-        }
     }
 }

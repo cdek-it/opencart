@@ -39,8 +39,20 @@ class SettingsDimensions extends AbstractSettings
             throw new Exception('cdek_error_dimensions_weight_empty');
         }
 
-        if ($this->dimensionsUseDefault === '') {
-            throw new Exception('cdek_error_dimensions_use_default_empty');
+        if (!is_numeric($this->dimensionsLength)) {
+            throw new Exception('cdek_error_dimensions_length_invalid');
+        }
+
+        if (!is_numeric($this->dimensionsWidth)) {
+            throw new Exception('cdek_error_dimensions_width_invalid');
+        }
+
+        if (!is_numeric($this->dimensionsHeight)) {
+            throw new Exception('cdek_error_dimensions_height_invalid');
+        }
+
+        if (!is_numeric($this->dimensionsWeight)) {
+            throw new Exception('cdek_error_dimensions_weight_invalid');
         }
     }
 }

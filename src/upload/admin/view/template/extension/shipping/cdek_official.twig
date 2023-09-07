@@ -66,7 +66,7 @@
                                             <input type="checkbox"
                                                    name="cdek_official_auth__test_mode"
                                                    id="cdek_official_auth__test_mode"
-                                                   value="1"
+                                                   value="on"
                                                    {% if cdek_official_auth__test_mode %} checked {% endif %}
                                                    class="form-control"/>
                                             <p style="margin: 10px;">{{ cdek_auth__test_mode }}</p>
@@ -124,7 +124,7 @@
                                             <input type="checkbox"
                                                    name="cdek_official_seller_international_shipping_checkbox"
                                                    id="cdek_official_seller_international_shipping_checkbox"
-                                                   value="1"
+                                                   value="on"
                                                     {% if cdek_official_seller_international_shipping_checkbox %} checked {% endif %}
                                                    class="form-control"/>
                                             <p style="margin: 10px;">{{ cdek_seller_international_shipping_checkbox_desc }}</p>
@@ -287,7 +287,8 @@
                                     <div class="col-sm-4" style="display: flex; padding-top: 9px;">
                                         <input type="checkbox" name="cdek_official_shipping__many_packages"
                                                id="cdek_official_shipping__many_packages"
-                                               value="{{ cdek_official_shipping__many_packages }}"
+                                               value="on"
+                                                {% if cdek_official_shipping__many_packages %} checked {% endif %}
                                                class="form-control"/>
                                         <p style="margin-left: 10px">{{ cdek_shipping__many_packages_on }}</p>
                                     </div>
@@ -300,8 +301,8 @@
                                                class="form-control" placeholder="{{ cdek_shipping__extra_days }}"/>
                                     </div>
                                 </div>
-                                <div class="row" style="padding-bottom: 10px;">
-                                    <label class="col-sm-2 control-label"
+                                <div class="row required" style="padding-bottom: 10px;">
+                                    <label class="col-sm-2 control-label "
                                            for="cdek_official_shipping__city">{{ cdek_shipping__city }}</label>
                                     <div class="col-sm-4">
                                         <input type="text" name="cdek_official_shipping__city"
@@ -318,7 +319,7 @@
                                                class="form-control" placeholder="{{ cdek_shipping__city_address }}"/>
                                     </div>
                                 </div>
-                                <div class="row" style="padding-bottom: 10px;">
+                                <div class="row required" style="padding-bottom: 10px;">
                                     <label class="col-sm-2 control-label"
                                            for="cdek_official_shipping__pvz">{{ cdek_shipping__pvz }}</label>
                                     <div class="col-sm-4">
@@ -333,7 +334,7 @@
                     </fieldset>
                     <fieldset>
                         <legend>{{ cdek_dimensions }}</legend>
-                        <div class="form-group">
+                        <div class="form-group required">
                             <div class="col-sm-10">
                                 <div class="row" style="padding-bottom: 10px">
                                     <label class="col-sm-2 control-label"
@@ -374,7 +375,8 @@
                                     <div class="col-sm-2 pull-right" style="display: flex; padding-top: 9px;">
                                         <input type="checkbox" name="cdek_official_dimensions__use_default"
                                                id="cdek_official_dimensions__use_default"
-                                               value="{{ cdek_official_dimensions__use_default }}"
+                                               value="on"
+                                                {% if cdek_official_dimensions__use_default %} checked {% endif %}
                                                class="form-control" placeholder="{{ cdek_dimensions__use_default }}"/>
                                         <p style="margin-left: 10px">{{ cdek_dimensions__use_default }}</p>
                                     </div>
@@ -427,10 +429,14 @@
                                     <div class="col-sm-2 pull-right" style="display: flex; padding-top: 9px;">
                                         <input type="checkbox" name="cdek_official_price__insurance"
                                                id="cdek_official_price__insurance"
-                                               value="{{ cdek_official_price__insurance }}"
+                                               value="on"
+                                               {% if cdek_official_price__insurance %} checked {% endif %}
                                                class="form-control" placeholder="{{ cdek_price__insurance }}"/>
                                         <p style="margin-left: 10px">{{ cdek_price__insurance }}</p>
                                     </div>
+                                </div>
+                                <div class="row">
+                                    <p>Виджет с ценой, который интерактивно покажет изменения цены с учетом настройки на примере</p>
                                 </div>
                             </div>
                         </div>
