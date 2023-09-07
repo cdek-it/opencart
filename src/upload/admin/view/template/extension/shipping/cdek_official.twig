@@ -134,7 +134,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group" {% if not cdek_official_seller_international_shipping_checkbox %}style="display: none;" {% endif %}>
+                        <div id="international_shipping_form" class="form-group" {% if not cdek_official_seller_international_shipping_checkbox %}style="display: none;" {% endif %}>
                             <div class="col-sm-10">
                                 <div class="row vertical-center" style="padding-bottom: 10px">
                                     <label class="col-sm-2 control-label"
@@ -245,8 +245,7 @@
                                                        id="cdek_official_shipping_tariff_{{ tariff.code }}"
                                                        name="cdek_official_shipping_tariff_{{ tariff.code }}"
                                                        value="{{ tariff.code }}" {% if tariff.enable %} checked {% endif %}>
-                                                {# Как вытаскивать имена тарифов из языковых файлов #}
-                                                {{ tariff.name }}
+                                                {{ attribute(_context, tariff.key) }}
                                             </label>
                                         </div>
                                     {% endfor %}
@@ -449,6 +448,10 @@
         </div>
     </div>
 </div>
+
+<script type="text/javascript">
+    {{ settings_page|raw }}
+</script>
 {{ footer }}
 
 

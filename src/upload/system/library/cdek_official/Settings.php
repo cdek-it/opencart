@@ -63,6 +63,7 @@ class Settings
         $this->authSettings->init($post);
         $this->sellerSettings->init($post);
         $this->shippingSettings->init($post);
+        $this->shippingSettings->setTariffs($post);
         $this->dimensionsSettings->init($post);
         $this->priceSettings->init($post);
     }
@@ -89,7 +90,5 @@ class Settings
             $this->dimensionsSettings->toArray(),
             $this->priceSettings->toArray(),
         );
-
-        $v = 1;
     }
 }

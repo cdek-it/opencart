@@ -1,7 +1,6 @@
 <?php
 
 require_once(DIR_SYSTEM . 'library/cdek_official/Settings.php');
-require_once(DIR_SYSTEM . 'library/cdek_official/Tariffs.php');
 require_once(DIR_SYSTEM . 'library/cdek_official/CdekApi.php');
 require_once(DIR_SYSTEM . 'library/cdek_official/test/CdekTest.php');
 
@@ -12,7 +11,14 @@ class ControllerExtensionShippingCdekOfficial extends Controller
         $this->load->language('extension/shipping/cdek_official');
         $this->document->setTitle($this->language->get('heading_title'));
         $this->load->model('setting/setting');
-        $this->document->addScript('admin/view/javascript/cdek_official/settings_page.js');
+
+        $script_path = DIR_APPLICATION . 'view/javascript/cdek_official/settings_page.js';
+        if (file_exists($script_path)) {
+            $script_content = file_get_contents($script_path);
+            $data['settings_page'] = $script_content;
+        } else {
+            $data['settings_page'] = '';
+        }
 
         if (isset($this->session->data['success'])) {
             $data['success'] = $this->session->data['success'];
@@ -53,6 +59,8 @@ class ControllerExtensionShippingCdekOfficial extends Controller
         } catch (Exception $exception) {
             $this->session->data['error_warning'] = $this->language->get('error_permission') . $this->language->get($exception->getMessage());
         }
+
+        $data['tariffs'] = $settings->shippingSettings->shippingTariffs;
 
         $data['breadcrumbs'] = array();
 
