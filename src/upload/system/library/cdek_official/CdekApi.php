@@ -1,6 +1,7 @@
 <?php
 
 require_once(DIR_SYSTEM . 'library/cdek_official/CdekHttpClient.php');
+require_once(DIR_SYSTEM . 'library/cdek_official/Settings.php');
 
 class CdekApi
 {
@@ -14,22 +15,64 @@ class CdekApi
     protected const API_URL = "https://api.cdek.ru/v2/";
     protected const API_TEST_URL = "https://api.edu.cdek.ru/v2/";
     protected CdekHttpClient $httpClient;
-    protected array $settings;
-    protected $controller;
+    protected Settings $settings;
+    protected Controller $controller;
 
-    public function __construct($controller)
+    public function __construct($controller, $settings)
     {
         $this->httpClient = new CdekHttpClient();
-        $this->settings = $controller->model_setting_setting->getSetting('cdek_official');
+        $this->settings = $settings;
         $this->controller = $controller;
     }
 
     protected function getToken()
     {
         $data = $this->getData();
-        $token = $this->httpClient->sendRequestAuth($this->getAuthUrl() . self::TOKEN_PATH, $data);
-        $this->controller->config->set('cdek_official_api_access_token', $token);
+        $token = $this->fetchToken($data);
+        $this->storeToken($token);
         return $token;
+    }
+
+    private function fetchToken($data)
+    {
+        return $this->httpClient->sendRequestAuth($this->getAuthUrl() . self::TOKEN_PATH, $data);
+    }
+
+    private function storeToken($token)
+    {
+        $this->controller->config->set('cdek_official_api_access_token', $token);
+    }
+
+    protected function sendRequestWithTokenRefresh($url, $method, $data = null)
+    {
+        $token = $this->getStoredToken();
+        $response = $this->httpClient->sendRequest($url, $method, $token, $data);
+
+        if ($this->isTokenInvalid($response)) {
+            $this->refreshToken();
+            $newToken = $this->getStoredToken();
+            $response = $this->httpClient->sendRequest($url, $method, $newToken, $data);
+        }
+
+        return $response;
+    }
+
+    private function getStoredToken()
+    {
+        return $this->controller->config->get('cdek_official_api_access_token');
+    }
+
+    private function isTokenInvalid($response)
+    {
+        return is_object($response) &&
+            property_exists($response, 'requests') &&
+            $response->requests[0]->type === 'AUTH' &&
+            $response->requests[0]->state === 'INVALID';
+    }
+
+    private function refreshToken()
+    {
+        $this->getToken();
     }
 
     public function checkAuth(): bool
@@ -42,23 +85,10 @@ class CdekApi
 
     public function testModeActive(): bool
     {
-        if (array_key_exists('cdek_official_auth__test_mode', $this->settings)) {
+        if ($this->settings->authSettings->authTestMode === 'on') {
             return true;
         }
         return false;
-    }
-
-    protected function sendRequestWithTokenRefresh($url, $method, $data = null)
-    {
-        $token = $this->controller->config->get('cdek_official_api_access_token');
-        $response = $this->httpClient->sendRequest($url, $method, $token, $data);
-        if (is_object($response) && property_exists($response, 'requests') && $response->requests[0]->type === 'AUTH' && $response->requests[0]->state === 'INVALID') {
-            $this->getToken();
-            $newToken = $this->controller->config->get('cdek_official_api_access_token');
-            $response = $this->httpClient->sendRequest($url, $method, $newToken);
-        }
-
-        return $response;
     }
 
     public function getOrderByUuid($uuid)
@@ -76,27 +106,29 @@ class CdekApi
     public function getCity($city)
     {
         $url = $this->getAuthUrl() . self::REGION_PATH;
-        return $this->sendRequestWithTokenRefresh($url, 'GET', ['city' => $city]);
+        return $this->sendRequestWithTokenRefresh($url, 'GET', ['city' => $city, 'size' => 5]);
     }
 
-    public function getPvz($cityCode, $weight = 0)
+    public function getPvz($cityCode, $street, $weight = 0)
     {
         $url = $this->getAuthUrl() . self::PVZ_PATH;
 
         $params['city_code'] = $cityCode;
-        $params['weight_max'] = (int)ceil($weight);
+        $params['weight_min'] = (int)ceil($weight);
 
         $result = $this->sendRequestWithTokenRefresh($url, 'GET', $params);
         $pvz = [];
         foreach ($result as $elem) {
             if (isset($elem->code, $elem->type, $elem->location->longitude, $elem->location->latitude, $elem->location->address)) {
-                $pvz[] = [
-                    'code' => $elem->code,
-                    'type' => $elem->type,
-                    'longitude' => $elem->location->longitude,
-                    'latitude' => $elem->location->latitude,
-                    'address' => $elem->location->address
-                ];
+                if (strpos(mb_strtolower($elem->location->address), mb_strtolower($street)) !== false) {
+                    $pvz[] = [
+                        'code' => $elem->code,
+                        'type' => $elem->type,
+                        'longitude' => $elem->location->longitude,
+                        'latitude' => $elem->location->latitude,
+                        'address' => $elem->location->address
+                    ];
+                }
             }
         }
 
@@ -148,8 +180,8 @@ class CdekApi
         } else {
             $data = [
                 'grant_type' => 'client_credentials',
-                'client_id' => $this->settings['cdek_official_auth_id'],
-                'client_secret' => $this->settings['cdek_official_auth_secret']
+                'client_id' => $this->settings->authSettings->authId,
+                'client_secret' => $this->settings->authSettings->authSecret
             ];
         }
         return $data;

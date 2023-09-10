@@ -11,6 +11,7 @@ class SettingsShipping extends AbstractSettings
     public $shippingManyPackages;
     public $shippingExtraDays;
     public $shippingCity;
+    public $shippingCityCode;
     public $shippingCityAddress;
     public $shippingPvz;
 
@@ -20,6 +21,7 @@ class SettingsShipping extends AbstractSettings
         'cdek_official_shipping__many_packages' => 'shippingManyPackages',
         'cdek_official_shipping__extra_days' => 'shippingExtraDays',
         'cdek_official_shipping__city' => 'shippingCity',
+        'cdek_official_shipping__city_code' => 'shippingCityCode',
         'cdek_official_shipping__city_address' => 'shippingCityAddress',
         'cdek_official_shipping__pvz' => 'shippingPvz',
     ];
@@ -40,31 +42,15 @@ class SettingsShipping extends AbstractSettings
             throw new Exception('cdek_error_shipping_tariffs_empty');
         }
 
-//        if ($this->shippingTariffName === '') {
-//            throw new Exception('cdek_error_shipping_tariff_name_empty');
-//        }
-
-//        if ($this->shippingTariffPlug === '') {
-//            throw new Exception('cdek_error_shipping_tariff_plug_empty');
-//        }
-
-//        if ($this->shippingManyPackages === '') {
-//            throw new Exception('cdek_error_shipping_many_packages_empty');
-//        }
-
-//        if ($this->shippingExtraDays === '') {
-//            throw new Exception('cdek_error_shipping_extra_days_empty');
-//        }
-
-        if ($this->shippingCity === '') {
+        if (empty($this->shippingCity)) {
             throw new Exception('cdek_error_shipping_city_empty');
         }
 
-        if ($this->shippingCityAddress === '') {
+        if (empty($this->shippingCityAddress)) {
             throw new Exception('cdek_error_shipping_city_address_empty');
         }
 
-        if ($this->shippingPvz === '') {
+        if (empty($this->shippingPvz)) {
             throw new Exception('cdek_error_shipping_pvz_empty');
         }
     }

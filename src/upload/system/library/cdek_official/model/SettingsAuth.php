@@ -21,11 +21,11 @@ class SettingsAuth extends AbstractSettings
             return;
         }
 
-        if ($this->authId === '') {
+        if (empty($this->authId)) {
             throw new Exception('cdek_error_auth_id_empty');
         }
 
-        if ($this->authSecret === '') {
+        if (empty($this->authSecret)) {
             throw new Exception('cdek_error_auth_secret_empty');
         }
     }

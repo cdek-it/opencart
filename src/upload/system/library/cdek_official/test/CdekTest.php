@@ -39,6 +39,7 @@ class CdekTest
         $uuid = '72753034-15a6-46ab-906a-2a493b621414';
         $response = $this->cdekApi->getOrderByUuid($uuid);
         if ($response->requests[0]->state !== 'SUCCESSFUL') {
+            file_put_contents('test_log.txt', "Test GetOrderByUuid failed. Response: " . json_encode($response) . "\n", FILE_APPEND);
             return 'Test GetOrderByUuid was Fail';
         }
         return "Test GetOrderByUuid was successful. " . $response->entity->uuid;
@@ -67,7 +68,8 @@ class CdekTest
     protected function testGetPvz()
     {
         $cityCode = 44;
-        $response = $this->cdekApi->getPvz($cityCode);
+        $street = 'Динамовская';
+        $response = $this->cdekApi->getPvz($cityCode, $street);
         if (!is_array($response) || empty($response)) {
             return 'Test GetPvz was Fail';
         }

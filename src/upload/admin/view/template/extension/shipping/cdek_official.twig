@@ -19,7 +19,7 @@
         {% endif %}
         {% if success %}
             <div class="alert alert-success alert-dismissible">
-                <i class="fa fa-check-circle"></i> {{ success }}
+                <i class="fa fa-check-circle"></i> {{ cdek_success }}
             </div>
         {% endif %}
         <div class="panel panel-default">
@@ -67,7 +67,7 @@
                                                    name="cdek_official_auth__test_mode"
                                                    id="cdek_official_auth__test_mode"
                                                    value="on"
-                                                   {% if cdek_official_auth__test_mode %} checked {% endif %}
+                                                    {% if cdek_official_auth__test_mode %} checked {% endif %}
                                                    class="form-control"/>
                                             <p style="margin: 10px;">{{ cdek_auth__test_mode }}</p>
                                         </div>
@@ -88,359 +88,397 @@
                         </div>
                     </fieldset>
 
-                    {% if status_auth or cdek_official_auth__test_mode%}
-                    <fieldset>
-                        <legend>{{ cdek_seller }}</legend>
-                        <div class="form-group required">
-                            <div class="col-sm-10">
-                                <div class="row">
-                                    <label class="col-sm-2 control-label"
-                                           for="cdek_official_shipping_seller_name">{{ cdek_seller_name }}</label>
-                                    <div class="col-sm-4">
-                                        <input type="text" name="cdek_official_shipping_seller_name"
-                                               id="cdek_official_shipping_seller_name"
-                                               class="form-control" value="{{ cdek_official_shipping_seller_name }}"
-                                               placeholder="{{ cdek_seller_name }}"/>
-                                    </div>
-                                    <label class="col-sm-2 control-label"
-                                           for="cdek_official_shipping_seller_phone">{{ cdek_seller_phone }}</label>
-                                    <div class="col-sm-4">
-                                        <input type="text" name="cdek_official_shipping_seller_phone"
-                                               id="cdek_official_shipping_seller_phone"
-                                               class="form-control" value="{{ cdek_official_shipping_seller_phone }}"
-                                               placeholder="{{ cdek_seller_phone }}"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="col-sm-10">
-                                <div class="row" style="display: flex; align-items: center;">
-                                    <label class="col-sm-2 control-label"
-                                           for="cdek_official_seller_international_shipping_checkbox">{{ cdek_seller_international_shipping_checkbox }}</label>
-                                    <div class="col-sm-4">
-                                        <div class="row" style="display: flex; align-items: center;">
-                                            <input type="checkbox"
-                                                   name="cdek_official_seller_international_shipping_checkbox"
-                                                   id="cdek_official_seller_international_shipping_checkbox"
-                                                   value="on"
-                                                    {% if cdek_official_seller_international_shipping_checkbox %} checked {% endif %}
-                                                   class="form-control"/>
-                                            <p style="margin: 10px;">{{ cdek_seller_international_shipping_checkbox_desc }}</p>
+                    {% if status_auth or cdek_official_auth__test_mode %}
+                        <fieldset>
+                            <legend>{{ cdek_seller }}</legend>
+                            <div class="form-group required">
+                                <div class="col-sm-10">
+                                    <div class="row">
+                                        <label class="col-sm-2 control-label"
+                                               for="cdek_official_shipping_seller_name">{{ cdek_seller_name }}</label>
+                                        <div class="col-sm-4">
+                                            <input type="text" name="cdek_official_shipping_seller_name"
+                                                   id="cdek_official_shipping_seller_name"
+                                                   class="form-control" value="{{ cdek_official_shipping_seller_name }}"
+                                                   placeholder="{{ cdek_seller_name }}"/>
+                                        </div>
+                                        <label class="col-sm-2 control-label"
+                                               for="cdek_official_shipping_seller_phone">{{ cdek_seller_phone }}</label>
+                                        <div class="col-sm-4">
+                                            <input type="text" name="cdek_official_shipping_seller_phone"
+                                                   id="cdek_official_shipping_seller_phone"
+                                                   class="form-control"
+                                                   value="{{ cdek_official_shipping_seller_phone }}"
+                                                   placeholder="{{ cdek_seller_phone }}"/>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div id="international_shipping_form" class="form-group" {% if not cdek_official_seller_international_shipping_checkbox %}style="display: none;" {% endif %}>
-                            <div class="col-sm-10">
-                                <div class="row vertical-center" style="padding-bottom: 10px">
-                                    <label class="col-sm-2 control-label"
-                                           for="cdek_official_seller__true_seller_address">{{ cdek_seller__true_seller_address }}</label>
-                                    <div class="col-sm-4">
-                                        <input type="text" name="cdek_official_seller__true_seller_address"
-                                               id="cdek_official_seller__true_seller_address"
-                                               class="form-control"
-                                               value="{{ cdek_official_seller__true_seller_address }}"
-                                               placeholder="{{ cdek_seller__true_seller_address }}"/>
-                                    </div>
-
-                                    <label class="col-sm-2 control-label"
-                                           for="cdek_official_seller__shipper">{{ cdek_seller__shipper }}</label>
-                                    <div class="col-sm-4">
-                                        <input type="text" name="cdek_official_seller__shipper"
-                                               id="cdek_official_seller__shipper" class="form-control"
-                                               value="{{ cdek_official_seller__shipper }}"
-                                               placeholder="{{ cdek_seller__shipper }}"/>
-                                    </div>
-                                </div>
-
-                                <div class="row vertical-center" style="padding-bottom: 10px">
-                                    <label class="col-sm-2 control-label"
-                                           for="cdek_official_seller__shipper_address">{{ cdek_seller__shipper_address }}</label>
-                                    <div class="col-sm-4">
-                                        <input type="text" name="cdek_official_seller__shipper_address"
-                                               id="cdek_official_seller__shipper_address"
-                                               value="{{ cdek_official_seller__shipper_address }}"
-                                               class="form-control" placeholder="{{ cdek_seller__shipper_address }}"/>
-                                    </div>
-
-                                    <label class="col-sm-2 control-label"
-                                           for="cdek_official_seller__passport_series">{{ cdek_seller__passport_series }}</label>
-                                    <div class="col-sm-4">
-                                        <input type="text" name="cdek_official_seller__passport_series"
-                                               id="cdek_official_seller__passport_series"
-                                               value="{{ cdek_official_seller__passport_series }}"
-                                               class="form-control" placeholder="{{ cdek_seller__passport_series }}"/>
-                                    </div>
-                                </div>
-
-                                <div class="row vertical-center" style="padding-bottom: 10px">
-                                    <label class="col-sm-2 control-label"
-                                           for="cdek_official_seller__passport_number">{{ cdek_seller__passport_number }}</label>
-                                    <div class="col-sm-4">
-                                        <input type="text" name="cdek_official_seller__passport_number"
-                                               id="cdek_official_seller__passport_number"
-                                               value="{{ cdek_official_seller__passport_number }}"
-                                               class="form-control" placeholder="{{ cdek_seller__passport_number }}"/>
-                                    </div>
-
-                                    <label class="col-sm-2 control-label"
-                                           for="cdek_official_seller__passport_issue_date">{{ cdek_seller__passport_issue_date }}</label>
-                                    <div class="col-sm-4">
-                                        <input type="date" name="cdek_official_seller__passport_issue_date"
-                                               id="cdek_official_seller__passport_issue_date"
-                                               value="{{ cdek_official_seller__passport_issue_date }}"
-                                               class="form-control"/>
-                                    </div>
-                                </div>
-
-                                <div class="row vertical-center" style="padding-bottom: 10px">
-                                    <label class="col-sm-2 control-label"
-                                           for="cdek_official_seller__passport_issuing_authority">{{ cdek_seller__passport_issuing_authority }}</label>
-                                    <div class="col-sm-4">
-                                        <input type="text" name="cdek_official_seller__passport_issuing_authority"
-                                               id="cdek_official_seller__passport_issuing_authority"
-                                               class="form-control"
-                                               value="{{ cdek_official_seller__passport_issuing_authority }}"
-                                               placeholder="{{ cdek_seller__passport_issuing_authority }}"/>
-                                    </div>
-
-                                    <label class="col-sm-2 control-label"
-                                           for="cdek_official_seller__tin">{{ cdek_seller__tin }}</label>
-                                    <div class="col-sm-4">
-                                        <input type="text" name="cdek_official_seller__tin"
-                                               id="cdek_official_seller__tin" class="form-control"
-                                               value="{{ cdek_official_seller__tin }}"
-                                               placeholder="{{ cdek_seller__tin }}"/>
-                                    </div>
-                                </div>
-
-                                <div class="row vertical-center" style="padding-bottom: 10px">
-                                    <label class="col-sm-2 control-label"
-                                           for="cdek_official_seller__date_of_birth">{{ cdek_seller__date_of_birth }}</label>
-                                    <div class="col-sm-4">
-                                        <input type="date" name="cdek_official_seller__date_of_birth"
-                                               id="cdek_official_seller__date_of_birth"
-                                               value="{{ cdek_official_seller__date_of_birth }}"
-                                               class="form-control"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </fieldset>
-
-                    <fieldset>
-                        <legend>{{ cdek_shipping }}</legend>
-                        <div class="form-group">
-                            <div class="col-sm-10">
-                                <label class="col-sm-2 control-label">{{ cdek_shipping__tariffs }}</label>
-                                <div class="well well-sm" style="height: 150px; overflow: auto;">
-                                    {% for tariff in tariffs %}
-                                        <div class="checkbox">
-                                            <label>
+                            <div class="form-group">
+                                <div class="col-sm-10">
+                                    <div class="row" style="display: flex; align-items: center;">
+                                        <label class="col-sm-2 control-label"
+                                               for="cdek_official_seller_international_shipping_checkbox">{{ cdek_seller_international_shipping_checkbox }}</label>
+                                        <div class="col-sm-4">
+                                            <div class="row" style="display: flex; align-items: center;">
                                                 <input type="checkbox"
-                                                       id="cdek_official_shipping_tariff_{{ tariff.code }}"
-                                                       name="cdek_official_shipping_tariff_{{ tariff.code }}"
-                                                       value="{{ tariff.code }}" {% if tariff.enable %} checked {% endif %}>
-                                                {{ attribute(_context, tariff.key) }}
-                                            </label>
+                                                       name="cdek_official_seller_international_shipping_checkbox"
+                                                       id="cdek_official_seller_international_shipping_checkbox"
+                                                       value="on"
+                                                        {% if cdek_official_seller_international_shipping_checkbox %} checked {% endif %}
+                                                       class="form-control"/>
+                                                <p style="margin: 10px;">{{ cdek_seller_international_shipping_checkbox_desc }}</p>
+                                            </div>
                                         </div>
-                                    {% endfor %}
-                                </div>
-                                <button type="button"
-                                        onclick="$(this).parent().find(':checkbox').prop('checked', true);"
-                                        class="btn btn-link">{{ cdek_shipping__tariffs_select_all }}
-                                </button>
-                                /
-                                <button type="button"
-                                        onclick="$(this).parent().find(':checkbox').prop('checked', false);"
-                                        class="btn btn-link">{{ cdek_shipping__tariffs_unselect_all }}
-                                </button>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-sm-10">
-                                <div class="row" style="padding-bottom: 10px">
-                                    <label class="col-sm-2 control-label"
-                                           for="cdek_official_shipping__tariff_name">{{ cdek_shipping__tariffs_name }}</label>
-                                    <div class="col-sm-4">
-                                        <input type="text" name="cdek_official_shipping__tariff_name"
-                                               id="cdek_official_shipping__tariff_name"
-                                               value="{{ cdek_official_shipping__tariff_name }}"
-                                               class="form-control" placeholder="{{ cdek_shipping__tariffs_name }}"/>
-                                    </div>
-                                    <label class="col-sm-2 control-label"
-                                           for="cdek_official_shipping__tariff_plug">{{ cdek_shipping__tariff_plug }}</label>
-                                    <div class="col-sm-4">
-                                        <input type="text" name="cdek_official_shipping__tariff_plug"
-                                               id="cdek_official_shipping__tariff_plug"
-                                               value="{{ cdek_official_shipping__tariff_plug }}"
-                                               class="form-control" placeholder="{{ cdek_shipping__tariff_plug }}"/>
-                                    </div>
-                                </div>
-                                <div class="row vertical-center" style="padding-bottom: 10px;">
-                                    <label class="col-sm-2 control-label"
-                                           for="cdek_official_shipping__many_packages">{{ cdek_shipping__many_packages }}</label>
-                                    <div class="col-sm-4" style="display: flex; padding-top: 9px;">
-                                        <input type="checkbox" name="cdek_official_shipping__many_packages"
-                                               id="cdek_official_shipping__many_packages"
-                                               value="on"
-                                                {% if cdek_official_shipping__many_packages %} checked {% endif %}
-                                               class="form-control"/>
-                                        <p style="margin-left: 10px">{{ cdek_shipping__many_packages_on }}</p>
-                                    </div>
-                                    <label class="col-sm-2 control-label"
-                                           for="cdek_official_shipping__extra_days">{{ cdek_shipping__extra_days }}</label>
-                                    <div class="col-sm-4">
-                                        <input type="text" name="cdek_official_shipping__extra_days"
-                                               id="cdek_official_shipping__extra_days"
-                                               value="{{ cdek_official_shipping__extra_days }}"
-                                               class="form-control" placeholder="{{ cdek_shipping__extra_days }}"/>
-                                    </div>
-                                </div>
-                                <div class="row required" style="padding-bottom: 10px;">
-                                    <label class="col-sm-2 control-label "
-                                           for="cdek_official_shipping__city">{{ cdek_shipping__city }}</label>
-                                    <div class="col-sm-4">
-                                        <input type="text" name="cdek_official_shipping__city"
-                                               id="cdek_official_shipping__city"
-                                               value="{{ cdek_official_shipping__city }}"
-                                               class="form-control" placeholder="{{ cdek_shipping__city }}"/>
-                                    </div>
-                                    <label class="col-sm-2 control-label"
-                                           for="cdek_official_shipping__city_address">{{ cdek_shipping__city_address }}</label>
-                                    <div class="col-sm-4">
-                                        <input type="text" name="cdek_official_shipping__city_address"
-                                               id="cdek_official_shipping__city_address"
-                                               value="{{ cdek_official_shipping__city_address }}"
-                                               class="form-control" placeholder="{{ cdek_shipping__city_address }}"/>
-                                    </div>
-                                </div>
-                                <div class="row required" style="padding-bottom: 10px;">
-                                    <label class="col-sm-2 control-label"
-                                           for="cdek_official_shipping__pvz">{{ cdek_shipping__pvz }}</label>
-                                    <div class="col-sm-4">
-                                        <input type="text" name="cdek_official_shipping__pvz"
-                                               id="cdek_official_shipping__pvz"
-                                               value="{{ cdek_official_shipping__pvz }}"
-                                               class="form-control" placeholder="{{ cdek_shipping__pvz }}"/>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </fieldset>
-                    <fieldset>
-                        <legend>{{ cdek_dimensions }}</legend>
-                        <div class="form-group required">
-                            <div class="col-sm-10">
-                                <div class="row" style="padding-bottom: 10px">
-                                    <label class="col-sm-2 control-label"
-                                           for="cdek_official_dimensions__length">{{ cdek_dimensions__length }}</label>
-                                    <div class="col-sm-2">
-                                        <input type="text" name="cdek_official_dimensions__length"
-                                               id="cdek_official_dimensions__length"
-                                               value="{{ cdek_official_dimensions__length }}"
-                                               class="form-control" placeholder="{{ cdek_dimensions__length }}"/>
-                                    </div>
-                                    <label class="col-sm-2 control-label"
-                                           for="cdek_official_dimensions__width">{{ cdek_dimensions__width }}</label>
-                                    <div class="col-sm-2">
-                                        <input type="text" name="cdek_official_dimensions__width"
-                                               id="cdek_official_dimensions__width"
-                                               value="{{ cdek_official_dimensions__width }}"
-                                               class="form-control" placeholder="{{ cdek_dimensions__width }}"/>
-                                    </div>
-                                    <label class="col-sm-2 control-label"
-                                           for="cdek_official_dimensions__height">{{ cdek_dimensions__height }}</label>
-                                    <div class="col-sm-2">
-                                        <input type="text" name="cdek_official_dimensions__height"
-                                               id="cdek_official_dimensions__height"
-                                               value="{{ cdek_official_dimensions__height }}"
-                                               class="form-control" placeholder="{{ cdek_dimensions__height }}"/>
-                                    </div>
-                                </div>
-                                <div class="row" style="padding-bottom: 10px">
-                                    <label class="col-sm-2 control-label"
-                                           for="cdek_official_dimensions__weight">{{ cdek_dimensions__weight }}</label>
-                                    <div class="col-sm-2">
-                                        <input type="text" name="cdek_official_dimensions__weight"
-                                               id="cdek_official_dimensions__weight"
-                                               value="{{ cdek_official_dimensions__weight }}"
-                                               class="form-control" placeholder="{{ cdek_dimensions__weight }}"/>
-                                    </div>
-                                    <div class="col-sm-6"></div>
-                                    <div class="col-sm-2 pull-right" style="display: flex; padding-top: 9px;">
-                                        <input type="checkbox" name="cdek_official_dimensions__use_default"
-                                               id="cdek_official_dimensions__use_default"
-                                               value="on"
-                                                {% if cdek_official_dimensions__use_default %} checked {% endif %}
-                                               class="form-control" placeholder="{{ cdek_dimensions__use_default }}"/>
-                                        <p style="margin-left: 10px">{{ cdek_dimensions__use_default }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </fieldset>
 
-                    <fieldset>
-                        <legend>{{ cdek_price }}</legend>
-                        <div class="form-group">
-                            <div class="col-sm-10">
-                                <div class="row" style="padding-bottom: 10px">
-                                    <label class="col-sm-2 control-label"
-                                           for="cdek_official_price__extra_price">{{ cdek_price__extra_price }}</label>
-                                    <div class="col-sm-2">
-                                        <input type="text" name="cdek_official_price__extra_price"
-                                               id="cdek_official_price__extra_price"
-                                               value="{{ cdek_official_price__extra_price }}"
-                                               class="form-control" placeholder="{{ cdek_price__extra_price }}"/>
+                            <div id="international_shipping_form" class="form-group"
+                                 {% if not cdek_official_seller_international_shipping_checkbox %}style="display: none;" {% endif %}>
+                                <div class="col-sm-10">
+                                    <div class="row vertical-center" style="padding-bottom: 10px">
+                                        <label class="col-sm-2 control-label"
+                                               for="cdek_official_seller__true_seller_address">{{ cdek_seller__true_seller_address }}</label>
+                                        <div class="col-sm-4">
+                                            <input type="text" name="cdek_official_seller__true_seller_address"
+                                                   id="cdek_official_seller__true_seller_address"
+                                                   class="form-control"
+                                                   value="{{ cdek_official_seller__true_seller_address }}"
+                                                   placeholder="{{ cdek_seller__true_seller_address }}"/>
+                                        </div>
+
+                                        <label class="col-sm-2 control-label"
+                                               for="cdek_official_seller__shipper">{{ cdek_seller__shipper }}</label>
+                                        <div class="col-sm-4">
+                                            <input type="text" name="cdek_official_seller__shipper"
+                                                   id="cdek_official_seller__shipper" class="form-control"
+                                                   value="{{ cdek_official_seller__shipper }}"
+                                                   placeholder="{{ cdek_seller__shipper }}"/>
+                                        </div>
                                     </div>
-                                    <label class="col-sm-2 control-label"
-                                           for="cdek_official_price__percentage_increase">{{ cdek_price__percentage_increase }}</label>
-                                    <div class="col-sm-2">
-                                        <input type="text" name="cdek_official_price__percentage_increase"
-                                               id="cdek_official_price__percentage_increase"
-                                               class="form-control"
-                                               value="{{ cdek_official_price__percentage_increase }}"
-                                               placeholder="{{ cdek_price__percentage_increase }}"/>
+
+                                    <div class="row vertical-center" style="padding-bottom: 10px">
+                                        <label class="col-sm-2 control-label"
+                                               for="cdek_official_seller__shipper_address">{{ cdek_seller__shipper_address }}</label>
+                                        <div class="col-sm-4">
+                                            <input type="text" name="cdek_official_seller__shipper_address"
+                                                   id="cdek_official_seller__shipper_address"
+                                                   value="{{ cdek_official_seller__shipper_address }}"
+                                                   class="form-control"
+                                                   placeholder="{{ cdek_seller__shipper_address }}"/>
+                                        </div>
+
+                                        <label class="col-sm-2 control-label"
+                                               for="cdek_official_seller__passport_series">{{ cdek_seller__passport_series }}</label>
+                                        <div class="col-sm-4">
+                                            <input type="text" name="cdek_official_seller__passport_series"
+                                                   id="cdek_official_seller__passport_series"
+                                                   value="{{ cdek_official_seller__passport_series }}"
+                                                   class="form-control"
+                                                   placeholder="{{ cdek_seller__passport_series }}"/>
+                                        </div>
                                     </div>
-                                    <label class="col-sm-2 control-label"
-                                           for="cdek_official_price__fix">{{ cdek_price__fix }}</label>
-                                    <div class="col-sm-2">
-                                        <input type="text" name="cdek_official_price__fix"
-                                               id="cdek_official_price__fix"
-                                               value="{{ cdek_official_price__fix }}"
-                                               class="form-control" placeholder="{{ cdek_price__fix }}"/>
+
+                                    <div class="row vertical-center" style="padding-bottom: 10px">
+                                        <label class="col-sm-2 control-label"
+                                               for="cdek_official_seller__passport_number">{{ cdek_seller__passport_number }}</label>
+                                        <div class="col-sm-4">
+                                            <input type="text" name="cdek_official_seller__passport_number"
+                                                   id="cdek_official_seller__passport_number"
+                                                   value="{{ cdek_official_seller__passport_number }}"
+                                                   class="form-control"
+                                                   placeholder="{{ cdek_seller__passport_number }}"/>
+                                        </div>
+
+                                        <label class="col-sm-2 control-label"
+                                               for="cdek_official_seller__passport_issue_date">{{ cdek_seller__passport_issue_date }}</label>
+                                        <div class="col-sm-4">
+                                            <input type="date" name="cdek_official_seller__passport_issue_date"
+                                                   id="cdek_official_seller__passport_issue_date"
+                                                   value="{{ cdek_official_seller__passport_issue_date }}"
+                                                   class="form-control"/>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="row" style="padding-bottom: 10px">
-                                    <label class="col-sm-2 control-label"
-                                           for="cdek_official_price__free">{{ cdek_price__free }}</label>
-                                    <div class="col-sm-2">
-                                        <input type="text" name="cdek_official_price__free"
-                                               id="cdek_official_price__free"
-                                               value="{{ cdek_official_price__free }}"
-                                               class="form-control" placeholder="{{ cdek_price__free }}"/>
+
+                                    <div class="row vertical-center" style="padding-bottom: 10px">
+                                        <label class="col-sm-2 control-label"
+                                               for="cdek_official_seller__passport_issuing_authority">{{ cdek_seller__passport_issuing_authority }}</label>
+                                        <div class="col-sm-4">
+                                            <input type="text" name="cdek_official_seller__passport_issuing_authority"
+                                                   id="cdek_official_seller__passport_issuing_authority"
+                                                   class="form-control"
+                                                   value="{{ cdek_official_seller__passport_issuing_authority }}"
+                                                   placeholder="{{ cdek_seller__passport_issuing_authority }}"/>
+                                        </div>
+
+                                        <label class="col-sm-2 control-label"
+                                               for="cdek_official_seller__tin">{{ cdek_seller__tin }}</label>
+                                        <div class="col-sm-4">
+                                            <input type="text" name="cdek_official_seller__tin"
+                                                   id="cdek_official_seller__tin" class="form-control"
+                                                   value="{{ cdek_official_seller__tin }}"
+                                                   placeholder="{{ cdek_seller__tin }}"/>
+                                        </div>
                                     </div>
-                                    <div class="col-sm-6"></div>
-                                    <div class="col-sm-2 pull-right" style="display: flex; padding-top: 9px;">
-                                        <input type="checkbox" name="cdek_official_price__insurance"
-                                               id="cdek_official_price__insurance"
-                                               value="on"
-                                               {% if cdek_official_price__insurance %} checked {% endif %}
-                                               class="form-control" placeholder="{{ cdek_price__insurance }}"/>
-                                        <p style="margin-left: 10px">{{ cdek_price__insurance }}</p>
+
+                                    <div class="row vertical-center" style="padding-bottom: 10px">
+                                        <label class="col-sm-2 control-label"
+                                               for="cdek_official_seller__date_of_birth">{{ cdek_seller__date_of_birth }}</label>
+                                        <div class="col-sm-4">
+                                            <input type="date" name="cdek_official_seller__date_of_birth"
+                                                   id="cdek_official_seller__date_of_birth"
+                                                   value="{{ cdek_official_seller__date_of_birth }}"
+                                                   class="form-control"/>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="row">
-                                    <p>Виджет с ценой, который интерактивно покажет изменения цены с учетом настройки на примере</p>
                                 </div>
                             </div>
-                        </div>
-                    </fieldset>
+                        </fieldset>
+
+                        <fieldset>
+                            <legend>{{ cdek_shipping }}</legend>
+                            <div class="form-group">
+                                <div class="col-sm-10">
+                                    <label class="col-sm-2 control-label">{{ cdek_shipping__tariffs }}</label>
+                                    <div class="well well-sm" style="height: 150px; overflow: auto;">
+                                        {% for tariff in tariffs %}
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input type="checkbox"
+                                                           id="cdek_official_shipping_tariff_{{ tariff.code }}"
+                                                           name="cdek_official_shipping_tariff_{{ tariff.code }}"
+                                                           value="{{ tariff.code }}" {% if tariff.enable %} checked {% endif %}>
+                                                    {{ attribute(_context, tariff.key) }}
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    <button type="button"
+                                            onclick="$(this).parent().find(':checkbox').prop('checked', true);"
+                                            class="btn btn-link">{{ cdek_shipping__tariffs_select_all }}
+                                    </button>
+                                    /
+                                    <button type="button"
+                                            onclick="$(this).parent().find(':checkbox').prop('checked', false);"
+                                            class="btn btn-link">{{ cdek_shipping__tariffs_unselect_all }}
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-10">
+                                    <div class="row" style="padding-bottom: 10px">
+                                        <label class="col-sm-2 control-label"
+                                               for="cdek_official_shipping__tariff_name">{{ cdek_shipping__tariffs_name }}</label>
+                                        <div class="col-sm-4">
+                                            <input type="text" name="cdek_official_shipping__tariff_name"
+                                                   id="cdek_official_shipping__tariff_name"
+                                                   value="{{ cdek_official_shipping__tariff_name }}"
+                                                   class="form-control"
+                                                   placeholder="{{ cdek_shipping__tariffs_name }}"/>
+                                        </div>
+                                        <label class="col-sm-2 control-label"
+                                               for="cdek_official_shipping__tariff_plug">{{ cdek_shipping__tariff_plug }}</label>
+                                        <div class="col-sm-4">
+                                            <input type="text" name="cdek_official_shipping__tariff_plug"
+                                                   id="cdek_official_shipping__tariff_plug"
+                                                   value="{{ cdek_official_shipping__tariff_plug }}"
+                                                   class="form-control" placeholder="{{ cdek_shipping__tariff_plug }}"/>
+                                        </div>
+                                    </div>
+                                    <div class="row vertical-center" style="padding-bottom: 10px;">
+                                        <label class="col-sm-2 control-label"
+                                               for="cdek_official_shipping__many_packages">{{ cdek_shipping__many_packages }}</label>
+                                        <div class="col-sm-4" style="display: flex; padding-top: 9px;">
+                                            <input type="checkbox" name="cdek_official_shipping__many_packages"
+                                                   id="cdek_official_shipping__many_packages"
+                                                   value="on"
+                                                    {% if cdek_official_shipping__many_packages %} checked {% endif %}
+                                                   class="form-control"/>
+                                            <p style="margin-left: 10px">{{ cdek_shipping__many_packages_on }}</p>
+                                        </div>
+                                        <label class="col-sm-2 control-label"
+                                               for="cdek_official_shipping__extra_days">{{ cdek_shipping__extra_days }}</label>
+                                        <div class="col-sm-4">
+                                            <input type="text" name="cdek_official_shipping__extra_days"
+                                                   id="cdek_official_shipping__extra_days"
+                                                   value="{{ cdek_official_shipping__extra_days }}"
+                                                   class="form-control" placeholder="{{ cdek_shipping__extra_days }}"/>
+                                        </div>
+                                    </div>
+                                    <div class="row required" style="padding-bottom: 10px;">
+                                        <label class="col-sm-2 control-label "
+                                               for="cdek_official_shipping__city">{{ cdek_shipping__city }}</label>
+                                        <div class="col-sm-4">
+                                            <div class="input-spinner-container">
+                                                <input type="text" name="cdek_official_shipping__city"
+                                                       id="cdek_official_shipping__city"
+                                                       value="{{ cdek_official_shipping__city }}" class="form-control"
+                                                       placeholder="{{ cdek_shipping__city }}"/>
+                                                <div id="preloader" class="hidden">
+                                                    <div class="spinner"></div>
+                                                </div>
+                                            </div>
+                                            <input type="hidden" name="cdek_official_shipping__city_code"
+                                                   id="cdek_official_shipping__city_code"
+                                                   value="{{ cdek_official_shipping__city_code }}"
+                                                   class="form-control"/>
+                                            <div id="city-choices" class="hidden"></div>
+                                        </div>
+                                        <label class="col-sm-2 control-label"
+                                               for="cdek_official_shipping__city_address">{{ cdek_shipping__city_address }}</label>
+                                        <div class="col-sm-4">
+                                            <input type="text" name="cdek_official_shipping__city_address"
+                                                   id="cdek_official_shipping__city_address"
+                                                   value="{{ cdek_official_shipping__city_address }}"
+                                                   class="form-control"
+                                                   placeholder="{{ cdek_shipping__city_address }}"/>
+                                        </div>
+                                    </div>
+                                    <div class="row required" style="padding-bottom: 10px;">
+                                        <label class="col-sm-2 control-label"
+                                        for="cdek_official_shipping__pvz">{{ cdek_shipping__pvz }}</label>
+                                        <div class="col-sm-4">
+                                            <div class="input-spinner-container">
+                                                <input type="text" name="cdek_official_shipping__pvz"
+                                                       id="cdek_official_shipping__pvz"
+                                                       value="{{ cdek_official_shipping__pvz }}" class="form-control"
+                                                       placeholder="{{ cdek_shipping__pvz }}"/>
+                                                <div id="preloader-pvz" class="hidden">
+                                                    <div class="spinner"></div>
+                                                </div>
+                                            </div>
+                                            <input type="hidden" name="cdek_official_shipping__pvz_code"
+                                                   id="cdek_official_shipping__pvz_code"
+                                                   value="{{ cdek_official_shipping__pvz_code }}"
+                                                   class="form-control"/>
+                                            <div id="pvz-choices" class="hidden"></div>
+                                        </div>
+
+
+
+{#                                        <div class="col-sm-4">#}
+{#                                            <input type="text" name="cdek_official_shipping__pvz"#}
+{#                                                   id="cdek_official_shipping__pvz"#}
+{#                                                   value="{{ cdek_official_shipping__pvz }}"#}
+{#                                                   class="form-control" placeholder="{{ cdek_shipping__pvz }}"/>#}
+{#                                        </div>#}
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <legend>{{ cdek_dimensions }}</legend>
+                            <div class="form-group required">
+                                <div class="col-sm-10">
+                                    <div class="row" style="padding-bottom: 10px">
+                                        <label class="col-sm-2 control-label"
+                                               for="cdek_official_dimensions__length">{{ cdek_dimensions__length }}</label>
+                                        <div class="col-sm-2">
+                                            <input type="text" name="cdek_official_dimensions__length"
+                                                   id="cdek_official_dimensions__length"
+                                                   value="{{ cdek_official_dimensions__length }}"
+                                                   class="form-control" placeholder="{{ cdek_dimensions__length }}"/>
+                                        </div>
+                                        <label class="col-sm-2 control-label"
+                                               for="cdek_official_dimensions__width">{{ cdek_dimensions__width }}</label>
+                                        <div class="col-sm-2">
+                                            <input type="text" name="cdek_official_dimensions__width"
+                                                   id="cdek_official_dimensions__width"
+                                                   value="{{ cdek_official_dimensions__width }}"
+                                                   class="form-control" placeholder="{{ cdek_dimensions__width }}"/>
+                                        </div>
+                                        <label class="col-sm-2 control-label"
+                                               for="cdek_official_dimensions__height">{{ cdek_dimensions__height }}</label>
+                                        <div class="col-sm-2">
+                                            <input type="text" name="cdek_official_dimensions__height"
+                                                   id="cdek_official_dimensions__height"
+                                                   value="{{ cdek_official_dimensions__height }}"
+                                                   class="form-control" placeholder="{{ cdek_dimensions__height }}"/>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="padding-bottom: 10px">
+                                        <label class="col-sm-2 control-label"
+                                               for="cdek_official_dimensions__weight">{{ cdek_dimensions__weight }}</label>
+                                        <div class="col-sm-2">
+                                            <input type="text" name="cdek_official_dimensions__weight"
+                                                   id="cdek_official_dimensions__weight"
+                                                   value="{{ cdek_official_dimensions__weight }}"
+                                                   class="form-control" placeholder="{{ cdek_dimensions__weight }}"/>
+                                        </div>
+                                        <div class="col-sm-6"></div>
+                                        <div class="col-sm-2 pull-right" style="display: flex; padding-top: 9px;">
+                                            <input type="checkbox" name="cdek_official_dimensions__use_default"
+                                                   id="cdek_official_dimensions__use_default"
+                                                   value="on"
+                                                    {% if cdek_official_dimensions__use_default %} checked {% endif %}
+                                                   class="form-control"
+                                                   placeholder="{{ cdek_dimensions__use_default }}"/>
+                                            <p style="margin-left: 10px">{{ cdek_dimensions__use_default }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <fieldset>
+                            <legend>{{ cdek_price }}</legend>
+                            <div class="form-group">
+                                <div class="col-sm-10">
+                                    <div class="row" style="padding-bottom: 10px">
+                                        <label class="col-sm-2 control-label"
+                                               for="cdek_official_price__extra_price">{{ cdek_price__extra_price }}</label>
+                                        <div class="col-sm-2">
+                                            <input type="text" name="cdek_official_price__extra_price"
+                                                   id="cdek_official_price__extra_price"
+                                                   value="{{ cdek_official_price__extra_price }}"
+                                                   class="form-control" placeholder="{{ cdek_price__extra_price }}"/>
+                                        </div>
+                                        <label class="col-sm-2 control-label"
+                                               for="cdek_official_price__percentage_increase">{{ cdek_price__percentage_increase }}</label>
+                                        <div class="col-sm-2">
+                                            <input type="text" name="cdek_official_price__percentage_increase"
+                                                   id="cdek_official_price__percentage_increase"
+                                                   class="form-control"
+                                                   value="{{ cdek_official_price__percentage_increase }}"
+                                                   placeholder="{{ cdek_price__percentage_increase }}"/>
+                                        </div>
+                                        <label class="col-sm-2 control-label"
+                                               for="cdek_official_price__fix">{{ cdek_price__fix }}</label>
+                                        <div class="col-sm-2">
+                                            <input type="text" name="cdek_official_price__fix"
+                                                   id="cdek_official_price__fix"
+                                                   value="{{ cdek_official_price__fix }}"
+                                                   class="form-control" placeholder="{{ cdek_price__fix }}"/>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="padding-bottom: 10px">
+                                        <label class="col-sm-2 control-label"
+                                               for="cdek_official_price__free">{{ cdek_price__free }}</label>
+                                        <div class="col-sm-2">
+                                            <input type="text" name="cdek_official_price__free"
+                                                   id="cdek_official_price__free"
+                                                   value="{{ cdek_official_price__free }}"
+                                                   class="form-control" placeholder="{{ cdek_price__free }}"/>
+                                        </div>
+                                        <div class="col-sm-6"></div>
+                                        <div class="col-sm-2 pull-right" style="display: flex; padding-top: 9px;">
+                                            <input type="checkbox" name="cdek_official_price__insurance"
+                                                   id="cdek_official_price__insurance"
+                                                   value="on"
+                                                    {% if cdek_official_price__insurance %} checked {% endif %}
+                                                   class="form-control" placeholder="{{ cdek_price__insurance }}"/>
+                                            <p style="margin-left: 10px">{{ cdek_price__insurance }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <p>Виджет с ценой, который интерактивно покажет изменения цены с учетом
+                                            настройки на примере</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
                     {% endif %}
 
                     <div class="pull-right">
@@ -456,257 +494,11 @@
 </div>
 
 <script type="text/javascript">
+    var userToken = '{{ user_token }}';
     {{ settings_page|raw }}
 </script>
+
+<style>
+    {{ settings_page_style|raw }}
+</style>
 {{ footer }}
-
-
-                    {#                    <select name="fraud_fraudlabspro_review_status_id" id="input-fraud-review-status" #}
-                    {#                            class="form-control"> #}
-                    {#                        <option value="7">Canceled</option> #}
-                    {#                        <option value="9">Canceled Reversal</option> #}
-                    {#                        <option value="13">Chargeback</option> #}
-                    {#                    </select> #}
-                    {#                    <label class="col-sm-2 control-label" for="input-fraud-review-status"><span #}
-                    {#                                data-toggle="tooltip" title="" #}
-                    {#                                data-original-title="Orders that marked as review by FraudLabs Pro will be assigned this order status.">{{ cdek_auth_id }}</span></label> #}
-
-
-                    {#                    <h3 class="">{{ cdek_auth }}</h3> #}
-                    {#                    <div class="form-group"> #}
-                    {#                        <label class="col-sm-2 control-label" for="input-status">{{ cdek_auth }}</label> #}
-                    {#                        <div class="col-sm-10"> #}
-                    {#                            <input type="text" name="cdek_official_shipping_auth" id="input-cdek-official-shipping-auth" #}
-                    {#                                   class="form-control"/> #}
-                    {#                        </div> #}
-                    {#                    </div> #}
-                    {#                    <div class="form-group"> #}
-                    {#                        <label class="col-sm-2 control-label" for="input-status">Вкл/Выкл</label> #}
-                    {#                        <div class="col-sm-10"> #}
-                    {#                            <select name="shipping_cdek_official_status" id="input-status" class="form-control"> #}
-                    {#                                {% if shipping_cdek_official_status %} #}
-                    {#                                    <option value="1" selected="selected">{{ text_enabled }}</option> #}
-                    {#                                    <option value="0">{{ text_disabled }}</option> #}
-                    {#                                {% else %} #}
-                    {#                                    <option value="1">{{ text_enabled }}</option> #}
-                    {#                                    <option value="0" selected="selected">{{ text_disabled }}</option> #}
-                    {#                                {% endif %} #}
-                    {#                            </select> #}
-                    {#                        </div> #}
-                    {#                    </div> #}
-
-                    {#                    <div class="form-group"> #}
-                    {#                        <label class="col-sm-2 control-label">Domestic Services</label> #}
-                    {#                        <div class="col-sm-10"> #}
-                    {#                            <div class="well well-sm" style="height: 150px; overflow: auto;"> #}
-                    {#                                <div class="checkbox"> #}
-                    {#                                    <label> #}
-                    {#                                        <input type="checkbox" name="shipping_usps_domestic_00" value="1"> #}
-                    {#                                        First-Class Mail Parcel #}
-                    {#                                    </label> #}
-                    {#                                </div> #}
-                    {#                                <div class="checkbox"> #}
-                    {#                                    <label> #}
-                    {#                                        <input type="checkbox" name="shipping_usps_domestic_01" value="1"> #}
-                    {#                                        First-Class Mail Large Envelope #}
-                    {#                                    </label> #}
-                    {#                                </div> #}
-                    {#                                <div class="checkbox"> #}
-                    {#                                    <label> #}
-                    {#                                        <input type="checkbox" name="shipping_usps_domestic_02" value="1"> #}
-                    {#                                        First-Class Mail Letter #}
-                    {#                                    </label> #}
-                    {#                                </div> #}
-                    {#                                <div class="checkbox"> #}
-                    {#                                    <label> #}
-                    {#                                        <input type="checkbox" name="shipping_usps_domestic_03" value="1"> #}
-                    {#                                        First-Class Mail Postcards #}
-                    {#                                    </label> #}
-                    {#                                </div> #}
-                    {#                                <div class="checkbox"> #}
-                    {#                                    <label> #}
-                    {#                                        <input type="checkbox" name="shipping_usps_domestic_1" value="1"> #}
-                    {#                                        Priority Mail #}
-                    {#                                    </label> #}
-                    {#                                </div> #}
-                    {#                                <div class="checkbox"> #}
-                    {#                                    <label> #}
-                    {#                                        <input type="checkbox" name="shipping_usps_domestic_2" value="1"> #}
-                    {#                                        Express Mail Hold for Pickup #}
-                    {#                                    </label> #}
-                    {#                                </div> #}
-                    {#                                <div class="checkbox"> #}
-                    {#                                    <label> #}
-                    {#                                        <input type="checkbox" name="shipping_usps_domestic_3" value="1"> #}
-                    {#                                        Express Mail #}
-                    {#                                    </label> #}
-                    {#                                </div> #}
-                    {#                                <div class="checkbox"> #}
-                    {#                                    <label> #}
-                    {#                                        <input type="checkbox" name="shipping_usps_domestic_4" value="1"> #}
-                    {#                                        Parcel Post #}
-                    {#                                    </label> #}
-                    {#                                </div> #}
-                    {#                                <div class="checkbox"> #}
-                    {#                                    <label> #}
-                    {#                                        <input type="checkbox" name="shipping_usps_domestic_5" value="1"> #}
-                    {#                                        Bound Printed Matter #}
-                    {#                                    </label> #}
-                    {#                                </div> #}
-                    {#                            </div> #}
-                    {#                            <button type="button" onclick="$(this).parent().find(':checkbox').prop('checked', true);" #}
-                    {#                                    class="btn btn-link">Select All #}
-                    {#                            </button> #}
-                    {#                            / #}
-                    {#                            <button type="button" onclick="$(this).parent().find(':checkbox').prop('checked', false);" #}
-                    {#                                    class="btn btn-link">Unselect All #}
-                    {#                            </button> #}
-                    {#                        </div> #}
-                    {#                    </div> #}
-
-                    {#                    <div class="form-group required"> #}
-                    {#                        <label class="col-sm-2 control-label" for="input-length"><span data-toggle="tooltip" title="" #}
-                    {#                                                                                       data-original-title="Average package dimensions for shipping package. Product dimensions are not used for shipping at this time.">Dimensions (L x W x H)</span></label> #}
-                    {#                        <div class="col-sm-10"> #}
-                    {#                            <div class="row"> #}
-                    {#                                <div class="col-sm-4"> #}
-                    {#                                    <input type="text" name="shipping_usps_length" value="" placeholder="Length" #}
-                    {#                                           id="input-length" class="form-control"> #}
-                    {#                                </div> #}
-                    {#                                <div class="col-sm-4"> #}
-                    {#                                    <input type="text" name="shipping_usps_width" value="" placeholder="Width" #}
-                    {#                                           id="input-width" class="form-control"> #}
-                    {#                                </div> #}
-                    {#                                <div class="col-sm-4"> #}
-                    {#                                    <input type="text" name="shipping_usps_height" value="" placeholder="Height" #}
-                    {#                                           id="input-height" class="form-control"> #}
-                    {#                                </div> #}
-                    {#                            </div> #}
-                    {#                        </div> #}
-                    {#                    </div> #}
-
-                    {#                    <div class="form-group"> #}
-                    {#                        <label class="col-sm-2 control-label"><span data-toggle="tooltip" title="" #}
-                    {#                                                                    data-original-title="Do you want to display the shipping time? (e.g. Ships within 3 to 5 days)">Display Delivery Time</span></label> #}
-                    {#                        <div class="col-sm-10"> #}
-                    {#                            <label class="radio-inline"> #}
-                    {#                                <input type="radio" name="shipping_usps_display_time" value="1"> #}
-                    {#                                Yes #}
-                    {#                            </label> #}
-                    {#                            <label class="radio-inline"> #}
-                    {#                                <input type="radio" name="shipping_usps_display_time" value="0" checked="checked"> #}
-                    {#                                No #}
-                    {#                            </label> #}
-                    {#                        </div> #}
-                    {#                    </div> #}
-
-
-                    {#                    <div class="form-group required"> #}
-                    {#                        <label class="col-sm-2 control-label" for="input-ip"> IP </label> #}
-                    {#                        <div class="col-sm-10"> #}
-                    {#                            <div class="input-group"> #}
-                    {#                                <input class="form-control" id="input-ip" placeholder="IP" type="text" value=""> #}
-                    {#                                <span class="input-group-btn"> #}
-                    {#                <button class="btn btn-primary" data-loading-text="Loading..." id="button-ip-add" #}
-                    {#                        type="button"> Add IP </button> #}
-                    {#                </span></div> #}
-                    {#                        </div> #}
-                    {#                    </div> #}
-
-                    {#                    <div class="form-group"> #}
-                    {#                        <label class="col-sm-2 control-label" for="input-cost">{{ entry_cost }}</label> #}
-                    {#                        <div class="col-sm-10"> #}
-                    {#                            <input type="number" name="shipping_cdek_official_cost" #}
-                    {#                                   value="{{ shipping_cdek_official_cost }}" placeholder="{{ entry_cost }}" #}
-                    {#                                   id="input-cost" class="form-control"/> #}
-                    {#                        </div> #}
-                    {#                    </div> #}
-
-                    {#                    <div class="form-group"> #}
-                    {#                        <label class="col-sm-2 control-label" for="input-data-feed">Data Feed Url</label> #}
-                    {#                        <div class="col-sm-10"> #}
-                    {#                            <textarea rows="5" id="input-data-feed" class="form-control" readonly="">http://localhost:8284/index.php?route=extension/feed/google_base</textarea> #}
-                    {#                        </div> #}
-                    {#                    </div> #}
-
-                    {#                    <div class="form-group"> #}
-                    {#                        <label class="col-sm-2 control-label" for="input-data-feed">Google Category</label> #}
-                    {#                        <div class="col-sm-10"> #}
-                    {#                            <input type="text" name="google_base_category" value="" placeholder="Google Category" #}
-                    {#                                   id="input-google-category" class="form-control" autocomplete="off"> #}
-                    {#                            <ul class="dropdown-menu" style="display: none;"></ul> #}
-                    {#                            <input type="hidden" name="google_base_category_id" value=""> #}
-                    {#                            <div class="input-group"> #}
-                    {#                                <input type="text" name="category" value="" placeholder="Category" id="input-category" #}
-                    {#                                       class="form-control" autocomplete="off"> #}
-                    {#                                <ul class="dropdown-menu"></ul> #}
-                    {#                                <input type="hidden" name="category_id" value=""> #}
-                    {#                                <span class="input-group-btn"><button type="button" id="button-category-add" #}
-                    {#                                                                      data-toggle="tooltip" title="" #}
-                    {#                                                                      class="btn btn-primary" #}
-                    {#                                                                      data-original-title="Add Category"><i #}
-                    {#                                                class="fa fa-plus"></i></button></span> #}
-                    {#                            </div> #}
-                    {#                        </div> #}
-                    {#                    </div> #}
-
-                    {#                    <div id="category"> #}
-                    {#                        <table class="table table-bordered"> #}
-                    {#                            <thead> #}
-                    {#                            <tr> #}
-                    {#                                <td class="text-left">Google Category</td> #}
-                    {#                                <td class="text-left">Category</td> #}
-                    {#                                <td class="text-right">Action</td> #}
-                    {#                            </tr> #}
-                    {#                            </thead> #}
-                    {#                            <tbody> #}
-                    {#                            <tr> #}
-                    {#                                <td class="text-center" colspan="3">No results!</td> #}
-                    {#                            </tr> #}
-                    {#                            </tbody> #}
-                    {#                        </table> #}
-                    {#                        <div class="row"> #}
-                    {#                            <div class="col-sm-6 text-left"></div> #}
-                    {#                            <div class="col-sm-6 text-right">Showing 0 to 0 of 0 (0 Pages)</div> #}
-                    {#                        </div> #}
-                    {#                    </div> #}
-
-                    {#                    <div class="table-responsive"> #}
-                    {#                        <table class="table table-bordered table-hover"> #}
-                    {#                            <tbody> #}
-                    {#                            <tr> #}
-                    {#                                <td class="text-center td-pointer"><input type="checkbox" name="acknowledge[0]"></td> #}
-                    {#                                <td class="text-left"><h4>Visibility of product catalog</h4> #}
-                    {#                                    <p>I confirm my product catalog is publically accessible without requiring a #}
-                    {#                                        password.</p></td> #}
-                    {#                            </tr> #}
-                    {#                            <tr> #}
-                    {#                                <td class="text-center td-pointer"><input type="checkbox" name="acknowledge[1]"></td> #}
-                    {#                                <td class="text-left"><h4>Secure checkout process</h4> #}
-                    {#                                    <p>Payment and transaction processing, as well as collection of any sensitive and #}
-                    {#                                        financial personal information from the user, are conducted over a secure #}
-                    {#                                        processing server (SSL-protected, with a valid SSL certificate - https://).</p> #}
-                    {#                                </td> #}
-                    {#                            </tr> #}
-                    {#                            <tr> #}
-                    {#                                <td class="text-center td-pointer"><input type="checkbox" name="acknowledge[2]"></td> #}
-                    {#                                <td class="text-left"><h4>Return policy</h4> #}
-                    {#                                    <p>I confirm my website provides a clear and conspicuous return policy to users.</p> #}
-                    {#                                </td> #}
-                    {#                            </tr> #}
-                    {#                            <tr> #}
-                    {#                                <td class="text-center td-pointer"><input type="checkbox" name="acknowledge[3]"></td> #}
-                    {#                                <td class="text-left"><h4>Billing terms and conditions</h4> #}
-                    {#                                    <p>I confirm my website provides clear and conspicuous billing terms and #}
-                    {#                                        conditions.</p></td> #}
-                    {#                            </tr> #}
-                    {#                            <tr> #}
-                    {#                                <td class="text-center td-pointer"><input type="checkbox" name="acknowledge[4]"></td> #}
-                    {#                                <td class="text-left"><h4>Accurate contact information</h4> #}
-                    {#                                    <p>I confirm my website displays sufficient and accurate contact information with #}
-                    {#                                        <em>at least two</em> of the following: phone number, physical address, email #}
-                    {#                                        address.</p></td> #}
-                    {#                            </tr> #}
-                    {#                            </tbody> #}
-                    {#                        </table> #}
-                    {#                    </div> #}

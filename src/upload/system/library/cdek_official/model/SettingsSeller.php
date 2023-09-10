@@ -37,11 +37,7 @@ class SettingsSeller extends AbstractSettings
      */
     public function validate()
     {
-        if ($this->sellerInternationalShippingCheckbox !== '1') {
-            return;
-        }
-
-        if ($this->shippingSellerName === '') {
+        if (empty($this->shippingSellerName)) {
             throw new Exception('cdek_error_shipping_seller_name_empty');
         }
 
@@ -49,7 +45,7 @@ class SettingsSeller extends AbstractSettings
             throw new Exception('cdek_error_shipping_seller_name_too_long');
         }
 
-        if ($this->shippingSellerPhone === '') {
+        if (empty($this->shippingSellerPhone)) {
             throw new Exception('cdek_error_shipping_seller_phone_empty');
         }
 
@@ -57,7 +53,11 @@ class SettingsSeller extends AbstractSettings
             throw new Exception('cdek_error_shipping_seller_phone_invalid_format');
         }
 
-        if ($this->sellerTrueSellerAddress === '') {
+        if ($this->sellerInternationalShippingCheckbox !== '1') {
+            return;
+        }
+
+        if (empty($this->sellerTrueSellerAddress)) {
             throw new Exception('cdek_error_seller_true_seller_address_empty');
         }
 
@@ -65,35 +65,35 @@ class SettingsSeller extends AbstractSettings
             throw new Exception('cdek_error_seller_true_seller_address_length');
         }
 
-        if ($this->sellerShipper === '') {
+        if (empty($this->sellerShipper)) {
             throw new Exception('cdek_error_seller_shipper_empty');
         }
 
-        if ($this->sellerShipperAddress === '') {
+        if (empty($this->sellerShipperAddress)) {
             throw new Exception('cdek_error_seller_shipper_address_empty');
         }
 
-        if ($this->sellerPassportSeries === '') {
+        if (empty($this->sellerPassportSeries)) {
             throw new Exception('cdek_error_seller_passport_series_empty');
         }
 
-        if ($this->sellerPassportNumber === '') {
+        if (empty($this->sellerPassportNumber)) {
             throw new Exception('cdek_error_seller_passport_number_empty');
         }
 
-        if ($this->sellerPassportIssueDate === '') {
+        if (empty($this->sellerPassportIssueDate)) {
             throw new Exception('cdek_error_seller_passport_issue_date_empty');
         }
 
-        if ($this->sellerPassportIssuingAuthority === '') {
+        if (empty($this->sellerPassportIssuingAuthority)) {
             throw new Exception('cdek_error_seller_passport_issuing_authority_empty');
         }
 
-        if ($this->sellerTin === '') {
+        if (empty($this->sellerTin)) {
             throw new Exception('cdek_error_seller_tin_empty');
         }
 
-        if ($this->sellerDateOfBirth === '') {
+        if (empty($this->sellerDateOfBirth)) {
             throw new Exception('cdek_error_seller_date_of_birth_empty');
         }
     }

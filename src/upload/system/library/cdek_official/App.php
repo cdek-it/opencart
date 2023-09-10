@@ -14,6 +14,8 @@ class App
     private $session;
     private $requestMethod;
     private $userToken;
+    private CdekApi $cdekApi;
+    protected $settings;
 
     public function __construct(Controller $controller, array $data, string $dirApplication)
     {
@@ -25,6 +27,8 @@ class App
         $this->url = $this->controller->url;
         $this->requestMethod = $this->controller->request->server['REQUEST_METHOD'] ?? '';
         $this->userToken = $this->controller->session->data['user_token'] ?? '';
+        $this->settings = new Settings();
+        $this->cdekApi = new CdekApi($controller, $this->settings);
     }
 
     public function run():void
@@ -39,6 +43,9 @@ class App
     {
         $scriptPath = $this->dirApplication . 'view/javascript/cdek_official/settings_page.js';
         $this->data['settings_page'] = file_exists($scriptPath) ? file_get_contents($scriptPath) : '';
+
+        $stylePath = $this->dirApplication . 'view/stylesheet/cdek_official/settings_page.css';
+        $this->data['settings_page_style'] = file_exists($stylePath) ? file_get_contents($stylePath) : '';
     }
 
     public function checkError(): void
@@ -52,17 +59,16 @@ class App
 
     public function init(): void
     {
-        $settings = new Settings();
-
         if ($this->requestMethod === 'POST') {
             $postSettings = $this->controller->request->post;
-            $settings->init($postSettings);
-
+            $this->settings->init($postSettings);
+            $this->data['status_auth'] = $this->cdekApi->checkAuth();
+            $this->controller->model_setting_setting->editSetting('cdek_official', $postSettings);
             try {
-                $this->controller->model_setting_setting->editSetting('cdek_official', $postSettings);
-                $settings->validate();
+                $this->settings->validate();
                 $this->session->data['success'] = $this->language->get('text_success');
             } catch (Exception $exception) {
+                $this->controller->log->write(">CDEK_OFFICIAL_LOG Validation failed: " . $this->language->get($exception->getMessage()));
                 $this->session->data['error_warning'] = $this->language->get('error_permission') .
                     $this->language->get($exception->getMessage());
             }
@@ -71,21 +77,33 @@ class App
             $this->controller->response->redirect($redirectUrl);
         }
 
-        $settings->init($this->controller->model_setting_setting->getSetting('cdek_official'));
-        $settings->updateData($this->data);
+        $modelSettings = $this->controller->model_setting_setting->getSetting('cdek_official');
+        if (!empty($modelSettings)) {
 
-        try {
-            $settings->validate();
-            $cdekApi = new CdekApi($this->controller);
-            $this->data['status_auth'] = $cdekApi->checkAuth();
-            $cdekTest = new CdekTest($this->controller);
-            $cdekTest->test();
-        } catch (Exception $exception) {
-            $this->session->data['error_warning'] = $this->language->get('error_permission') .
-                $this->language->get($exception->getMessage());
+            $this->settings->init($this->controller->model_setting_setting->getSetting('cdek_official'));
+            $this->settings->updateData($this->data);
+
+            $this->data['status_auth'] = $this->cdekApi->checkAuth();
+            $this->data['tariffs'] = $this->settings->shippingSettings->shippingTariffs;
+        } else {
+            $this->data['status_auth'] = false;
         }
 
-        $this->data['tariffs'] = $settings->shippingSettings->shippingTariffs;
+
+//        $cdekTest = new CdekTest($this->controller);
+//        $cdekTest->test();
+
+//        try {
+//            $this->data['status_auth'] = $this->cdekApi->checkAuth();
+//            if ($this->data['status_auth']) {
+//                $settings->validate();
+//            }
+////            $cdekTest = new CdekTest($this->controller);
+////            $cdekTest->test();
+//        } catch (Exception $exception) {
+//            $this->session->data['error_warning'] = $this->language->get('error_permission') .
+//                $this->language->get($exception->getMessage());
+//        }
     }
 
     public function breadcrumbs(): void
@@ -104,5 +122,36 @@ class App
                 'href' => $this->url->link('extension/shipping/cdek_official', "user_token={$this->userToken}", true)
             ]
         ];
+    }
+
+    public function handleAjaxRequest()
+    {
+        $this->settings->init($this->controller->model_setting_setting->getSetting('cdek_official'));
+        if (isset($this->controller->request->post['cdekRequest'])) {
+            if ($this->controller->request->post['cdekRequest'] === 'getCity') {
+                if ($this->controller->request->post['key'] === '') {
+                    exit;
+                }
+                $result = $this->cdekApi->getCity($this->controller->request->post['key']);
+                echo json_encode($result);
+                exit;
+            }
+
+            if ($this->controller->request->post['cdekRequest'] === 'getPvz') {
+                if ($this->controller->request->post['key'] === '') {
+                    exit;
+                }
+                $result = $this->cdekApi->getPvz($this->controller->request->post['key'], $this->controller->request->post['street']);
+                echo json_encode($result);
+                exit;
+            }
+        }
+    }
+
+    public function checkState(&$data)
+    {
+        $data['shipping_cdek_official_status'] = 1;
+        $this->controller->model_setting_setting->editSetting('shipping_cdek_official', $data);
+        file_put_contents('test_log.txt', "Response: " . json_encode($this->settings) . "\n", FILE_APPEND);
     }
 }

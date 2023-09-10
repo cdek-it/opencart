@@ -23,19 +23,19 @@ class SettingsDimensions extends AbstractSettings
      */
     public function validate()
     {
-        if ($this->dimensionsLength === '') {
+        if (empty($this->dimensionsLength)) {
             throw new Exception('cdek_error_dimensions_length_empty');
         }
 
-        if ($this->dimensionsWidth === '') {
+        if (empty($this->dimensionsWidth)) {
             throw new Exception('cdek_error_dimensions_width_empty');
         }
 
-        if ($this->dimensionsHeight === '') {
+        if (empty($this->dimensionsHeight)) {
             throw new Exception('cdek_error_dimensions_height_empty');
         }
 
-        if ($this->dimensionsWeight === '') {
+        if (empty($this->dimensionsWeight)) {
             throw new Exception('cdek_error_dimensions_weight_empty');
         }
 
