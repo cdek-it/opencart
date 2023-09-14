@@ -6,18 +6,18 @@ require_once(DIR_SYSTEM . 'library/cdek_official/test/CdekTest.php');
 
 class App
 {
-    private Registry $registry;
+    public Registry $registry;
     public array $data;
-    private string $dirApplication;
-    private $url;
-    private $language;
-    private $session;
-    private $requestMethod;
-    private $userToken;
-    private CdekApi $cdekApi;
-    protected $settings;
-    protected $modelSetting;
-    protected $request;
+    public string $dirApplication;
+    public $url;
+    public $language;
+    public $session;
+    public $requestMethod;
+    public $userToken;
+    public CdekApi $cdekApi;
+    public $settings;
+    public $modelSetting;
+    public $request;
 
     public function __construct(Registry $registry, array $data, string $dirApplication)
     {

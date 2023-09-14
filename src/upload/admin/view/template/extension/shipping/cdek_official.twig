@@ -1,11 +1,11 @@
-<script type="text/javascript" src="http://localhost:8284/system/library/cdek_official/cdek-widget.umd.js" charset="utf-8"></script>
+<script type="text/javascript" src="/system/library/cdek_official/cdek-widget.umd.js" charset="utf-8"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         new window.CDEKWidget({
             defaultLocation: 'Барнаул', // по умолчанию будет показываться Барнаул
             from: 'Санкт-Петербург', // доставка ведется из Санкт-Петербурга
             apiKey: '8b88b1d3-462b-4d8a-b2ca-ef519d70aaf9',
-            servicePath: 'http://localhost:8284/system/library/cdek_official/service.php',
+            servicePath: '/service.php',
             canChoose: true, // не будем отображать кнопку выбора пункта выдачи
             root: 'cdek-map', // привяжем виджет к указанной ссылке
             sender: false,

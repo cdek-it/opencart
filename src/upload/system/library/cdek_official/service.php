@@ -4,12 +4,12 @@
 /**
  * Вставьте свой аккаунт\идентификатор для интеграции
  * Put your account for integration here
- */ '3Buqclh6AL503ALpsU9wIDpQHsSVnG9n',
+ */ "{{AUTH_ID}}",
 
 /**
  * Вставьте свой пароль для интеграции
  * Put your password for integration here
- */ 'q03UXvGt6uXmBdG5NgbnNtHDfpWPfHYJ'))->process($_GET, file_get_contents('php://input'));
+ */ "{{AUTH_SECRET}}"))->process($_GET, file_get_contents('php://input'));
 
 class service
 {

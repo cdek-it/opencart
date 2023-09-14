@@ -5,4 +5,16 @@
     <version>1.0</version>
     <author>CDEK IT</author>
     <link>https://www.cdek.ru/ru/integration</link>
+<!--    <file path="admin/view/template/sale/order_info.twig">-->
+<!--        <search>-->
+<!--            <![CDATA[-->
+<!--                <div class="panel panel-default">-->
+<!--            ]]>-->
+<!--        </search>-->
+<!--        <add position="after">-->
+<!--            <![CDATA[-->
+<!--                <h1>DISPLAY</h1>-->
+<!--            ]]>-->
+<!--        </add>-->
+<!--    </file>-->
 </modification>
