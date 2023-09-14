@@ -1,3 +1,33 @@
+<script type="text/javascript" src="http://localhost:8284/system/library/cdek_official/cdek-widget.umd.js" charset="utf-8"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        new window.CDEKWidget({
+            defaultLocation: 'Барнаул', // по умолчанию будет показываться Барнаул
+            from: 'Санкт-Петербург', // доставка ведется из Санкт-Петербурга
+            apiKey: '8b88b1d3-462b-4d8a-b2ca-ef519d70aaf9',
+            servicePath: 'http://localhost:8284/system/library/cdek_official/service.php',
+            canChoose: true, // не будем отображать кнопку выбора пункта выдачи
+            root: 'cdek-map', // привяжем виджет к указанной ссылке
+            sender: false,
+            debug: true,
+            hideDeliveryOptions: {
+                office: false,
+                door: true,
+            },
+            goods: [
+                {
+                    length: 10,
+                    width: 10,
+                    height: 10,
+                    weight: 1,
+                }],
+            onChoose: function (event) {
+                console.log(event)
+            }
+        });
+    });
+</script>
+
 {{ header }}{{ column_left }}
 
 <div id="content">
@@ -307,6 +337,17 @@
                                                    class="form-control" placeholder="{{ cdek_shipping__extra_days }}"/>
                                         </div>
                                     </div>
+                                    <div class="row" style="padding-bottom: 10px;">
+                                        <label class="col-sm-2 control-label"
+                                               for="cdek_official_shipping__currency">{{ cdek_shipping__currency }}</label>
+                                        <div class="col-sm-4">
+                                            <select class="form-control" id="cdek_official_shipping__currency" name="cdek_official_shipping__currency">
+                                                {% for currency in currencies %}
+                                                    <option value="{{ currency.code }}" {% if currency.select %} selected="selected" {% endif %}>{{ attribute(_context, currency.key) }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
                                     <div class="row required" style="padding-bottom: 10px;">
                                         <label class="col-sm-2 control-label "
                                                for="cdek_official_shipping__city">{{ cdek_shipping__city }}</label>
@@ -368,6 +409,8 @@
                                 </div>
                             </div>
                         </fieldset>
+
+                        <div id="cdek-map" style="width:800px;height:600px"></div>
                         <fieldset>
                             <legend>{{ cdek_dimensions }}</legend>
                             <div class="form-group required">

@@ -16,13 +16,13 @@ class CdekApi
     protected const API_TEST_URL = "https://api.edu.cdek.ru/v2/";
     protected CdekHttpClient $httpClient;
     protected Settings $settings;
-    protected Controller $controller;
+    protected Registry $registry;
 
-    public function __construct($controller, $settings)
+    public function __construct($registry, $settings)
     {
         $this->httpClient = new CdekHttpClient();
         $this->settings = $settings;
-        $this->controller = $controller;
+        $this->registry = $registry;
     }
 
     protected function getToken()
@@ -40,7 +40,7 @@ class CdekApi
 
     private function storeToken($token)
     {
-        $this->controller->config->set('cdek_official_api_access_token', $token);
+        $this->registry->get('config')->set('cdek_official_api_access_token', $token);
     }
 
     protected function sendRequestWithTokenRefresh($url, $method, $data = null)
@@ -59,7 +59,7 @@ class CdekApi
 
     private function getStoredToken()
     {
-        return $this->controller->config->get('cdek_official_api_access_token');
+        return $this->registry->get('config')->get('cdek_official_api_access_token');
     }
 
     private function isTokenInvalid($response)
@@ -138,22 +138,7 @@ class CdekApi
     public function calculate($data)
     {
         $url = $this->getAuthUrl() . self::CALC_PATH;
-        $param = [
-            'tariff_code' => $data['tariff'],
-            'from_location' => [
-                'code' => $data['city_code_from']
-            ],
-            'to_location' => [
-                'code' => $data['city_code_to'],
-            ],
-            'packages' => [
-                'weight' => $data['package_data']['weight'],
-                'length' => $data['package_data']['length'],
-                'width' => $data['package_data']['width'],
-                'height' => $data['package_data']['height'],
-            ],
-        ];
-        return $this->sendRequestWithTokenRefresh($url, 'POST', $param);
+        return $this->sendRequestWithTokenRefresh($url, 'POST', $data);
     }
 
     public function createOrder($order)
@@ -185,5 +170,11 @@ class CdekApi
             ];
         }
         return $data;
+    }
+
+    public function getCityByPostcode($postcode)
+    {
+        $url = $this->getAuthUrl() . self::REGION_PATH;
+        return $this->sendRequestWithTokenRefresh($url, 'GET', ['postal_code' => $postcode]);
     }
 }

@@ -5,14 +5,15 @@ class ModelExtensionShippingCdekOfficial extends Model {
         $settings = $this->model_setting_setting->getSetting('cdek_official');
 
         if (isset($settings['cdek_official_status']) && $settings['cdek_official_status'] == 1) {
+
             $quote_data = array();
 
             $quote_data['cdek_official'] = array(
                 'code'         => 'cdek_official.cdek_official',
                 'title'        => 'CDEK Official Shipping',
-                'cost'         => 5.00,
+                'cost'         => 6.00,
                 'tax_class_id' => 0,
-                'text'         => '$5.00'
+                'text'         => '$6.00'
             );
 
             // Define the method data

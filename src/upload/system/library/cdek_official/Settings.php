@@ -64,6 +64,7 @@ class Settings
         $this->sellerSettings->init($post);
         $this->shippingSettings->init($post);
         $this->shippingSettings->setTariffs($post);
+        $this->shippingSettings->setCurrency($post);
         $this->dimensionsSettings->init($post);
         $this->priceSettings->init($post);
     }

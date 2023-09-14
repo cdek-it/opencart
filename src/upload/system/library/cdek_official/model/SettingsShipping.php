@@ -1,11 +1,13 @@
 <?php
 
 require_once(DIR_SYSTEM . 'library/cdek_official/model/Tariffs.php');
+require_once(DIR_SYSTEM . 'library/cdek_official/model/Currency.php');
 require_once(DIR_SYSTEM . 'library/cdek_official/model/AbstractSettings.php');
 
 class SettingsShipping extends AbstractSettings
 {
     public $shippingTariffs;
+    public array $shippingCurrencies;
     public $shippingTariffName;
     public $shippingTariffPlug;
     public $shippingManyPackages;
@@ -14,6 +16,8 @@ class SettingsShipping extends AbstractSettings
     public $shippingCityCode;
     public $shippingCityAddress;
     public $shippingPvz;
+    public $tariffs;
+    public Currency $currency;
 
     const PARAM_ID = [
         'cdek_official_shipping__tariff_name' => 'shippingTariffName',
@@ -26,11 +30,10 @@ class SettingsShipping extends AbstractSettings
         'cdek_official_shipping__pvz' => 'shippingPvz',
     ];
 
-    protected $tariffs;
-
     public function __construct()
     {
         $this->tariffs = new Tariffs();
+        $this->currency = new Currency();
     }
 
     /**
@@ -83,5 +86,12 @@ class SettingsShipping extends AbstractSettings
             }
         }
         return true;
+    }
+
+    public function setCurrency($post)
+    {
+        $currency = $post['cdek_official_shipping__currency'];
+        $this->currency->selectCurrency((int) $currency);
+        $this->shippingCurrencies = $this->currency->getCurrency();
     }
 }

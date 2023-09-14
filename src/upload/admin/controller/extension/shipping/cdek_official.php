@@ -10,9 +10,13 @@ class ControllerExtensionShippingCdekOfficial extends Controller
         $this->load->model('setting/setting');
 
         $data = [];
-        $app = new App($this, $data, DIR_APPLICATION);
+        $registry = $this->registry;
+        $app = new App($registry, $data, DIR_APPLICATION);
         $app->handleAjaxRequest();
         $app->run();
+
+//        $servicePhp = file_get_contents(DIR_SYSTEM . 'library/cdek_official/service.php');
+//        file_put_contents('service.php', $servicePhp, FILE_APPEND);
 
         $app->checkState($app->data);
 

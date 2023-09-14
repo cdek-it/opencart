@@ -34,6 +34,12 @@ $_['cdek_shipping__tariff_name_138'] = 'Door-to-warehouse parcel';
 $_['cdek_shipping__tariff_name_139'] = 'Door-to-door parcel';
 $_['cdek_shipping__tariffs_select_all'] = 'Select All';
 $_['cdek_shipping__tariffs_unselect_all'] = 'Unselect All';
+
+$_['cdek_shipping__currency'] = 'Currency';
+$_['cdek_shipping__currency_rub'] = 'RUB';
+$_['cdek_shipping__currency_usd'] = 'USD';
+$_['cdek_shipping__currency_eur'] = 'EUR';
+
 $_['cdek_shipping__tariffs_name'] = 'Edit tariffs name';
 $_['cdek_shipping__tariff_plug'] = 'Name tariff plug';
 $_['cdek_shipping__many_packages'] = 'Many packages';
