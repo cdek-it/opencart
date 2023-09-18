@@ -23,13 +23,21 @@ class Order
     public bool $isClientReturn;
     private Settings $settings;
     private $orderOC;
+    private $products;
+    private $dimensions;
+    private $model_catalog_product;
+    private $weight;
+    private $weightPackage;
 
 
-    public function __construct($settings, $orderOC)
+    public function __construct($settings, $orderOC, $products, $dimensions, $model_catalog_product, $weight)
     {
-
         $this->settings = $settings;
         $this->orderOC = $orderOC;
+        $this->products = $products;
+        $this->dimensions = $dimensions;
+        $this->model_catalog_product = $model_catalog_product;
+        $this->weight = $weight;
     }
 
     public function getRequestData()
@@ -46,23 +54,12 @@ class Order
             ],
             "packages" => [
                 [
-                    "number" => "order_id",
-                    "height" => 10,
-                    "length" => 10,
-                    "width" => 10,
-                    "weight" => 4000,
-                    "items" => [
-                        [
-                            "ware_key" => "00055",
-                            "payment" => [
-                                "value" => 3000
-                            ],
-                            "name" => "Товар",
-                            "cost" => 300,
-                            "amount" => 1,
-                            "weight" => 700,
-                        ]
-                    ],
+                    "number" => "package_order_" . $this->orderOC['order_id'],
+                    "height" => $this->dimensions['height'],
+                    "length" => $this->dimensions['length'],
+                    "width" => $this->dimensions['width'],
+                    "items" => $this->getItems(),
+                    "weight" => $this->weightPackage,
 
                 ]
             ],
@@ -89,6 +86,40 @@ class Order
             'tariffCodeCustomer' => $tariffCodeCustomer,
             'paymentCodeCustomer' => $this->orderOC['payment_code']
         ];
+    }
+
+    private function getItems()
+    {
+        $data = [];
+        foreach ($this->products as $product) {
+            $productOC = $this->model_catalog_product->getProduct($product['product_id']);
+            //            weight_class_id
+            $weight = (int)$this->weight->convert((int)$productOC['weight'], $productOC['weight_class_id'], '2');
+            if ($weight === 0) {
+                $weight = $this->settings->dimensionsSettings->dimensionsWeight;
+            }
+            $tmp = [
+                "ware_key" => "product_id_" . $product['product_id'],
+                "name" => $product['name'],
+                "cost" => $product['price'],
+                "amount" => $product['quantity'],
+                "weight" => $weight,
+            ];
+
+            if ($this->orderOC['payment_code'] === 'cod') {
+                $tmp["payment"] = [
+                    "value" => $product['price']
+                ];
+            } else {
+                $tmp["payment"] = [
+                    "value" => 0
+                ];
+            }
+            $data[] = $tmp;
+
+            $this->weightPackage += $weight;
+        }
+        return $data;
     }
 }
 

@@ -3,7 +3,6 @@ require_once(DIR_SYSTEM . 'library/cdek_official/Calc.php');
 class ModelExtensionShippingCdekOfficial extends Model {
     public function getQuote($address) {
         $this->load->language('extension/shipping/cdek_official');
-//$this->registry->get("session")->data["currency"]
         $cartProducts = $this->cart->getProducts();
         $weight = $this->cart->weight;
         $this->load->model('setting/setting');

@@ -63,12 +63,30 @@ class ControllerExtensionShippingCdekOfficial extends Controller
         if ($query->num_rows) {
             $dataOrderForm['cdek_order_created'] = true;
             $orderMetaData = $query->row;
-            $dataOrderForm['cdek_number'] = $orderMetaData['cdek_number'];
             $dataOrderForm['cdek_uuid'] = $orderMetaData['cdek_uuid'];
-            $dataOrderForm['name'] = $orderMetaData['name'];
-            $dataOrderForm['type'] = $orderMetaData['type'];
-            $dataOrderForm['payment_type'] = $orderMetaData['payment_type'];
-            $dataOrderForm['to_location'] = $orderMetaData['to_location'];
+
+            if (!is_numeric($orderMetaData['cdek_number'])) {
+                $settings = new Settings();
+                $settings->init($this->model_setting_setting->getSetting('cdek_official'));
+                $cdekApi = new CdekApi($this->registry, $settings);
+                $order = $cdekApi->getOrderByUuid($orderMetaData['cdek_uuid']);
+                $param = [
+                    'cdek_number' => $order->entity->cdek_number,
+                    'cdek_uuid' => $orderMetaData['cdek_uuid'],
+                    'name' => $order->entity->recipient->name,
+                    'type' => $this->getDeliveryModeName($order->entity->delivery_mode),
+                    'payment_type' => $orderMetaData['payment_type'],
+                    'to_location' => $order->entity->to_location->city . ', ' . $order->entity->to_location->address
+                ];
+                $this->insertOrderMeta($param, $dataOrderForm['order_id']);
+                $dataOrderForm = array_merge($dataOrderForm, $param);
+            } else {
+                $dataOrderForm['cdek_number'] = $orderMetaData['cdek_number'];
+                $dataOrderForm['name'] = $orderMetaData['name'];
+                $dataOrderForm['type'] = $orderMetaData['type'];
+                $dataOrderForm['payment_type'] = $orderMetaData['payment_type'];
+                $dataOrderForm['to_location'] = $orderMetaData['to_location'];
+            }
         }
 
         $customContent = $this->load->view('extension/shipping/cdek_official_create_order', $dataOrderForm);
@@ -123,5 +141,37 @@ class ControllerExtensionShippingCdekOfficial extends Controller
         $this->model_setting_setting->editSetting('shipping_cdek_official', $data);
         $this->load->model('extension/shipping/cdek_official');
         $this->model_extension_shipping_cdek_official->deleteEvents();
+    }
+
+    private function getDeliveryModeName(int $deliveryMode)
+    {
+        if (in_array($deliveryMode, [1, 3, 8])) {
+            return $this->language->get('cdek_shipping__tariff_type_to_door');
+        }
+        return $this->language->get('cdek_shipping__tariff_type_to_warehouse');
+    }
+
+    private function insertOrderMeta(array $data, int $orderId)
+    {
+        if (!is_numeric($data['cdek_number'])) {
+            $data['cdek_number'] = null;
+        }
+
+        $this->db->query(
+            "INSERT INTO oc_cdek_order_meta SET order_id = " . $orderId
+            . ", cdek_number = '" . $this->db->escape($data['cdek_number']) . "'"
+            . ", cdek_uuid = '" . $this->db->escape($data['cdek_uuid']) . "'"
+            . ", name = '" . $this->db->escape($data['name']) . "'"
+            . ", type = '" . $this->db->escape($data['type']) . "'"
+            . ", payment_type = '" . $this->db->escape($data['payment_type']) . "'"
+            . ", to_location = '" . $this->db->escape($data['to_location']) . "'"
+            . " ON DUPLICATE KEY UPDATE "
+            . "cdek_number = VALUES(cdek_number), "
+            . "cdek_uuid = VALUES(cdek_uuid), "
+            . "name = VALUES(name), "
+            . "type = VALUES(type), "
+            . "payment_type = VALUES(payment_type), "
+            . "to_location = VALUES(to_location)"
+        );
     }
 }

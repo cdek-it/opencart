@@ -1,33 +1,39 @@
 <?php
 class ControllerExtensionShippingCdekOfficial extends Controller {
-    public function getQuote($address) {
-        $this->load->language('extension/shipping/cdek_official');
 
-        $status = true;
+    public function cdek_official_checkout_shipping_after(&$route, &$data, &$output)
+    {
+        $cdekBlock = '<p><strong>CDEK Official Shipping</strong></p>';
+        $errorBlock = '<div id="cdek_number_customer_error" style="color: red; display: none">Введите телефон</div>';
+        $phoneBlock = '<div class="row required">
+      <label class="col-sm-1 control-label" for="input-shipping-firstname">Phone</label>
+      <div class="col-sm-3">
+        <input type="tel" name="cdek_number_customer" value="" placeholder="Phone" id="cdek_number_customer" class="form-control">
+      </div>
+      <div class="col-sm-8"></div>
+    </div>';
 
-        $method_data = array();
+        $btnShippingContinue = "$(document).delegate('#button-shipping-method', 'click', function() {";
+        $validatePhone = "if ($('#cdek_number_customer').val() === '') {
+        $('#cdek_number_customer_error').show()
+        return;
+    }
+    $('#cdek_number_customer_error').hide()";
 
-        if ($status) {
-            $quote_data = array();
-            $cost = 5.00;
+        $this->searchAndReplace($output, $cdekBlock, $phoneBlock);
+        $this->searchAndReplace($output, $cdekBlock, $errorBlock);
+        $this->searchAndReplace($output, $btnShippingContinue, $validatePhone);
 
-            $quote_data['cdek_official'] = array(
-                'code'         => 'cdek_official.cdek_official',
-                'title'        => $this->language->get('text_description'),
-                'cost'         => $cost,
-                'tax_class_id' => 0,
-                'text'         => $this->currency->format($cost, $this->session->data['currency'])
-            );
+    }
 
-            $method_data = array(
-                'code'       => 'cdek_official',
-                'title'      => $this->language->get('text_title'),
-                'quote'      => $quote_data,
-                'sort_order' => $this->config->get('shipping_cdek_official_sort_order'),
-                'error'      => false
-            );
+    private function searchAndReplace(&$output, $search, $replace)
+    {
+        $pos = strpos($output, $search);
+
+        if ($pos !== false) {
+            $insertPos = $pos + strlen($search);
+            $output = substr_replace($output, $replace, $insertPos, 0);
         }
 
-        return $method_data;
     }
 }

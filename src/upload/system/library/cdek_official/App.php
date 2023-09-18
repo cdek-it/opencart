@@ -168,20 +168,24 @@ class App
                 }
                 $this->registry->get('load')->model('sale/order');
                 $model_sale_order = $this->registry->get('model_sale_order');
+                $this->registry->get('load')->model('catalog/product');
+                $model_catalog_product = $this->registry->get('model_catalog_product');
+                $weight = $this->registry->get('weight');
                 $orderId = (int)$this->request->post['order_id'];
                 $orderOC = $model_sale_order->getOrder($orderId);
-                $order = new Order($this->settings, $orderOC);
+                $products = $model_sale_order->getOrderProducts($orderId);
+                $order = new Order($this->settings, $orderOC, $products, $this->request->post['dimensions'], $model_catalog_product, $weight);
                 $response = $this->cdekApi->createOrder($order);
                 file_put_contents('test_log.txt', "Order created: " . json_encode($response) . "\n", FILE_APPEND);
                 if ($cdekApiValidate->createApiValidate($response)) {
                     $order = $this->cdekApi->getOrderByUuid($response->entity->uuid);
                     $data = [
-                        'cdek_number' => $order->entity->cdek_number,
+                        'cdek_number' => $order->entity->cdek_number ?? $this->language->get('cdek_error_cdek_number_empty'),
                         'cdek_uuid' => $order->entity->uuid,
                         'name' => $order->entity->recipient->name,
-                        'type' => $this->getDeliveryModeName((int) $order->entity->delivery_mode),
+                        'type' => isset($order->entity->delivery_mode) ? $this->getDeliveryModeName((int) $order->entity->delivery_mode) : null,
                         'payment_type' => $this->getPaymentTypeName($orderOC['payment_code']),
-                        'to_location' => $order->entity->to_location->city . ', ' . $order->entity->to_location->address
+                        'to_location' => $order->entity->to_location->city ?? '' . ', ' . $order->entity->to_location->address
                     ];
                     $this->insertOrderMeta($data, $orderId);
                     file_put_contents('test_log.txt', "Order validated" . "\n", FILE_APPEND);
@@ -261,6 +265,10 @@ class App
 
     private function insertOrderMeta(array $data, int $orderId)
     {
+        if (!is_numeric($data['cdek_number'])) {
+            $data['cdek_number'] = null;
+        }
+
         $this->db->query(
             "INSERT INTO oc_cdek_order_meta SET order_id = " . $orderId
             . ", cdek_number = '" . $this->db->escape($data['cdek_number']) . "'"

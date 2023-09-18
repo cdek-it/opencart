@@ -117,6 +117,7 @@ $_['cdek_error_dimensions_width_invalid'] = 'Width must be a numeric value';
 $_['cdek_error_dimensions_height_invalid'] = 'Height must be a numeric value';
 $_['cdek_error_dimensions_weight_invalid'] = 'Weight must be a numeric value';
 $_['cdek_error_dimensions_use_default_invalid'] = 'Use Default must be a numeric value';
+$_['cdek_error_cdek_number_empty'] = 'Cdek number will be available later';
 
 
 
