@@ -1,0 +1,19 @@
+.cdek-error {
+    color: red;
+    font-weight: bold;
+    display: none;
+    padding-top: 10px;
+    padding-left: 15px;
+}
+
+/*#cdek_order_created {*/
+/*    display: none;*/
+/*}*/
+
+.cdek_delete_order_btn {
+    color: red;
+}
+
+.cdek_delete_order_btn:hover {
+    color: rgb(178, 0, 0);
+}

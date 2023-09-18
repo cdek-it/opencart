@@ -143,7 +143,8 @@ class CdekApi
 
     public function createOrder($order)
     {
-        //нужен DTO клас для заказа и калькулятора
+        $url = $this->getAuthUrl() . self::ORDERS_PATH;
+        return $this->sendRequestWithTokenRefresh($url, 'POST', $order->getRequestData());
     }
 
     private function getAuthUrl(): string
@@ -176,5 +177,11 @@ class CdekApi
     {
         $url = $this->getAuthUrl() . self::REGION_PATH;
         return $this->sendRequestWithTokenRefresh($url, 'GET', ['postal_code' => $postcode]);
+    }
+
+    public function deleteOrder($uuid)
+    {
+        $url = $this->getAuthUrl() . self::ORDERS_PATH . $uuid;
+        return $this->sendRequestWithTokenRefresh($url, 'DELETE');
     }
 }

@@ -9,6 +9,7 @@ cp "src/upload/admin/controller/extension/shipping/cdek_official.php" "$1/upload
 cp "src/upload/admin/language/en-gb/extension/shipping/cdek_official.php" "$1/upload/admin/language/en-gb/extension/shipping"
 cp "src/upload/admin/model/extension/shipping/cdek_official.php" "$1/upload/admin/model/extension/shipping"
 cp "src/upload/admin/view/template/extension/shipping/cdek_official.twig" "$1/upload/admin/view/template/extension/shipping"
+cp "src/upload/admin/view/template/extension/shipping/cdek_official_create_order.twig" "$1/upload/admin/view/template/extension/shipping"
 
 mkdir -p "$1/upload/admin/view/javascript/cdek_official"
 cp -r src/upload/admin/view/javascript/cdek_official/* "$1/upload/admin/view/javascript/cdek_official"

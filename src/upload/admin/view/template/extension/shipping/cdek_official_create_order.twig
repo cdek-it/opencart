@@ -1,0 +1,77 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-truck"></i> CDEK</h3>
+    </div>
+    <div id="cdek_order_create_error" class="cdek-error"></div>
+    <div id="cdek_order_create_form" class="panel-body" {% if cdek_order_created %} style="display: none" {% else %} style="display: block" {% endif %}>
+        <form id="dimensions-form" action="" method="post">
+            <div class="form-group">
+                <label for="cdek_order_length">{{ cdek_dimensions__length }}:</label>
+                <input type="number" class="form-control" id="cdek_order_length" name="cdek_order_length" required>
+            </div>
+            <div class="form-group">
+                <label for="cdek_order_width">{{ cdek_dimensions__width }}:</label>
+                <input type="number" class="form-control" id="cdek_order_width" name="cdek_order_width" required>
+            </div>
+            <div class="form-group">
+                <label for="cdek_order_height">{{ cdek_dimensions__height }}:</label>
+                <input type="number" class="form-control" id="cdek_order_height" name="cdek_order_height" required>
+            </div>
+            <button id="create-order" type="submit" class="btn btn-primary">{{ cdek_auth__btn_submit }}</button>
+        </form>
+    </div>
+    <div id="cdek_order_created" class="panel-body" {% if cdek_order_created %} style="display: block" {% else %} style="display: none" {% endif %}>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <td class="text-left" colspan=2>{{ cdek_order_create_info_name }}</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td style="width: 15%" class="text-left">{{ cdek_order_number_name }}</td>
+                <td id="cdek_order_number_name" class="text-left">{% if cdek_order_created %} {{ cdek_number }} {% endif %}</td>
+            </tr>
+            <tr>
+                <td class="text-left">{{cdek_order_customer_name}}</td>
+                <td id="cdek_order_customer_name" class="text-left">{% if cdek_order_created %} {{ name }} {% endif %}</td>
+            </tr>
+            <tr>
+                <td class="text-left">{{ cdek_order_type_name }}</td>
+                <td id="cdek_order_type_name" class="text-left">{% if cdek_order_created %} {{ type }} {% endif %}</td>
+            </tr>
+            <tr>
+                <td class="text-left">{{ cdek_order_payment_type_name }}</td>
+                <td id="cdek_order_payment_type_name" class="text-left">{% if cdek_order_created %} {{ payment_type }} {% endif %}</td>
+            </tr>
+            <tr>
+                <td class="text-left">{{ cdek_order_direction_name }}</td>
+                <td id="cdek_order_direction_name" class="text-left">{% if cdek_order_created %} {{ to_location }} {% endif %}</td>
+            </tr>
+            </tbody>
+        </table>
+        <fieldset>
+            <div class="col-sm-12">
+                <div class="row">
+                    <div class="col-sm-8"></div>
+                    <div id="cdek_order_action" class="col-sm-4" style="text-align: right; display: grid">
+                        <a href="">{{ cdek_order_get_bill_name }}</a>
+                        <a href="">{{ cdek_order_call_courier_name }}</a>
+                        <a id="cdek_delete_order_btn" class="cdek_delete_order_btn" data-uuid="{% if cdek_order_created %}{{ cdek_uuid }}{% endif %}" href="">{{ cdek_order_delete_order_name }}</a>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+    var userToken = '{{ user_token }}';
+    var orderId = '{{ order_id }}';
+    {{ create_order_js|raw }}
+</script>
+
+<style>
+    {{ create_order_style|raw }}
+</style>

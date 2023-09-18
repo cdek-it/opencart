@@ -45,6 +45,17 @@ class Calc
         $quoteData = [];
         $this->registry->get('currency');
         $recipientLocation = $this->cdekApi->getCityByPostcode($this->postcode);
+        if (empty($recipientLocation)) {
+            $tariffPlugName = $this->getTariffPlugName();
+            $quoteData['cdek_official_tariff_plug'] = [
+                'code' => 'cdek_official.cdek_official_tariff_plug',
+                'title' => $tariffPlugName,
+                'cost' => 0,
+                'tax_class_id' => 0,
+                'text' => ('address incorrect')
+            ];
+            return $quoteData;
+        }
         foreach ($tariffs->data as $tariff) {
             if ($tariff['enable']) {
                 $data = [
@@ -98,10 +109,23 @@ class Calc
             $dimensions = [
                 "height" => (int)$product['height'],
                 "length" => (int)$product['length'],
-                "weight" => ($this->weight->convert((int)$product['weight'], $product['weight_class_id'], '2'))/(int)$product['quantity'],
+                "weight" => ($this->weight->convert((int)$product['weight'], $product['weight_class_id'], '2')) / (int)$product['quantity'],
                 "width" => (int)$product['width']
             ];
         }
         return $dimensions;
+    }
+
+    /**
+     * @return mixed
+     */
+    protected function getTariffPlugName()
+    {
+        if (empty($this->settings->shippingSettings->shippingTariffPlug)) {
+            $tariffPlugName = $this->registry->get('language')->get('cdek_shipping__tariff_name_plug');
+        } else {
+            $tariffPlugName = $this->settings->shippingSettings->shippingTariffPlug;
+        }
+        return $tariffPlugName;
     }
 }

@@ -5,6 +5,7 @@ $_['cdek_auth']         = 'Authorize';
 $_['cdek_auth_id']      = 'Id';
 $_['cdek_auth_secret']  = 'Secret';
 $_['cdek_auth__status']  = 'Status';
+$_['cdek_auth__btn_submit']  = 'Submit';
 $_['cdek_auth__btn_connect']  = 'Connect';
 $_['cdek_auth__status_connected']  = 'Connected';
 $_['cdek_auth__status_unconnected']  = 'Unconnected';
@@ -28,12 +29,26 @@ $_['cdek_seller__tin'] = 'TIN';
 $_['cdek_seller__date_of_birth'] = 'Date of Birth';
 $_['cdek_shipping'] = 'Shipping';
 $_['cdek_shipping__tariffs'] = 'Tariffs';
+$_['cdek_shipping__tariff_name_plug'] = 'CDEK plug';
 $_['cdek_shipping__tariff_name_136'] = 'Parcel warehouse-warehouse';
 $_['cdek_shipping__tariff_name_137'] = 'Parcel warehouse-door';
 $_['cdek_shipping__tariff_name_138'] = 'Door-to-warehouse parcel';
 $_['cdek_shipping__tariff_name_139'] = 'Door-to-door parcel';
 $_['cdek_shipping__tariffs_select_all'] = 'Select All';
 $_['cdek_shipping__tariffs_unselect_all'] = 'Unselect All';
+$_['cdek_shipping__tariff_type_to_door'] = 'To door';
+$_['cdek_shipping__tariff_type_to_warehouse'] = 'To warehouse';
+$_['cdek_shipping__payment_type_cod'] = 'Cash on delivery';
+$_['cdek_shipping__payment_type_online'] = 'Online payment';
+$_['cdek_order_create_info_name'] = 'Order created';
+$_['cdek_order_number_name'] = 'Order number';
+$_['cdek_order_customer_name'] = 'Name';
+$_['cdek_order_type_name'] = 'Type';
+$_['cdek_order_payment_type_name'] = 'Payment type';
+$_['cdek_order_direction_name'] = 'Direction';
+$_['cdek_order_get_bill_name'] = 'Get the delivery note';
+$_['cdek_order_call_courier_name'] = 'Call a courier';
+$_['cdek_order_delete_order_name'] = 'Delete order';
 
 $_['cdek_shipping__currency'] = 'Currency';
 $_['cdek_shipping__currency_rub'] = 'RUB';
@@ -72,6 +87,7 @@ $_['cdek_error_price_insurance_empty'] = 'Insurance price is empty';
 $_['cdek_error_dimensions_length_empty'] = 'Dimensions length is empty';
 $_['cdek_error_dimensions_width_empty'] = 'Dimensions width is empty';
 $_['cdek_error_dimensions_height_empty'] = 'Dimensions height is empty';
+$_['cdek_error_dimensions_order_id_empty'] = 'Failed to get Order id';
 $_['cdek_error_dimensions_weight_empty'] = 'Dimensions weight is empty';
 $_['cdek_error_dimensions_use_default_empty'] = 'Dimensions use default is empty';
 $_['cdek_error_shipping_tariffs_empty'] = 'Tariffs is empty';
@@ -101,6 +117,7 @@ $_['cdek_error_dimensions_width_invalid'] = 'Width must be a numeric value';
 $_['cdek_error_dimensions_height_invalid'] = 'Height must be a numeric value';
 $_['cdek_error_dimensions_weight_invalid'] = 'Weight must be a numeric value';
 $_['cdek_error_dimensions_use_default_invalid'] = 'Use Default must be a numeric value';
+
 
 
 
