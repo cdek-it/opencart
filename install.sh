@@ -21,6 +21,8 @@ cp "src/upload/catalog/controller/extension/shipping/cdek_official.php" "$1/uplo
 cp "src/upload/catalog/language/en-gb/extension/shipping/cdek_official.php" "$1/upload/catalog/language/en-gb/extension/shipping"
 cp "src/upload/catalog/model/extension/shipping/cdek_official.php" "$1/upload/catalog/model/extension/shipping"
 cp "src/upload/catalog/view/theme/default/template/extension/shipping/cdek_official.twig" "$1/upload/catalog/view/theme/default/template/extension/shipping"
+cp "src/upload/catalog/view/theme/default/template/extension/shipping/cdek_official_map.twig" "$1/upload/catalog/view/theme/default/template/extension/shipping"
+cp "src/upload/catalog/view/theme/default/template/extension/shipping/cdek_official_map_script.twig" "$1/upload/catalog/view/theme/default/template/extension/shipping"
 
 rm -r "$1/upload/system/library/cdek_official/*"
 mkdir -p "$1/upload/system/library/cdek_official"

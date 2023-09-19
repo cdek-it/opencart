@@ -1,29 +1,37 @@
 <?php
 class ControllerExtensionShippingCdekOfficial extends Controller {
 
+    public function index()
+    {
+        $data['header'] = $this->load->controller('common/header');
+        $this->document->addScript('catalog/view/javascript/jquery/datetimepicker/moment/moment.min.js');
+    }
     public function cdek_official_checkout_shipping_after(&$route, &$data, &$output)
     {
-        $cdekBlock = '<p><strong>CDEK Official Shipping</strong></p>';
-        $errorBlock = '<div id="cdek_number_customer_error" style="color: red; display: none">Введите телефон</div>';
-        $phoneBlock = '<div class="row required">
-      <label class="col-sm-1 control-label" for="input-shipping-firstname">Phone</label>
-      <div class="col-sm-3">
-        <input type="tel" name="cdek_number_customer" value="" placeholder="Phone" id="cdek_number_customer" class="form-control">
-      </div>
-      <div class="col-sm-8"></div>
-    </div>';
+//        $cdekBlock = '<p><strong>CDEK Official Shipping</strong></p>';
+//
+//        $map = DIR_APPLICATION . 'view/theme/default/template/extension/shipping/cdek_official_map.twig';
+//        $mapLayout = file_exists($map) ? file_get_contents($map) : '';
+//        $this->searchAndReplace($output, $cdekBlock, $mapLayout);
 
-        $btnShippingContinue = "$(document).delegate('#button-shipping-method', 'click', function() {";
-        $validatePhone = "if ($('#cdek_number_customer').val() === '') {
-        $('#cdek_number_customer_error').show()
-        return;
     }
-    $('#cdek_number_customer_error').hide()";
 
-        $this->searchAndReplace($output, $cdekBlock, $phoneBlock);
-        $this->searchAndReplace($output, $cdekBlock, $errorBlock);
-        $this->searchAndReplace($output, $btnShippingContinue, $validatePhone);
+    public function cdek_official_checkout_checkout_before(&$route, &$data, &$output)
+    {
+//        $this->document->addScript('https://cdn.jsdelivr.net/gh/cdek-it/widget@latest/dist/cdek-widget.umd.js');
+    }
 
+    public function cdek_official_checkout_checkout_after(&$route, &$data, &$output)
+    {
+        $header = "<head>";
+        $map = DIR_APPLICATION . 'view/theme/default/template/extension/shipping/cdek_official_map_script.twig';
+        $script = file_exists($map) ? file_get_contents($map) : '';
+        $this->searchAndReplace($output, $header, $script);
+    }
+
+    public function cdek_official_header_before(&$route, &$data, &$output)
+    {
+//        $data['scripts'][]='https://cdn.jsdelivr.net/gh/cdek-it/widget@latest/dist/cdek-widget.umd.js';
     }
 
     private function searchAndReplace(&$output, $search, $replace)
@@ -36,4 +44,17 @@ class ControllerExtensionShippingCdekOfficial extends Controller {
         }
 
     }
+
+//shipping_method 112
+//if (isset($this->request->post['cdek_number_customer']) && empty($this->request->post['cdek_number_customer'])) {
+//$json['error']['warning'] = "Phone is required";
+//$this->response->setOutput(json_encode($json));
+//return;
+//}
+
+
+//129
+//if (isset($this->request->post['cdek_number_customer'])) {
+//$this->session->data['cdek_number_customer'] = strip_tags($this->request->post['cdek_number_customer']);
+//}
 }

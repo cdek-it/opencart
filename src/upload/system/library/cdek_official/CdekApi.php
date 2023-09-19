@@ -135,6 +135,36 @@ class CdekApi
         return $pvz;
     }
 
+    public function getPvzByCityCode($cityCode)
+    {
+        $url = $this->getAuthUrl() . self::PVZ_PATH;
+
+        $params['city_code'] = $cityCode;
+
+        $result = $this->sendRequestWithTokenRefresh($url, 'GET', $params);
+        $pvz = [];
+        foreach ($result as $elem) {
+            if (isset($elem->code, $elem->type, $elem->location->longitude, $elem->location->latitude, $elem->location->address)) {
+                $pvz[] = [
+                    'city_code' => $cityCode,
+                    'type' => $elem->type,
+                    'country_code' => $elem->location->country_code,
+                    'have_cashless' => $elem->have_cashless,
+                    'have_cash' => $elem->have_cash,
+                    'allowed_cod' => $elem->allowed_cod,
+                    'is_dressing_room' => $elem->is_dressing_room,
+                    'code' => $elem->code,
+                    'name' => $elem->name,
+                    'address' => $elem->location->address,
+                    'work_time' => $elem->work_time,
+                    'location' => [$elem->location->longitude, $elem->location->latitude],
+                ];
+            }
+        }
+
+        return $pvz;
+    }
+
     public function calculate($data)
     {
         $url = $this->getAuthUrl() . self::CALC_PATH;

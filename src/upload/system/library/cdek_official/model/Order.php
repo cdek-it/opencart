@@ -67,7 +67,7 @@ class Order
                 "name" => $order['nameCustomer'],
                 "phones" => [
                     [
-                        "number" => "+79134637228"
+                        "number" => $this->orderOC['telephone']
                     ]
                 ]
             ],

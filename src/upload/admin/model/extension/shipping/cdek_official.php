@@ -5,6 +5,15 @@ class ModelExtensionShippingCdekOfficial extends Model {
         'admin/view/sale/order_info/after' => array(
             'extension/shipping/cdek_official/cdek_official_order_info'
         ),
+        'catalog/view/checkout/checkout/after' => [
+            'extension/shipping/cdek_official/cdek_official_checkout_checkout_after'
+        ],
+        'catalog/view/checkout/checkout/before' => [
+            'extension/shipping/cdek_official/cdek_official_checkout_checkout_before'
+        ],
+        'catalog/view/common/header/before' => [
+            'extension/shipping/cdek_official/cdek_official_header_before'
+        ],
         'catalog/view/checkout/shipping_method/after' => [
             'extension/shipping/cdek_official/cdek_official_checkout_shipping_after'
         ]
