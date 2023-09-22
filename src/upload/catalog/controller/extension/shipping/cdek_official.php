@@ -1,24 +1,45 @@
 <?php
 class ControllerExtensionShippingCdekOfficial extends Controller {
 
-    public function index()
-    {
-        $data['header'] = $this->load->controller('common/header');
-        $this->document->addScript('catalog/view/javascript/jquery/datetimepicker/moment/moment.min.js');
-    }
     public function cdek_official_checkout_shipping_after(&$route, &$data, &$output)
     {
-//        $cdekBlock = '<p><strong>CDEK Official Shipping</strong></p>';
-//
-//        $map = DIR_APPLICATION . 'view/theme/default/template/extension/shipping/cdek_official_map.twig';
-//        $mapLayout = file_exists($map) ? file_get_contents($map) : '';
-//        $this->searchAndReplace($output, $cdekBlock, $mapLayout);
+        $code = [];
+        $mapLayout = [];
+        if (array_key_exists( 'cdek_official' ,$data['shipping_methods'])) {
+            foreach ($data['shipping_methods']['cdek_official']['quote'] as $key => $quote) {
+                $separate = explode('_', $key);
+                $tariffCode = end($separate);
+                $tariffModel = new Tariffs();
+                if ($tariffModel->getDirectionByCode((int)$tariffCode) === 'store') {
+                    $code[] = $quote['code'];
+                    $mapLayout[$quote['code']] = $quote['extra'];
+                    unset($data['shipping_methods']['cdek_official']['quote'][$key]['extra']);
+                }
+            }
+        }
 
+        if (!empty($code)) {
+            $cdekBlock = '<p><strong>CDEK Official Shipping</strong></p>';
+            $pvzCode = '<input type="hidden" id="cdek_official_pvz_code" name="cdek_official_pvz_code" value="">';
+            $this->searchAndReplace($output, $cdekBlock, $pvzCode);
+            foreach ($code as $quoteCode) {
+                $cdekQuoteLayoutMap = $mapLayout[$quoteCode];
+                $cdekQuoteBlockPattern = '/<div class="radio">.*?value="' . preg_quote($quoteCode, '/') . '".*?<\/div>/s';
+
+                $output = preg_replace_callback($cdekQuoteBlockPattern, function($matches) use ($cdekQuoteLayoutMap) {
+                    return $matches[0] . $cdekQuoteLayoutMap;
+                }, $output);
+            }
+        }
     }
 
-    public function cdek_official_checkout_checkout_before(&$route, &$data, &$output)
+    public function cdek_official_checkout_shipping_method_before(&$route, &$data, &$output)
     {
-//        $this->document->addScript('https://cdn.jsdelivr.net/gh/cdek-it/widget@latest/dist/cdek-widget.umd.js');
+
+        $cdekBlock = '{{ quote.title }} - {{ quote.text }}</label>';
+        $pvzCode = '{{ quote.extra|raw }}';
+        $this->searchAndReplace($output, $cdekBlock, $pvzCode);
+
     }
 
     public function cdek_official_checkout_checkout_after(&$route, &$data, &$output)
@@ -45,13 +66,19 @@ class ControllerExtensionShippingCdekOfficial extends Controller {
 
     }
 
+//if (isset($this->request->post['cdek_official_pvz_code']) && empty($this->request->post['cdek_official_pvz_code'])) {
+//$json['error']['warning'] = "Pvz is required";
+//$this->response->setOutput(json_encode($json));
+//return;
+//}
+
 //shipping_method 112
 //if (isset($this->request->post['cdek_number_customer']) && empty($this->request->post['cdek_number_customer'])) {
 //$json['error']['warning'] = "Phone is required";
 //$this->response->setOutput(json_encode($json));
 //return;
 //}
-
+//$this->session->data['cdek_official_pvz_code'] = $this->request->post['cdek_official_pvz_code'];
 
 //129
 //if (isset($this->request->post['cdek_number_customer'])) {

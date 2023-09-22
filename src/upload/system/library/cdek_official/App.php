@@ -79,7 +79,7 @@ class App
                 $this->settings->validate();
                 $this->session->data['success'] = $this->language->get('text_success');
             } catch (Exception $exception) {
-                $this->registry->log->write(">CDEK_OFFICIAL_LOG Validation failed: " . $this->language->get($exception->getMessage()));
+                $this->registry->get('log')->write(">CDEK_OFFICIAL_LOG Validation failed: " . $this->language->get($exception->getMessage()));
                 $this->session->data['error_warning'] = $this->language->get('error_permission') .
                     $this->language->get($exception->getMessage());
             }

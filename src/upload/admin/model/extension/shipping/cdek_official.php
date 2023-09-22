@@ -8,8 +8,8 @@ class ModelExtensionShippingCdekOfficial extends Model {
         'catalog/view/checkout/checkout/after' => [
             'extension/shipping/cdek_official/cdek_official_checkout_checkout_after'
         ],
-        'catalog/view/checkout/checkout/before' => [
-            'extension/shipping/cdek_official/cdek_official_checkout_checkout_before'
+        'catalog/view/checkout/shipping_method/before' => [
+            'extension/shipping/cdek_official/cdek_official_checkout_shipping_method_before'
         ],
         'catalog/view/common/header/before' => [
             'extension/shipping/cdek_official/cdek_official_header_before'

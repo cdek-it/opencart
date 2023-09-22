@@ -11,8 +11,12 @@
                 office: false,
                 door: true,
             },
-            onChoose: function (event) {
-                console.log(event)
+            onChoose: function (type, tariff, address) {
+                console.log(type)
+                console.log(tariff)
+                console.log(address.code)
+                $('#cdek_official_shipping__pvz_code').val(address.code);
+                $('#cdek_official_shipping__pvz').val(address.address);
             }
         });
     });

@@ -141,28 +141,21 @@ class CdekApi
 
         $params['city_code'] = $cityCode;
 
-        $result = $this->sendRequestWithTokenRefresh($url, 'GET', $params);
-        $pvz = [];
-        foreach ($result as $elem) {
-            if (isset($elem->code, $elem->type, $elem->location->longitude, $elem->location->latitude, $elem->location->address)) {
-                $pvz[] = [
-                    'city_code' => $cityCode,
-                    'type' => $elem->type,
-                    'country_code' => $elem->location->country_code,
-                    'have_cashless' => $elem->have_cashless,
-                    'have_cash' => $elem->have_cash,
-                    'allowed_cod' => $elem->allowed_cod,
-                    'is_dressing_room' => $elem->is_dressing_room,
-                    'code' => $elem->code,
-                    'name' => $elem->name,
-                    'address' => $elem->location->address,
-                    'work_time' => $elem->work_time,
-                    'location' => [$elem->location->longitude, $elem->location->latitude],
-                ];
-            }
-        }
-
-        return $pvz;
+        return
+            array_map(static fn($elem) => [
+                'city_code' => $cityCode,
+                'type' => $elem->type,
+                'country_code' => $elem->location->country_code,
+                'have_cashless' => $elem->have_cashless ? 1 : 0,
+                'have_cash' => $elem->have_cash ? 1 : 0,
+                'allowed_cod' => $elem->allowed_cod ? 1 : 0,
+                'is_dressing_room' => $elem->is_dressing_room ? 1 : 0,
+                'code' => $elem->code,
+                'name' => $elem->name,
+                'address' => $elem->location->address,
+                'work_time' => $elem->work_time,
+                'location' => [$elem->location->longitude, $elem->location->latitude]
+            ], $this->sendRequestWithTokenRefresh($url, 'GET', $params));
     }
 
     public function calculate($data)

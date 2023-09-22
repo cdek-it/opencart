@@ -41,4 +41,14 @@ class Tariffs
             }
         }
     }
+
+    public function getDirectionByCode($code)
+    {
+        foreach ($this->data as $key => $tariffElement) {
+            if ($tariffElement['code'] === $code) {
+                return $this->data[$key]['to'];
+            }
+        }
+        return '';
+    }
 }

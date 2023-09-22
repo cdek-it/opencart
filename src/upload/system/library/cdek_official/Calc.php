@@ -52,8 +52,7 @@ class Calc
                 'title' => $tariffPlugName,
                 'cost' => 0,
                 'tax_class_id' => 0,
-                'text' => ('address incorrect'),
-                'extra' => 123
+                'text' => ('address incorrect')
             ];
             return $quoteData;
         }
@@ -73,14 +72,26 @@ class Calc
                 $result = $this->cdekApi->calculate($data);
                 $pvz = $this->cdekApi->getPvzByCityCode($recipientLocation[0]->code);
 
-                $quoteData['cdek_official_' . $tariff['code']] = [
-                    'code' => 'cdek_official.cdek_official_' . $tariff['code'],
-                    'title' => $this->registry->get('language')->get('cdek_shipping__tariff_name_' . $tariff['code']),
-                    'cost' => $result->total_sum,
-                    'tax_class_id' => $tariff['code'],
-                    'text' => $this->registry->get('currency')->format($result->total_sum, $this->registry->get('session')->data['currency']),
-                    'extra' => $this->registry->get('load')->view('extension/shipping/cdek_official_map', ['tariff' => $tariff, 'offices' => $pvz])
-                ];
+                $tariffModel = new Tariffs();
+                if ($tariffModel->getDirectionByCode($tariff['code']) === 'store') {
+                    $quoteData['cdek_official_' . $tariff['code']] = [
+                        'code' => 'cdek_official.cdek_official_' . $tariff['code'],
+                        'title' => $this->registry->get('language')->get('cdek_shipping__tariff_name_' . $tariff['code']),
+                        'cost' => $result->total_sum,
+                        'tax_class_id' => $tariff['code'],
+                        'text' => $this->registry->get('currency')->format($result->total_sum, $this->registry->get('session')->data['currency']),
+                        'extra' => $this->registry->get('load')->view('extension/shipping/cdek_official_map', ['tariff' => $tariff, 'offices' => $pvz])
+                    ];
+                } else {
+                    $quoteData['cdek_official_' . $tariff['code']] = [
+                        'code' => 'cdek_official.cdek_official_' . $tariff['code'],
+                        'title' => $this->registry->get('language')->get('cdek_shipping__tariff_name_' . $tariff['code']),
+                        'cost' => $result->total_sum,
+                        'tax_class_id' => $tariff['code'],
+                        'text' => $this->registry->get('currency')->format($result->total_sum, $this->registry->get('session')->data['currency'])
+                    ];
+                }
+
             }
         }
         return $quoteData;
