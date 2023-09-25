@@ -127,6 +127,7 @@ class ControllerExtensionShippingCdekOfficial extends Controller
                 `type` VARCHAR(255) NOT NULL,
                 `payment_type` VARCHAR(255) NOT NULL,
                 `to_location` VARCHAR(255) NOT NULL,
+                `pvz_code` VARCHAR(255) NOT NULL,
                 PRIMARY KEY (`id`),
                 UNIQUE KEY `order_id_unique` (`order_id`),
                 FOREIGN KEY (`order_id`) REFERENCES `" . DB_PREFIX . "order`(`order_id`)

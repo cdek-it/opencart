@@ -8,47 +8,16 @@ class ModelExtensionShippingCdekOfficial extends Model {
         'catalog/view/checkout/checkout/after' => [
             'extension/shipping/cdek_official/cdek_official_checkout_checkout_after'
         ],
-        'catalog/view/checkout/shipping_method/before' => [
-            'extension/shipping/cdek_official/cdek_official_checkout_shipping_method_before'
-        ],
-        'catalog/view/common/header/before' => [
-            'extension/shipping/cdek_official/cdek_official_header_before'
-        ],
         'catalog/view/checkout/shipping_method/after' => [
             'extension/shipping/cdek_official/cdek_official_checkout_shipping_after'
-        ]
+        ],
+        'catalog/controller/checkout/shipping_method/save/after' => [
+            'extension/shipping/cdek_official/cdek_official_checkout_shipping_controller_before'
+        ],
+        'catalog/controller/checkout/confirm/after' => [
+            'extension/shipping/cdek_official/cdek_official_checkout_confirm_after'
+        ],
     );
-
-//    public function getQuote($address) {
-//        $this->load->model('setting/setting');
-//        $settings = $this->model_setting_setting->getSetting('cdek_official');
-//
-//        if (isset($settings['cdek_official_status']) && $settings['cdek_official_status'] == 1) {
-//
-//            $quote_data = array();
-//
-//            $quote_data['cdek_official'] = array(
-//                'code'         => 'cdek_official.cdek_official',
-//                'title'        => 'CDEK Official Shipping',
-//                'cost'         => 6.00,
-//                'tax_class_id' => 0,
-//                'text'         => '$6.00'
-//            );
-//
-//            // Define the method data
-//            $method_data = array(
-//                'code'       => 'cdek_official',
-//                'title'      => 'CDEK Official Shipping',
-//                'quote'      => [],
-//                'sort_order' => 1,
-//                'error'      => false
-//            );
-//
-//            return $method_data;
-//        } else {
-//            return;
-//        }
-//    }
 
     public function createEvents() {
         $this->log->write('create events');

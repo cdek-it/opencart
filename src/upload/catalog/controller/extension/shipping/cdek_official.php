@@ -1,5 +1,21 @@
 <?php
+
+require_once(DIR_SYSTEM . 'library/cdek_official/model/Tariffs.php');
+
 class ControllerExtensionShippingCdekOfficial extends Controller {
+
+    public function index() {
+        if ($this->request->server['REQUEST_METHOD'] == 'POST') {
+            // Process your form submission
+            $comment = strip_tags($this->request->post['comment']);
+            $cdekPvzCode = strip_tags($this->request->post['cdek_official_pvz_code']);
+
+            // Set data in session
+            $this->session->data['comment'] = $comment;
+            $this->session->data['cdek_official_pvz_code'] = $cdekPvzCode;
+        }
+
+    }
 
     public function cdek_official_checkout_shipping_after(&$route, &$data, &$output)
     {
@@ -33,26 +49,53 @@ class ControllerExtensionShippingCdekOfficial extends Controller {
         }
     }
 
-    public function cdek_official_checkout_shipping_method_before(&$route, &$data, &$output)
-    {
-
-        $cdekBlock = '{{ quote.title }} - {{ quote.text }}</label>';
-        $pvzCode = '{{ quote.extra|raw }}';
-        $this->searchAndReplace($output, $cdekBlock, $pvzCode);
-
-    }
-
     public function cdek_official_checkout_checkout_after(&$route, &$data, &$output)
     {
         $header = "<head>";
         $map = DIR_APPLICATION . 'view/theme/default/template/extension/shipping/cdek_official_map_script.twig';
         $script = file_exists($map) ? file_get_contents($map) : '';
         $this->searchAndReplace($output, $header, $script);
+
+        $btnShippingMethod = "data: $('#collapse-shipping-method input[type=\'radio\']:checked, #collapse-shipping-method textarea')";
+        $btnShippingMethodWithHide = "data: $('#collapse-shipping-method input[type=\'radio\']:checked, #collapse-shipping-method textarea, #collapse-shipping-method input[type=\'hidden\']')";
+        $output = str_replace($btnShippingMethod, $btnShippingMethodWithHide, $output);
     }
 
-    public function cdek_official_header_before(&$route, &$data, &$output)
+    public function cdek_official_checkout_shipping_controller_before()
     {
-//        $data['scripts'][]='https://cdn.jsdelivr.net/gh/cdek-it/widget@latest/dist/cdek-widget.umd.js';
+        $shippingMethod = $this->request->post['shipping_method'];
+        $shippingMethodExplode = explode('.', $shippingMethod);
+        $shippingMethodName = $shippingMethodExplode[0];
+        if ($shippingMethodName === 'cdek_official') {
+            $shippingMethodTariff = $shippingMethodExplode[1];
+            $shippingMethodTariffExplode = explode('_', $shippingMethodTariff);
+            $tariffCode = end($shippingMethodTariffExplode);
+            $tariffModel = new Tariffs();
+            if ($tariffModel->getDirectionByCode((int)$tariffCode) === 'store') {
+                if (isset($this->request->post['cdek_official_pvz_code']) && !empty($this->request->post['cdek_official_pvz_code'])) {
+                    $this->session->data['cdek_official_pvz_code'] = $this->request->post['cdek_official_pvz_code'];
+                } else {
+                    $this->load->language('extension/shipping/cdek_official');
+                    $json['error']['warning'] = $this->language->get('cdek_pvz_not_found');
+                    $this->response->addHeader('Content-Type: application/json');
+                    $this->response->setOutput(json_encode($json));
+                }
+            }
+        }
+    }
+
+    public function cdek_official_checkout_confirm_after()
+    {
+        if (isset($this->session->data['order_id'])) {
+            $cdekPvzCode = $this->session->data['cdek_official_pvz_code'];
+            $this->db->query(
+                "INSERT INTO oc_cdek_order_meta SET order_id = " . $this->session->data['order_id']
+                . ", pvz_code = '" . $this->db->escape($cdekPvzCode) . "'"
+                . " ON DUPLICATE KEY UPDATE "
+                . "pvz_code = VALUES(pvz_code)"
+            );
+            unset($this->session->data['shipping_method']);
+        }
     }
 
     private function searchAndReplace(&$output, $search, $replace)
@@ -65,23 +108,4 @@ class ControllerExtensionShippingCdekOfficial extends Controller {
         }
 
     }
-
-//if (isset($this->request->post['cdek_official_pvz_code']) && empty($this->request->post['cdek_official_pvz_code'])) {
-//$json['error']['warning'] = "Pvz is required";
-//$this->response->setOutput(json_encode($json));
-//return;
-//}
-
-//shipping_method 112
-//if (isset($this->request->post['cdek_number_customer']) && empty($this->request->post['cdek_number_customer'])) {
-//$json['error']['warning'] = "Phone is required";
-//$this->response->setOutput(json_encode($json));
-//return;
-//}
-//$this->session->data['cdek_official_pvz_code'] = $this->request->post['cdek_official_pvz_code'];
-
-//129
-//if (isset($this->request->post['cdek_number_customer'])) {
-//$this->session->data['cdek_number_customer'] = strip_tags($this->request->post['cdek_number_customer']);
-//}
 }

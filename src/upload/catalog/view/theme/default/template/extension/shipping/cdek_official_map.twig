@@ -11,24 +11,6 @@
             office: false,
             door: true,
         },
-        offices: [
-            {% for office in offices %}
-            {
-                city_code: '{{ office.city_code }}',
-                type: '{{ office.type }}',
-                country_code: '{{ office.country_code }}',
-                have_cashless: {{ office.have_cashless }},
-                have_cash: {{ office.have_cash }},
-                allowed_cod: {{ office.allowed_cod }},
-                is_dressing_room: {{ office.is_dressing_room }},
-                code: '{{ office.code }}',
-                name: '{{ office.name }}',
-                address: '{{ office.address }}',
-                work_time: '{{ office.work_time }}',
-                location: [{{ office.location[0] }}, '{{ office.location[1] }}'],
-            },
-            {% endfor %}
-        ],
         onChoose: function (type, tariff, address) {
             console.log(type, tariff, address)
             $('#cdek_official_pvz_code').val(address.code);

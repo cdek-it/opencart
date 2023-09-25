@@ -45,17 +45,17 @@ class Calc
         $quoteData = [];
         $this->registry->get('currency');
         $recipientLocation = $this->cdekApi->getCityByPostcode($this->postcode);
-        if (empty($recipientLocation)) {
-            $tariffPlugName = $this->getTariffPlugName();
-            $quoteData['cdek_official_tariff_plug'] = [
-                'code' => 'cdek_official.cdek_official_tariff_plug',
-                'title' => $tariffPlugName,
-                'cost' => 0,
-                'tax_class_id' => 0,
-                'text' => ('address incorrect')
-            ];
-            return $quoteData;
-        }
+//        if (empty($recipientLocation)) {
+//            $tariffPlugName = $this->getTariffPlugName();
+//            $quoteData['cdek_official_tariff_plug'] = [
+//                'code' => 'cdek_official.cdek_official_tariff_plug',
+//                'title' => $tariffPlugName,
+//                'cost' => 0,
+//                'tax_class_id' => 0,
+//                'text' => ('address incorrect')
+//            ];
+//            return $quoteData;
+//        }
         foreach ($tariffs->data as $tariff) {
             if ($tariff['enable']) {
                 $data = [

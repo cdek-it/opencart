@@ -141,21 +141,31 @@ class CdekApi
 
         $params['city_code'] = $cityCode;
 
-        return
-            array_map(static fn($elem) => [
-                'city_code' => $cityCode,
-                'type' => $elem->type,
-                'country_code' => $elem->location->country_code,
-                'have_cashless' => $elem->have_cashless ? 1 : 0,
-                'have_cash' => $elem->have_cash ? 1 : 0,
-                'allowed_cod' => $elem->allowed_cod ? 1 : 0,
-                'is_dressing_room' => $elem->is_dressing_room ? 1 : 0,
-                'code' => $elem->code,
-                'name' => $elem->name,
-                'address' => $elem->location->address,
-                'work_time' => $elem->work_time,
-                'location' => [$elem->location->longitude, $elem->location->latitude]
-            ], $this->sendRequestWithTokenRefresh($url, 'GET', $params));
+        $pvz = $this->sendRequestWithTokenRefresh($url, 'GET', $params);
+
+        $result = [];
+        foreach ($pvz as $elem) {
+            if (isset($elem->type, $elem->location->country_code, $elem->have_cashless, $elem->have_cash,
+                $elem->allowed_cod, $elem->is_dressing_room, $elem->code, $elem->name,
+                $elem->location->address, $elem->work_time, $elem->location->longitude, $elem->location->latitude)) {
+                $result[] = [
+                    'city_code' => $cityCode,
+                    'type' => $elem->type,
+                    'country_code' => $elem->location->country_code,
+                    'have_cashless' => $elem->have_cashless ? 1 : 0,
+                    'have_cash' => $elem->have_cash ? 1 : 0,
+                    'allowed_cod' => $elem->allowed_cod ? 1 : 0,
+                    'is_dressing_room' => $elem->is_dressing_room ? 1 : 0,
+                    'code' => $elem->code,
+                    'name' => $elem->name,
+                    'address' => $elem->location->address,
+                    'work_time' => $elem->work_time,
+                    'location' => [$elem->location->longitude, $elem->location->latitude]
+                ];
+            }
+        }
+
+        return $result;
     }
 
     public function calculate($data)
