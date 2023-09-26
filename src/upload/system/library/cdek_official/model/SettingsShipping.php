@@ -16,6 +16,7 @@ class SettingsShipping extends AbstractSettings
     public $shippingCityCode;
     public $shippingCityAddress;
     public $shippingPvz;
+    public $shippingPvzCode;
     public $tariffs;
     public Currency $currency;
 
@@ -28,6 +29,7 @@ class SettingsShipping extends AbstractSettings
         'cdek_official_shipping__city_code' => 'shippingCityCode',
         'cdek_official_shipping__city_address' => 'shippingCityAddress',
         'cdek_official_shipping__pvz' => 'shippingPvz',
+        'cdek_official_shipping__pvz_code' => 'shippingPvzCode',
     ];
 
     public function __construct()

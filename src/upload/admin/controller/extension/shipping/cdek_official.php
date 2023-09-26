@@ -21,9 +21,12 @@ class ControllerExtensionShippingCdekOfficial extends Controller
         $servicePhp = file_get_contents(DIR_SYSTEM . 'library/cdek_official/service.php');
         $servicePhp = str_replace("{{AUTH_ID}}", $authId, $servicePhp);
         $servicePhp = str_replace("{{AUTH_SECRET}}", $authSecret, $servicePhp);
-        file_put_contents('../service.php', $servicePhp);
+        file_put_contents('service.php', $servicePhp);
 
         $app->checkState($app->data);
+
+        $pvz = $app->cdekApi->getPvzByCityCode($app->settings->shippingSettings->shippingCityCode);
+        $city = $app->cdekApi->getCityByCode($app->settings->shippingSettings->shippingCityCode);
 
         $userToken = $this->session->data['user_token'];
         $app->data['action'] = $this->url->link('extension/shipping/cdek_official', 'user_token=' . $userToken);
@@ -32,6 +35,9 @@ class ControllerExtensionShippingCdekOfficial extends Controller
         $app->data['column_left'] = $this->load->controller('common/column_left');
         $app->data['footer'] = $this->load->controller('common/footer');
         $app->data['user_token'] = $userToken;
+        $app->data['offices'] = $pvz;
+        $app->data['city'] = $city[0]->city;
+        $app->data['apikey'] = $app->settings->authSettings->apiKey;
 
         $this->response->setOutput($this->load->view('extension/shipping/cdek_official', $app->data));
     }
@@ -61,31 +67,33 @@ class ControllerExtensionShippingCdekOfficial extends Controller
 
         $query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "cdek_order_meta` WHERE `order_id` = " . (int)$data['order_id']);
         if ($query->num_rows) {
-            $dataOrderForm['cdek_order_created'] = true;
             $orderMetaData = $query->row;
-            $dataOrderForm['cdek_uuid'] = $orderMetaData['cdek_uuid'];
+            if ($orderMetaData['cdek_uuid'] !== "") {
+                $dataOrderForm['cdek_order_created'] = true;
+                $dataOrderForm['cdek_uuid'] = $orderMetaData['cdek_uuid'];
 
-            if (!is_numeric($orderMetaData['cdek_number'])) {
-                $settings = new Settings();
-                $settings->init($this->model_setting_setting->getSetting('cdek_official'));
-                $cdekApi = new CdekApi($this->registry, $settings);
-                $order = $cdekApi->getOrderByUuid($orderMetaData['cdek_uuid']);
-                $param = [
-                    'cdek_number' => $order->entity->cdek_number,
-                    'cdek_uuid' => $orderMetaData['cdek_uuid'],
-                    'name' => $order->entity->recipient->name,
-                    'type' => $this->getDeliveryModeName($order->entity->delivery_mode),
-                    'payment_type' => $orderMetaData['payment_type'],
-                    'to_location' => $order->entity->to_location->city . ', ' . $order->entity->to_location->address
-                ];
-                $this->insertOrderMeta($param, $dataOrderForm['order_id']);
-                $dataOrderForm = array_merge($dataOrderForm, $param);
-            } else {
-                $dataOrderForm['cdek_number'] = $orderMetaData['cdek_number'];
-                $dataOrderForm['name'] = $orderMetaData['name'];
-                $dataOrderForm['type'] = $orderMetaData['type'];
-                $dataOrderForm['payment_type'] = $orderMetaData['payment_type'];
-                $dataOrderForm['to_location'] = $orderMetaData['to_location'];
+                if (!is_numeric($orderMetaData['cdek_number'])) {
+                    $settings = new Settings();
+                    $settings->init($this->model_setting_setting->getSetting('cdek_official'));
+                    $cdekApi = new CdekApi($this->registry, $settings);
+                    $order = $cdekApi->getOrderByUuid($orderMetaData['cdek_uuid']);
+                    $param = [
+                        'cdek_number' => $order->entity->cdek_number,
+                        'cdek_uuid' => $orderMetaData['cdek_uuid'],
+                        'name' => $order->entity->recipient->name,
+                        'type' => $this->getDeliveryModeName($order->entity->delivery_mode),
+                        'payment_type' => $orderMetaData['payment_type'],
+                        'to_location' => $order->entity->to_location->city . ', ' . $order->entity->to_location->address
+                    ];
+                    $this->insertOrderMeta($param, $dataOrderForm['order_id']);
+                    $dataOrderForm = array_merge($dataOrderForm, $param);
+                } else {
+                    $dataOrderForm['cdek_number'] = $orderMetaData['cdek_number'];
+                    $dataOrderForm['name'] = $orderMetaData['name'];
+                    $dataOrderForm['type'] = $orderMetaData['type'];
+                    $dataOrderForm['payment_type'] = $orderMetaData['payment_type'];
+                    $dataOrderForm['to_location'] = $orderMetaData['to_location'];
+                }
             }
         }
 

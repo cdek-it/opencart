@@ -7,7 +7,7 @@ class ModelExtensionShippingCdekOfficial extends Model {
         $weight = $this->cart->weight;
         $this->load->model('setting/setting');
         $settings = $this->model_setting_setting->getSetting('cdek_official');
-        $calc = new Calc($this->registry, $cartProducts, $settings, $address['postcode'], $weight);
+        $calc = new Calc($this->registry, $cartProducts, $settings, $address, $weight);
         return $calc->getMethodData();
     }
 }

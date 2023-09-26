@@ -8,10 +8,10 @@ class Calc
     private $settings;
     protected $registry;
     protected $cdekApi;
-    protected $postcode;
+    protected $address;
     private $weight;
 
-    public function __construct($registry, $cartProducts, $modelSettings, $postcode, $weight)
+    public function __construct($registry, $cartProducts, $modelSettings, $address, $weight)
     {
         $this->cartProducts = $cartProducts;
         $this->registry = $registry;
@@ -19,7 +19,7 @@ class Calc
         $this->settings = new Settings();
         $this->settings->init($modelSettings);
         $this->cdekApi = new CdekApi($registry, $this->settings);
-        $this->postcode = $postcode;
+        $this->address = $address;
         $this->weight = $weight;
     }
 
@@ -44,7 +44,7 @@ class Calc
         $currency = $this->settings->shippingSettings->currency;
         $quoteData = [];
         $this->registry->get('currency');
-        $recipientLocation = $this->cdekApi->getCityByPostcode($this->postcode);
+        $recipientLocation = $this->cdekApi->getCityByParam($this->address['city'], $this->address['postcode']);
 //        if (empty($recipientLocation)) {
 //            $tariffPlugName = $this->getTariffPlugName();
 //            $quoteData['cdek_official_tariff_plug'] = [
@@ -80,7 +80,12 @@ class Calc
                         'cost' => $result->total_sum,
                         'tax_class_id' => $tariff['code'],
                         'text' => $this->registry->get('currency')->format($result->total_sum, $this->registry->get('session')->data['currency']),
-                        'extra' => $this->registry->get('load')->view('extension/shipping/cdek_official_map', ['tariff' => $tariff, 'offices' => $pvz])
+                        'extra' => $this->registry->get('load')->view('extension/shipping/cdek_official_map', [
+                            'tariff' => $tariff,
+                            'offices' => $pvz,
+                            'apikey' => $this->settings->authSettings->apiKey,
+                            'city' => $recipientLocation[0]->city
+                        ])
                     ];
                 } else {
                     $quoteData['cdek_official_' . $tariff['code']] = [
@@ -91,7 +96,6 @@ class Calc
                         'text' => $this->registry->get('currency')->format($result->total_sum, $this->registry->get('session')->data['currency'])
                     ];
                 }
-
             }
         }
         return $quoteData;

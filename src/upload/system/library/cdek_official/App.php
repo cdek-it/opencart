@@ -166,6 +166,11 @@ class App
                     echo json_encode($validate);
                     exit;
                 }
+                $query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "cdek_order_meta` WHERE `order_id` = " . (int)$this->request->post['order_id']);
+                $pvz = '';
+                if ($query->num_rows && $query->row['pvz_code'] !== "") {
+                    $pvz = $query->row['pvz_code'];
+                }
                 $this->registry->get('load')->model('sale/order');
                 $model_sale_order = $this->registry->get('model_sale_order');
                 $this->registry->get('load')->model('catalog/product');
@@ -174,10 +179,11 @@ class App
                 $orderId = (int)$this->request->post['order_id'];
                 $orderOC = $model_sale_order->getOrder($orderId);
                 $products = $model_sale_order->getOrderProducts($orderId);
-                $order = new Order($this->settings, $orderOC, $products, $this->request->post['dimensions'], $model_catalog_product, $weight);
+                $order = new Order($this->settings, $orderOC, $products, $this->request->post['dimensions'], $model_catalog_product, $weight, $pvz);
                 $response = $this->cdekApi->createOrder($order);
                 file_put_contents('test_log.txt', "Order created: " . json_encode($response) . "\n", FILE_APPEND);
                 if ($cdekApiValidate->createApiValidate($response)) {
+                    sleep(5);
                     $order = $this->cdekApi->getOrderByUuid($response->entity->uuid);
                     $data = [
                         'cdek_number' => $order->entity->cdek_number ?? $this->language->get('cdek_error_cdek_number_empty'),

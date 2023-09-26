@@ -3,6 +3,7 @@ $_['heading_title']     = 'CDEK Delivery Shipping Method';
 $_['cdek_success']      = 'Success: You have modified CDEK Shipping settings!';
 $_['cdek_auth']         = 'Authorize';
 $_['cdek_auth_id']      = 'Id';
+$_['cdek_api_key']      = 'Api key';
 $_['cdek_auth_secret']  = 'Secret';
 $_['cdek_auth__status']  = 'Status';
 $_['cdek_auth__btn_submit']  = 'Submit';

@@ -109,6 +109,12 @@ class CdekApi
         return $this->sendRequestWithTokenRefresh($url, 'GET', ['city' => $city, 'size' => 5]);
     }
 
+    public function getCityByCode($cityCode)
+    {
+        $url = $this->getAuthUrl() . self::REGION_PATH;
+        return $this->sendRequestWithTokenRefresh($url, 'GET', ['code' => $cityCode]);
+    }
+
     public function getPvz($cityCode, $street, $weight = 0)
     {
         $url = $this->getAuthUrl() . self::PVZ_PATH;
@@ -206,10 +212,10 @@ class CdekApi
         return $data;
     }
 
-    public function getCityByPostcode($postcode)
+    public function getCityByParam($city, $postcode)
     {
         $url = $this->getAuthUrl() . self::REGION_PATH;
-        return $this->sendRequestWithTokenRefresh($url, 'GET', ['postal_code' => $postcode]);
+        return $this->sendRequestWithTokenRefresh($url, 'GET', ['city' => $city, 'postal_code' => $postcode]);
     }
 
     public function deleteOrder($uuid)

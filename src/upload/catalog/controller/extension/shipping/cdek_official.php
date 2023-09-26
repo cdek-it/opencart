@@ -40,10 +40,10 @@ class ControllerExtensionShippingCdekOfficial extends Controller {
             $this->searchAndReplace($output, $cdekBlock, $pvzCode);
             foreach ($code as $quoteCode) {
                 $cdekQuoteLayoutMap = $mapLayout[$quoteCode];
-                $cdekQuoteBlockPattern = '/<div class="radio">.*?value="' . preg_quote($quoteCode, '/') . '".*?<\/div>/s';
+                $cdekQuoteBlockPattern = '/<div class="radio">.*?value="' . preg_quote($quoteCode, '/') . '".*?<\/label>/s';
 
                 $output = preg_replace_callback($cdekQuoteBlockPattern, function($matches) use ($cdekQuoteLayoutMap) {
-                    return $matches[0] . $cdekQuoteLayoutMap;
+                    return substr($matches[0], 0, -8) . $cdekQuoteLayoutMap . "</label>";
                 }, $output);
             }
         }

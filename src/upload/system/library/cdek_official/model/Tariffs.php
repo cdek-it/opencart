@@ -51,4 +51,14 @@ class Tariffs
         }
         return '';
     }
+
+    public function getFromByCode($code)
+    {
+        foreach ($this->data as $key => $tariffElement) {
+            if ($tariffElement['code'] === $code) {
+                return $this->data[$key]['from'];
+            }
+        }
+        return '';
+    }
 }

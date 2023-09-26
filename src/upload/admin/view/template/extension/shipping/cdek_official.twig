@@ -1,12 +1,31 @@
-<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/cdek-it/widget@latest/dist/cdek-widget.umd.js" charset="utf-8"></script>
+<script type="text/javascript" src="../system/library/cdek_official/cdek-widget.umd.js" charset="utf-8"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         new window.CDEKWidget({
-            defaultLocation: 'Барнаул', // по умолчанию будет показываться Барнаул
-            from: 'Санкт-Петербург', // доставка ведется из Санкт-Петербурга
-            apiKey: '8b88b1d3-462b-4d8a-b2ca-ef519d70aaf9',
-            canChoose: true, // не будем отображать кнопку выбора пункта выдачи
+            defaultLocation: '{{ city }}',
+            from: '{{ city }}',
+            apiKey: {{ apikey }},
+            canChoose: true,
+            servicePath: '/admin/service.php',
             sender: true,
+            offices: [
+                {% for office in offices %}
+                {
+                    city_code: '{{ office.city_code }}',
+                    type: '{{ office.type }}',
+                    country_code: '{{ office.country_code }}',
+                    have_cashless: {{ office.have_cashless }},
+                    have_cash: {{ office.have_cash }},
+                    allowed_cod: {{ office.allowed_cod }},
+                    is_dressing_room: {{ office.is_dressing_room }},
+                    code: '{{ office.code }}',
+                    name: '{{ office.name }}',
+                    address: '{{ office.address }}',
+                    work_time: '{{ office.work_time }}',
+                    location: [{{ office.location[0] }}, '{{ office.location[1] }}'],
+                },
+                {% endfor %}
+            ],
             hideDeliveryOptions: {
                 office: false,
                 door: true,
@@ -64,6 +83,13 @@
                                     <div class="col-sm-4">
                                         <input type="text" name="cdek_official_auth_id"
                                                value="{{ cdek_official_auth_id }}" placeholder="{{ cdek_auth_id }}"
+                                               id="input-length" class="form-control">
+                                    </div>
+                                    <label class="col-sm-2 control-label"
+                                           for="cdek_official_api_key">{{ cdek_api_key }}</label>
+                                    <div class="col-sm-4">
+                                        <input type="text" name="cdek_official_api_key"
+                                               value="{{ cdek_official_api_key }}" placeholder="{{ cdek_api_key }}"
                                                id="input-length" class="form-control">
                                     </div>
                                     <label class="col-sm-2 control-label"

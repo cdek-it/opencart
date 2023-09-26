@@ -4,11 +4,13 @@ class SettingsAuth extends AbstractSettings
 {
     public $authId;
     public $authSecret;
+    public $apiKey;
     public $authTestMode;
 
     const PARAM_ID = [
         'cdek_official_auth_id' => 'authId',
         'cdek_official_auth_secret' => 'authSecret',
+        'cdek_official_api_key' => 'apiKey',
         'cdek_official_auth__test_mode' => 'authTestMode',
     ];
 
@@ -26,6 +28,10 @@ class SettingsAuth extends AbstractSettings
         }
 
         if (empty($this->authSecret)) {
+            throw new Exception('cdek_error_auth_secret_empty');
+        }
+
+        if (empty($this->apiKey)) {
             throw new Exception('cdek_error_auth_secret_empty');
         }
     }

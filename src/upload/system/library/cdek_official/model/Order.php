@@ -1,5 +1,7 @@
 <?php
 
+require_once(DIR_SYSTEM . 'library/cdek_official/model/Tariffs.php');
+
 class Order
 {
     public string $number;
@@ -28,9 +30,10 @@ class Order
     private $model_catalog_product;
     private $weight;
     private $weightPackage;
+    private $pvz;
 
 
-    public function __construct($settings, $orderOC, $products, $dimensions, $model_catalog_product, $weight)
+    public function __construct($settings, $orderOC, $products, $dimensions, $model_catalog_product, $weight, $pvz)
     {
         $this->settings = $settings;
         $this->orderOC = $orderOC;
@@ -38,20 +41,14 @@ class Order
         $this->dimensions = $dimensions;
         $this->model_catalog_product = $model_catalog_product;
         $this->weight = $weight;
+        $this->pvz = $pvz;
+        $this->tariffs = new Tariffs();
     }
 
     public function getRequestData()
     {
         $order = $this->getOrderData();
-        return [
-            "from_location" => [
-                "code" => $this->settings->shippingSettings->shippingCityCode,
-                "address" => $this->settings->shippingSettings->shippingCityAddress
-            ],
-            "to_location" => [
-                "postal_code" => $order['postcodeCustomer'],
-                "address" => $order['addressCustomer']
-            ],
+        $data = [
             "packages" => [
                 [
                     "number" => "package_order_" . $this->orderOC['order_id'],
@@ -73,6 +70,11 @@ class Order
             ],
             "tariff_code" => $order['tariffCodeCustomer']
         ];
+
+        $data = array_merge($data, $this->getFromByTariffCode((int)$order['tariffCodeCustomer']));
+        $data = array_merge($data, $this->getToByTariffCode((int)$order['tariffCodeCustomer'], $order));
+
+        return $data;
     }
 
     private function getOrderData(): array
@@ -121,84 +123,38 @@ class Order
         }
         return $data;
     }
-}
 
-//$phpArray = [
-//    "number" => "ddOererre7450813980068",
-//    "comment" => "Новый заказ",
-//    "delivery_recipient_cost" => [
-//        "value" => 50
-//    ],
-//    "delivery_recipient_cost_adv" => [
-//        [
-//            "sum" => 3000,
-//            "threshold" => 200
-//        ]
-//    ],
-//    "from_location" => [
-//        "code" => "44",
-//        "fias_guid" => "",
-//        "postal_code" => "",
-//        "longitude" => "",
-//        "latitude" => "",
-//        "country_code" => "",
-//        "region" => "",
-//        "sub_region" => "",
-//        "city" => "Москва",
-//        "kladr_code" => "",
-//        "address" => "пр. Ленинградский, д.4"
-//    ],
-//    "to_location" => [
-//        "code" => "270",
-//        "fias_guid" => "",
-//        "postal_code" => "",
-//        "longitude" => "",
-//        "latitude" => "",
-//        "country_code" => "",
-//        "region" => "",
-//        "sub_region" => "",
-//        "city" => "Новосибирск",
-//        "kladr_code" => "",
-//        "address" => "ул. Блюхера, 32"
-//    ],
-//    "packages" => [
-//        [
-//            "number" => "bar-001",
-//            "comment" => "Упаковка",
-//            "height" => 10,
-//            "items" => [
-//                [
-//                    "ware_key" => "00055",
-//                    "payment" => [
-//                        "value" => 3000
-//                    ],
-//                    "name" => "Товар",
-//                    "cost" => 300,
-//                    "amount" => 2,
-//                    "weight" => 700,
-//                    "url" => "www.item.ru"
-//                ]
-//            ],
-//            "length" => 10,
-//            "weight" => 4000,
-//            "width" => 10
-//        ]
-//    ],
-//    "recipient" => [
-//        "name" => "Иванов Иван",
-//        "phones" => [
-//            [
-//                "number" => "+79134637228"
-//            ]
-//        ]
-//    ],
-//    "sender" => [
-//        "name" => "Петров Петр"
-//    ],
-//    "services" => [
-//        [
-//            "code" => "SECURE_PACKAGE_A2"
-//        ]
-//    ],
-//    "tariff_code" => 139
-//];
+    private function getFromByTariffCode(int $tariffCode)
+    {
+        if ($this->tariffs->getFromByCode($tariffCode) === "door") {
+            $result = [
+                "from_location" => [
+                    "code" => $this->settings->shippingSettings->shippingCityCode,
+                    "address" => $this->settings->shippingSettings->shippingCityAddress
+                ]
+            ];
+        } else {
+            $result = [
+                "shipment_point" => $this->settings->shippingSettings->shippingPvzCode
+            ];
+        }
+        return $result;
+    }
+
+    private function getToByTariffCode(int $tariffCode, $order)
+    {
+        if ($this->tariffs->getDirectionByCode($tariffCode) === "door") {
+            $result = [
+                "to_location" => [
+                    "postal_code" => $order['postcodeCustomer'],
+                    "address" => $order['addressCustomer']
+                ],
+            ];
+        } else {
+            $result = [
+                "delivery_point" => $this->pvz
+            ];
+        }
+        return $result;
+    }
+}
