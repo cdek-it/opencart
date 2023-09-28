@@ -2,6 +2,7 @@
 
 require_once(DIR_SYSTEM . 'library/cdek_official/model/Tariffs.php');
 require_once(DIR_SYSTEM . 'library/cdek_official/Service.php');
+require_once(DIR_SYSTEM . 'library/cdek_official/CdekOrderMetaRepository.php');
 
 class ControllerExtensionShippingCdekOfficial extends Controller {
 
@@ -86,13 +87,8 @@ class ControllerExtensionShippingCdekOfficial extends Controller {
     {
         if (isset($this->session->data['order_id']) && isset($this->session->data['cdek_official_pvz_code'])) {
             $cdekPvzCode = $this->session->data['cdek_official_pvz_code'];
-            $this->db->query(
-                "INSERT INTO oc_cdek_order_meta SET order_id = " . $this->session->data['order_id']
-                . ", pvz_code = '" . $this->db->escape($cdekPvzCode) . "'"
-                . " ON DUPLICATE KEY UPDATE "
-                . "pvz_code = VALUES(pvz_code)"
-            );
-            unset($this->session->data['shipping_method']);
+            CdekOrderMetaRepository::insertPvzCode($this->db, DB_PREFIX, $this->session->data['order_id'], $cdekPvzCode);
+            unset($this->session->data['cdek_official_pvz_code']);
         }
     }
 

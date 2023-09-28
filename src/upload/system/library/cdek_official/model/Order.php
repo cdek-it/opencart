@@ -4,44 +4,26 @@ require_once(DIR_SYSTEM . 'library/cdek_official/model/Tariffs.php');
 
 class Order
 {
-    public string $number;
-    public int $tariffCode;
-    public string $developerKey;
-    public string $shipmentPoint;
-    public string $deliveryPoint;
-    public string $dateInvoice;
-    public string $shipperName;
-    public string $shipperAddress;
-    public DeliveryRecipientCost $deliveryRecipientCost;
-    public DeliveryRecipientCostAdv $deliveryRecipientCostAdv;
-    public array $sender;
-    public array $seller;
-    public array $recipient;
-    public array $fromLocation;
-    public array $toLocation;
-    public array $service;
-    public array $packages;
-    public string $print;
-    public bool $isClientReturn;
     private Settings $settings;
     private $orderOC;
     private $products;
     private $dimensions;
     private $model_catalog_product;
     private $weight;
-    private $weightPackage;
     private $pvz;
+    private Tariffs $tariffs;
+    private $weightPackage;
 
 
-    public function __construct($settings, $orderOC, $products, $dimensions, $model_catalog_product, $weight, $pvz)
+    public function __construct($settings, $orderData, $dimensions)
     {
         $this->settings = $settings;
-        $this->orderOC = $orderOC;
-        $this->products = $products;
+        $this->orderOC = $orderData['orderOC'];
+        $this->products = $orderData['products'];
         $this->dimensions = $dimensions;
-        $this->model_catalog_product = $model_catalog_product;
-        $this->weight = $weight;
-        $this->pvz = $pvz;
+        $this->model_catalog_product = $orderData['modelCatalogProduct'];
+        $this->weight = $orderData['weight'];
+        $this->pvz = $orderData['pvz'];
         $this->tariffs = new Tariffs();
     }
 
@@ -71,10 +53,13 @@ class Order
             "tariff_code" => $order['tariffCodeCustomer']
         ];
 
-        $data = array_merge($data, $this->getFromByTariffCode((int)$order['tariffCodeCustomer']));
-        $data = array_merge($data, $this->getToByTariffCode((int)$order['tariffCodeCustomer'], $order));
+        $tariffCode = (int)$order['tariffCodeCustomer'];
 
-        return $data;
+        return array_merge(
+            $data,
+            $this->getFromByTariffCode($tariffCode),
+            $this->getToByTariffCode($tariffCode, $order)
+        );
     }
 
     private function getOrderData(): array
