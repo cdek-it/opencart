@@ -49,34 +49,19 @@ class CdekHttpClient
         return $body->access_token;
     }
 
-    public function sendRequestBill($url, $method, $token, $data = null)
+    public function sendRequestBill($url, $token)
     {
-        if (strtoupper($method) === 'GET' && is_array($data)) {
-            $data = http_build_query($data);
-            $url = $url . '?' . $data;
-        }
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, strtoupper($method));
+        $ch = curl_init($url);
         $headers = [
             "Authorization: Bearer $token",
-            'Content-Type: application/json'
         ];
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        if (strtoupper($method) === 'POST' && is_array($data)) {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-        }
-
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $output = curl_exec($ch);
         curl_close($ch);
 
-        file_put_contents(
-            'bill2.pdf',
-            $output
-        );
-        exit();
+        header('Content-Type: application/pdf');
+        return $output;
     }
 
 }

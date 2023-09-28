@@ -18,10 +18,6 @@ class ControllerExtensionShippingCdekOfficial extends Controller
         $app->run();
 
         $app->checkState($app->data);
-
-        $pvz = $app->cdekApi->getPvzByCityCode($app->settings->shippingSettings->shippingCityCode);
-        $city = $app->cdekApi->getCityByCode($app->settings->shippingSettings->shippingCityCode);
-
         $userToken = $this->session->data['user_token'];
         $app->data['action'] = $this->url->link('extension/shipping/cdek_official', 'user_token=' . $userToken);
         $app->data['cancel'] = $this->url->link('extension/shipping', 'user_token=' . $userToken);
@@ -29,9 +25,9 @@ class ControllerExtensionShippingCdekOfficial extends Controller
         $app->data['column_left'] = $this->load->controller('common/column_left');
         $app->data['footer'] = $this->load->controller('common/footer');
         $app->data['user_token'] = $userToken;
-        $app->data['offices'] = $pvz;
+        $app->data['offices'] = $app->data['map_pvz'] ?? [];
         if ($app->data['status_auth']) {
-            $app->data['city'] = $city[0]->city;
+            $app->data['city'] = $app->data['map_city'] ?? 44;
         } else {
             $app->data['city'] = 44;
         }
@@ -40,16 +36,6 @@ class ControllerExtensionShippingCdekOfficial extends Controller
         $this->response->setOutput($this->load->view('extension/shipping/cdek_official', $app->data));
     }
 
-
-    //                $dataOrderForm['cdek_order_create_info_name'] = $this->language->get('cdek_order_create_info_name');
-//                $dataOrderForm['cdek_order_number_name'] = $this->language->get('cdek_order_number_name');
-//                $dataOrderForm['cdek_order_customer_name'] = $this->language->get('cdek_order_customer_name');
-//                $dataOrderForm['cdek_order_type_name'] = $this->language->get('cdek_order_type_name');
-//                $dataOrderForm['cdek_order_payment_type_name'] = $this->language->get('cdek_order_payment_type_name');
-//                $dataOrderForm['cdek_order_direction_name'] = $this->language->get('cdek_order_direction_name');
-//                $dataOrderForm['cdek_order_get_bill_name'] = $this->language->get('cdek_order_get_bill_name');
-//                $dataOrderForm['cdek_order_call_courier_name'] = $this->language->get('cdek_order_call_courier_name');
-//                $dataOrderForm['cdek_order_delete_order_name'] = $this->language->get('cdek_order_delete_order_name');
     public function cdek_official_order_info(&$route, &$data, &$output)
     {
         $orderId = (int)$data['order_id'];
@@ -60,7 +46,6 @@ class ControllerExtensionShippingCdekOfficial extends Controller
             if ($orderCreated['create']) {
                 $dataOrderForm['cdek_order_created'] = true;
                 $dataOrderForm['products'] = $data['products'];
-
                 $orderMetaData = $orderCreated['row'];
                 if ($orderMetaData['cdek_number'] === "" && $orderMetaData['created'] === 1) {
                     $settings = new Settings();
@@ -78,6 +63,7 @@ class ControllerExtensionShippingCdekOfficial extends Controller
                     CdekOrderMetaRepository::insertOrderMeta($this->db, $param, $dataOrderForm['order_id']);
                     $dataOrderForm = array_merge($dataOrderForm, $param);
                 } else {
+                    $dataOrderForm['cdek_uuid'] = $orderMetaData['cdek_uuid'];
                     $dataOrderForm['cdek_number'] = $orderMetaData['cdek_number'];
                     $dataOrderForm['name'] = $orderMetaData['name'];
                     $dataOrderForm['type'] = $orderMetaData['type'];

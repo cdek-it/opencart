@@ -94,6 +94,8 @@ class App
         if (!empty($modelSettings)) {
             $this->settings->init($this->modelSetting->getSetting('cdek_official'));
             $this->settings->updateData($this->data);
+            $this->data['map_pvz'] = $this->cdekApi->getPvzByCityCode($this->settings->shippingSettings->shippingCityCode ?? 44);
+            $this->data['map_city'] = $this->cdekApi->getCityByCode($this->settings->shippingSettings->shippingCityCode ?? 44)[0]->city;
             $this->data['status_auth'] = $this->cdekApi->checkAuth();
             $this->data['tariffs'] = $this->settings->shippingSettings->shippingTariffs;
             $this->data['currencies'] = $this->settings->shippingSettings->shippingCurrencies;
@@ -155,17 +157,11 @@ class App
 
             if ($this->request->post['cdekRequest'] === 'deleteOrder') {
                 $response = $this->cdekApi->deleteOrder($this->request->post['uuid']);
-                if ($response->requests[0]->state === 'ACCEPTED' || $response->requests[0]->state === 'SUCCESSFUL') {
-                    $this->db->query("UPDATE `" . DB_PREFIX . "cdek_order_meta` SET cdek_number='', cdek_uuid='', name='', type='', payment_type='', to_location='' WHERE `order_id` = " . (int)$this->request->post['order_id']);
-                    echo json_encode([
-                        'state' => true,
-                        'message' => ''
-                    ]);
+                if (CdekApiValidate::deleteOrder($response)) {
+                    CdekOrderMetaRepository::deleteOrder($this->db, (int)$this->request->post['order_id']);
+                    echo json_encode(['state' => true, 'message' => '']);
                 } else {
-                    echo json_encode([
-                        'state' => false,
-                        'message' => 'The order could not be deleted'
-                    ]);
+                    echo json_encode(['state' => false, 'message' => 'The order could not be deleted']);
                 }
                 exit;
             }

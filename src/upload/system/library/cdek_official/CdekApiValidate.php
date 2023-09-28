@@ -9,4 +9,12 @@ class CdekApiValidate
         }
         return false;
     }
+
+    public static function deleteOrder($response): bool
+    {
+        if ($response->requests[0]->state === 'ACCEPTED' || $response->requests[0]->state === 'SUCCESSFUL') {
+            return true;
+        }
+        return false;
+    }
 }

@@ -63,4 +63,9 @@ class CdekOrderMetaRepository
             . "created = VALUES(created)"
         );
     }
+
+    public static function deleteOrder($db, int $orderId)
+    {
+        $db->query("UPDATE `" . DB_PREFIX . "cdek_order_meta` SET cdek_number='', cdek_uuid='', name='', type='', payment_type='', to_location='', created=0 WHERE `order_id` = " . $orderId);
+    }
 }

@@ -55,8 +55,8 @@
                 <div class="row">
                     <div class="col-sm-8"></div>
                     <div id="cdek_order_action" class="col-sm-4" style="text-align: right; display: grid">
-                        <a id="cdek_get_bill_btn" href="{{ cdek_order_get_bill_link }}" data-uuid="{% if cdek_order_created %}{{ cdek_uuid }}{% endif %}">{{ cdek_order_get_bill_name }}</a>
-                        <a href="">{{ cdek_order_call_courier_name }}</a>
+                        <a id="cdek_get_bill_btn" data-uuid="{% if cdek_order_created %}{{ cdek_uuid }}{% endif %}">{{ cdek_order_get_bill_name }}</a>
+{#                        <a href="">{{ cdek_order_call_courier_name }}</a>#}
                         <a id="cdek_delete_order_btn" class="cdek_delete_order_btn" data-uuid="{% if cdek_order_created %}{{ cdek_uuid }}{% endif %}" href="">{{ cdek_order_delete_order_name }}</a>
                     </div>
                 </div>

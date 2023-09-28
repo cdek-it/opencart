@@ -2,6 +2,7 @@
 
 require_once(DIR_SYSTEM . 'library/cdek_official/CdekHttpClient.php');
 require_once(DIR_SYSTEM . 'library/cdek_official/Settings.php');
+require_once(DIR_SYSTEM . 'library/cdek_official/CdekLog.php');
 
 class CdekApi
 {
@@ -10,7 +11,7 @@ class CdekApi
     protected const ORDERS_PATH = "orders/";
     protected const PVZ_PATH = "deliverypoints";
     protected const CALC_PATH = "calculator/tariff";
-    protected const WAYBILL_PATH = "print/orders/";
+    protected const WAYBILL_PATH = "print/orders";
     protected const CALL_COURIER = "intakes";
     protected const API_URL = "https://api.cdek.ru/v2/";
     protected const API_TEST_URL = "https://api.edu.cdek.ru/v2/";
@@ -25,62 +26,19 @@ class CdekApi
         $this->registry = $registry;
     }
 
+    private function sendRequest(string $url, string $method, $data = null)
+    {
+        return $this->httpClient->sendRequest($url, $method, $this->getToken(), $data);
+    }
+
     protected function getToken()
     {
-        $data = $this->getData();
-        $token = $this->fetchToken($data);
-        $this->storeToken($token);
-        return $token;
-    }
-
-    private function fetchToken($data)
-    {
-        return $this->httpClient->sendRequestAuth($this->getAuthUrl() . self::TOKEN_PATH, $data);
-    }
-
-    private function storeToken($token)
-    {
-        $this->registry->get('config')->set('cdek_official_api_access_token', $token);
-    }
-
-    protected function sendRequestWithTokenRefresh($url, $method, $data = null)
-    {
-        $token = $this->getStoredToken();
-        $response = $this->httpClient->sendRequest($url, $method, $token, $data);
-
-        if ($this->isTokenInvalid($response)) {
-            $this->refreshToken();
-            $newToken = $this->getStoredToken();
-            $response = $this->httpClient->sendRequest($url, $method, $newToken, $data);
-        }
-
-        return $response;
-    }
-
-    private function getStoredToken()
-    {
-        return $this->registry->get('config')->get('cdek_official_api_access_token');
-    }
-
-    private function isTokenInvalid($response)
-    {
-        return is_object($response) &&
-            property_exists($response, 'requests') &&
-            $response->requests[0]->type === 'AUTH' &&
-            $response->requests[0]->state === 'INVALID';
-    }
-
-    private function refreshToken()
-    {
-        $this->getToken();
+        return $this->httpClient->sendRequestAuth($this->getAuthUrl() . self::TOKEN_PATH, $this->getData());
     }
 
     public function checkAuth(): bool
     {
-        if ($this->getToken() !== false) {
-            return true;
-        }
-        return false;
+        return true;
     }
 
     public function testModeActive(): bool
@@ -94,25 +52,25 @@ class CdekApi
     public function getOrderByUuid($uuid)
     {
         $url = $this->getAuthUrl() . self::ORDERS_PATH . $uuid;
-        return $this->sendRequestWithTokenRefresh($url, 'GET');
+        return $this->sendRequest($url, 'GET');
     }
 
     public function getOrderByNumber($number)
     {
         $url = $this->getAuthUrl() . self::ORDERS_PATH;
-        return $this->sendRequestWithTokenRefresh($url, 'GET', ['cdek_number' => $number]);
+        return $this->sendRequest($url, 'GET', ['cdek_number' => $number]);
     }
 
     public function getCity($city)
     {
         $url = $this->getAuthUrl() . self::REGION_PATH;
-        return $this->sendRequestWithTokenRefresh($url, 'GET', ['city' => $city, 'size' => 5]);
+        return $this->sendRequest($url, 'GET', ['city' => $city, 'size' => 5]);
     }
 
     public function getCityByCode($cityCode)
     {
         $url = $this->getAuthUrl() . self::REGION_PATH;
-        return $this->sendRequestWithTokenRefresh($url, 'GET', ['code' => $cityCode]);
+        return $this->sendRequest($url, 'GET', ['code' => $cityCode]);
     }
 
     public function getPvz($cityCode, $street, $weight = 0)
@@ -122,7 +80,7 @@ class CdekApi
         $params['city_code'] = $cityCode;
         $params['weight_min'] = (int)ceil($weight);
 
-        $result = $this->sendRequestWithTokenRefresh($url, 'GET', $params);
+        $result = $this->sendRequest($url, 'GET', $params);
         $pvz = [];
         foreach ($result as $elem) {
             if (isset($elem->code, $elem->type, $elem->location->longitude, $elem->location->latitude, $elem->location->address)) {
@@ -147,7 +105,7 @@ class CdekApi
 
         $params['city_code'] = $cityCode;
 
-        $pvz = $this->sendRequestWithTokenRefresh($url, 'GET', $params);
+        $pvz = $this->sendRequest($url, 'GET', $params);
 
         $result = [];
         foreach ($pvz as $elem) {
@@ -177,13 +135,13 @@ class CdekApi
     public function calculate($data)
     {
         $url = $this->getAuthUrl() . self::CALC_PATH;
-        return $this->sendRequestWithTokenRefresh($url, 'POST', $data);
+        return $this->sendRequest($url, 'POST', $data);
     }
 
     public function createOrder($order)
     {
         $url = $this->getAuthUrl() . self::ORDERS_PATH;
-        return $this->sendRequestWithTokenRefresh($url, 'POST', $order->getRequestData());
+        return $this->sendRequest($url, 'POST', $order->getRequestData());
     }
 
     private function getAuthUrl(): string
@@ -215,13 +173,13 @@ class CdekApi
     public function getCityByParam($city, $postcode)
     {
         $url = $this->getAuthUrl() . self::REGION_PATH;
-        return $this->sendRequestWithTokenRefresh($url, 'GET', ['city' => $city, 'postal_code' => $postcode]);
+        return $this->sendRequest($url, 'GET', ['city' => $city, 'postal_code' => $postcode]);
     }
 
     public function deleteOrder($uuid)
     {
         $url = $this->getAuthUrl() . self::ORDERS_PATH . $uuid;
-        return $this->sendRequestWithTokenRefresh($url, 'DELETE');
+        return $this->sendRequest($url, 'DELETE');
     }
 
     public function getBill($uuid)
@@ -233,9 +191,16 @@ class CdekApi
             ],
             "copy_count" => 2
         ];
-        $requestBill = $this->sendRequestWithTokenRefresh($url, 'POST', $data);
+        $requestBill = $this->sendRequest($url, 'POST', $data);
+        CdekLog::sendLog('RequestBill: ' . json_encode($requestBill));
         sleep(5);
-        $result = $this->sendRequestWithTokenRefresh($url . $requestBill->entity->uuid, 'GET');
-        $this->httpClient->sendRequestBill($result->entity->url, 'GET', $this->getToken());
+        $result = $this->sendRequest($url . '/' . $requestBill->entity->uuid, 'GET');
+        CdekLog::sendLog('Result: ' . json_encode($result));
+        $pdf = $this->httpClient->sendRequestBill($result->entity->url, $this->getToken());
+        $tempFile = tmpfile();
+        $tempFilePath = stream_get_meta_data($tempFile)['uri'];
+        file_put_contents($tempFilePath, $pdf);
+        echo $tempFilePath;
+        exit();
     }
 }

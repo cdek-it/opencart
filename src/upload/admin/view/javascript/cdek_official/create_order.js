@@ -25,12 +25,14 @@ $(document).ready(function() {
                 }
                 console.log(resp.data)
                 console.log(resp.data.cdek_number)
+                console.log(resp.data.cdek_uuid)
                 $('#cdek_order_number_name').text(resp.data.cdek_number);
                 $('#cdek_order_customer_name').text(resp.data.name);
                 $('#cdek_order_type_name').text(resp.data.type);
                 $('#cdek_order_payment_type_name').text(resp.data.payment_type);
                 $('#cdek_order_direction_name').text(resp.data.to_location);
-                $('#cdek_delete_order_btn').data('uuid', resp.data.cdek_uuid);
+                $('#cdek_delete_order_btn').attr('data-uuid', resp.data.cdek_uuid);
+                $('#cdek_get_bill_btn').attr('data-uuid', resp.data.cdek_uuid);
                 $('#cdek_order_create_form').hide();
                 $('#cdek_order_created').show();
                 console.log(resp);
@@ -76,8 +78,12 @@ $(document).ready(function() {
                 uuid: $(event.currentTarget).data('uuid')
             },
             success: function(response) {
-                console.log(response)
-                window.open('/admin/bill2.pdf', '_blank');
+                console.log(response.link)
+                var link = document.createElement('a');
+                link.href = response;
+                link.target = '_blank';
+                link.download = 'your_filename.pdf';
+                link.click();
             },
             error: function(error) {
                 console.log(error);
