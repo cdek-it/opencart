@@ -10,6 +10,7 @@ class Calc
     protected $cdekApi;
     protected $address;
     private $weight;
+    private $link;
 
     public function __construct($registry, $cartProducts, $modelSettings, $address, $weight)
     {
@@ -21,6 +22,7 @@ class Calc
         $this->cdekApi = new CdekApi($registry, $this->settings);
         $this->address = $address;
         $this->weight = $weight;
+        $this->link = $this->registry->get('link');
     }
 
     public function getMethodData()
@@ -70,35 +72,38 @@ class Calc
                     "packages" => $this->getPackage()
                 ];
                 $result = $this->cdekApi->calculate($data);
-                $pvz = $this->cdekApi->getPvzByCityCode($recipientLocation[0]->code);
+
+                $title = $this->registry->get('language')->get('cdek_shipping__tariff_name_' . $tariff['code']) . $this->getPeriod($result);
+                $total = $this->getTotalSum($result);
+
+                $quoteData['cdek_official_' . $tariff['code']] = [
+                    'code' => 'cdek_official.cdek_official_' . $tariff['code'],
+                    'title' => $title,
+                    'cost' => $total,
+                    'tax_class_id' => $tariff['code'],
+                    'text' => $this->registry->get('currency')->format($total, $this->registry->get('session')->data['currency'])
+                ];
 
                 $tariffModel = new Tariffs();
                 if ($tariffModel->getDirectionByCode($tariff['code']) === 'store') {
-                    $quoteData['cdek_official_' . $tariff['code']] = [
-                        'code' => 'cdek_official.cdek_official_' . $tariff['code'],
-                        'title' => $this->registry->get('language')->get('cdek_shipping__tariff_name_' . $tariff['code']),
-                        'cost' => $result->total_sum,
-                        'tax_class_id' => $tariff['code'],
-                        'text' => $this->registry->get('currency')->format($result->total_sum, $this->registry->get('session')->data['currency']),
-                        'extra' => $this->registry->get('load')->view('extension/shipping/cdek_official_map', [
-                            'tariff' => $tariff,
-                            'offices' => $pvz,
-                            'apikey' => $this->settings->authSettings->apiKey,
-                            'city' => $recipientLocation[0]->city
-                        ])
-                    ];
-                } else {
-                    $quoteData['cdek_official_' . $tariff['code']] = [
-                        'code' => 'cdek_official.cdek_official_' . $tariff['code'],
-                        'title' => $this->registry->get('language')->get('cdek_shipping__tariff_name_' . $tariff['code']),
-                        'cost' => $result->total_sum,
-                        'tax_class_id' => $tariff['code'],
-                        'text' => $this->registry->get('currency')->format($result->total_sum, $this->registry->get('session')->data['currency'])
-                    ];
+                    $quoteData['cdek_official_' . $tariff['code']]['extra'] = $this->registry->get('load')->view('extension/shipping/cdek_official_map', [
+                        'tariff' => $tariff,
+                        'apikey' => $this->settings->authSettings->apiKey,
+                        'city' => $recipientLocation[0]->city
+                    ]);
                 }
             }
         }
         return $quoteData;
+    }
+
+    private function getPeriod($calc)
+    {
+        $extraDays = (int)$this->settings->shippingSettings->shippingExtraDays;
+        $min = $calc->period_min + $extraDays;
+        $max = $calc->period_max + $extraDays;
+        return ' (' . $min . '-' . $max . ')';
+
     }
 
     private function getPackage()
@@ -145,5 +150,32 @@ class Calc
             $tariffPlugName = $this->settings->shippingSettings->shippingTariffPlug;
         }
         return $tariffPlugName;
+    }
+
+    private function getTotalSum($result)
+    {
+        $total = $result->total_sum;
+
+        if ($this->settings->priceSettings->priceExtraPrice !== '') {
+            $total = $total + $this->settings->priceSettings->priceExtraPrice;
+        }
+
+        if ($this->settings->priceSettings->pricePercentageIncrease !== '') {
+            $added = $total/100*(int)$this->settings->priceSettings->pricePercentageIncrease;
+            $total = $total + $added;
+            $total = round($total);
+        }
+
+        if ($this->settings->priceSettings->priceFix !== '') {
+            $total = (int)$this->settings->priceSettings->priceFix;
+        }
+
+        if ($this->settings->priceSettings->priceFree !== '') {
+            if ($this->cartProducts[0]['total'] > (float)$this->settings->priceSettings->priceFree) {
+                $total = 0;
+            }
+        }
+
+        return $total;
     }
 }

@@ -5,6 +5,7 @@ require_once(DIR_SYSTEM . 'library/cdek_official/CdekApi.php');
 require_once(DIR_SYSTEM . 'library/cdek_official/model/Order.php');
 require_once(DIR_SYSTEM . 'library/cdek_official/test/CdekTest.php');
 require_once(DIR_SYSTEM . 'library/cdek_official/CdekApiValidate.php');
+require_once(DIR_SYSTEM . 'library/cdek_official/Service.php');
 
 class App
 {
@@ -142,6 +143,11 @@ class App
         $cdekApiValidate = new CdekApiValidate();
         if (isset($this->request->post['cdekRequest'])) {
 
+            if ($this->request->post['cdekRequest'] === 'map') {
+                $service = new Service($this->settings->authSettings->authId, $this->settings->authSettings->authSecret);
+                $service->process($this->request->get, file_get_contents('php://input'));
+            }
+
             if ($this->request->post['cdekRequest'] === 'getCity') {
                 if ($this->request->post['key'] === '') {
                     exit;
@@ -209,7 +215,7 @@ class App
             if ($this->request->post['cdekRequest'] === 'deleteOrder') {
                 $response = $this->cdekApi->deleteOrder($this->request->post['uuid']);
                 if ($response->requests[0]->state === 'ACCEPTED' || $response->requests[0]->state === 'SUCCESSFUL') {
-                    $this->db->query("DELETE FROM `" . DB_PREFIX . "cdek_order_meta` WHERE `order_id` = " . (int)$this->request->post['order_id']);
+                    $this->db->query("UPDATE `" . DB_PREFIX . "cdek_order_meta` SET cdek_number='', cdek_uuid='', name='', type='', payment_type='', to_location='' WHERE `order_id` = " . (int)$this->request->post['order_id']);
                     echo json_encode([
                         'state' => true,
                         'message' => ''
@@ -221,6 +227,10 @@ class App
                     ]);
                 }
                 exit;
+            }
+
+            if ($this->request->post['cdekRequest'] === 'getBill') {
+                $this->cdekApi->getBill($this->request->post['uuid']);
             }
         }
     }

@@ -65,4 +65,23 @@ $(document).ready(function() {
             }
         });
     })
+
+    $('#cdek_get_bill_btn').click(function (event) {
+        event.preventDefault();
+        $.ajax({
+            url: 'index.php?route=extension/shipping/cdek_official&user_token=' + userToken,
+            type: 'POST',
+            data: {
+                cdekRequest: 'getBill',
+                uuid: $(event.currentTarget).data('uuid')
+            },
+            success: function(response) {
+                console.log(response)
+                window.open('/admin/bill2.pdf', '_blank');
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    })
 });

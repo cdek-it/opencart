@@ -223,4 +223,19 @@ class CdekApi
         $url = $this->getAuthUrl() . self::ORDERS_PATH . $uuid;
         return $this->sendRequestWithTokenRefresh($url, 'DELETE');
     }
+
+    public function getBill($uuid)
+    {
+        $url = $this->getAuthUrl() . self::WAYBILL_PATH;
+        $data = [
+            "orders" => [
+                "order_uuid" => $uuid
+            ],
+            "copy_count" => 2
+        ];
+        $requestBill = $this->sendRequestWithTokenRefresh($url, 'POST', $data);
+        sleep(5);
+        $result = $this->sendRequestWithTokenRefresh($url . $requestBill->entity->uuid, 'GET');
+        $this->httpClient->sendRequestBill($result->entity->url, 'GET', $this->getToken());
+    }
 }

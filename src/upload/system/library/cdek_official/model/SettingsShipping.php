@@ -92,8 +92,10 @@ class SettingsShipping extends AbstractSettings
 
     public function setCurrency($post)
     {
-        $currency = $post['cdek_official_shipping__currency'];
-        $this->currency->selectCurrency((int) $currency);
+        if (isset($post['cdek_official_shipping__currency'])) {
+            $currency = $post['cdek_official_shipping__currency'];
+            $this->currency->selectCurrency((int) $currency);
+        }
         $this->shippingCurrencies = $this->currency->getCurrency();
     }
 }

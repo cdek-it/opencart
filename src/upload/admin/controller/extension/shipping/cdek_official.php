@@ -16,13 +16,6 @@ class ControllerExtensionShippingCdekOfficial extends Controller
         $app->handleAjaxRequest();
         $app->run();
 
-        $authId = $app->settings->authSettings->authId;
-        $authSecret = $app->settings->authSettings->authSecret;
-        $servicePhp = file_get_contents(DIR_SYSTEM . 'library/cdek_official/service.php');
-        $servicePhp = str_replace("{{AUTH_ID}}", $authId, $servicePhp);
-        $servicePhp = str_replace("{{AUTH_SECRET}}", $authSecret, $servicePhp);
-        file_put_contents('service.php', $servicePhp);
-
         $app->checkState($app->data);
 
         $pvz = $app->cdekApi->getPvzByCityCode($app->settings->shippingSettings->shippingCityCode);
@@ -36,7 +29,11 @@ class ControllerExtensionShippingCdekOfficial extends Controller
         $app->data['footer'] = $this->load->controller('common/footer');
         $app->data['user_token'] = $userToken;
         $app->data['offices'] = $pvz;
-        $app->data['city'] = $city[0]->city;
+        if ($app->data['status_auth']) {
+            $app->data['city'] = $city[0]->city;
+        } else {
+            $app->data['city'] = 44;
+        }
         $app->data['apikey'] = $app->settings->authSettings->apiKey;
 
         $this->response->setOutput($this->load->view('extension/shipping/cdek_official', $app->data));
@@ -44,74 +41,77 @@ class ControllerExtensionShippingCdekOfficial extends Controller
 
     public function cdek_official_order_info(&$route, &$data, &$output)
     {
-        $this->log->write('event start');
-        $this->load->language('extension/shipping/cdek_official');
-        $scriptPath = DIR_APPLICATION . 'view/javascript/cdek_official/create_order.js';
-        $dataOrderForm['create_order_js'] = file_exists($scriptPath) ? file_get_contents($scriptPath) : '';
-        $dataOrderForm['user_token'] = $this->session->data['user_token'];
-        $dataOrderForm['order_id'] = $data['order_id'];
-        $dataOrderForm['products'] = $data['products'];
-        $dataOrderForm['cdek_order_create_info_name'] = $this->language->get('cdek_order_create_info_name');
-        $dataOrderForm['cdek_order_number_name'] = $this->language->get('cdek_order_number_name');
-        $dataOrderForm['cdek_order_customer_name'] = $this->language->get('cdek_order_customer_name');
-        $dataOrderForm['cdek_order_type_name'] = $this->language->get('cdek_order_type_name');
-        $dataOrderForm['cdek_order_payment_type_name'] = $this->language->get('cdek_order_payment_type_name');
-        $dataOrderForm['cdek_order_direction_name'] = $this->language->get('cdek_order_direction_name');
-        $dataOrderForm['cdek_order_get_bill_name'] = $this->language->get('cdek_order_get_bill_name');
-        $dataOrderForm['cdek_order_call_courier_name'] = $this->language->get('cdek_order_call_courier_name');
-        $dataOrderForm['cdek_order_delete_order_name'] = $this->language->get('cdek_order_delete_order_name');
-        $dataOrderForm['cdek_order_created'] = false;
-
-        $stylePath = $this->dirApplication . 'view/stylesheet/cdek_official/create_order.css';
-        $dataOrderForm['create_order_style'] = file_exists($stylePath) ? file_get_contents($stylePath) : '';
-
         $query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "cdek_order_meta` WHERE `order_id` = " . (int)$data['order_id']);
-        if ($query->num_rows) {
-            $orderMetaData = $query->row;
-            if ($orderMetaData['cdek_uuid'] !== "") {
-                $dataOrderForm['cdek_order_created'] = true;
-                $dataOrderForm['cdek_uuid'] = $orderMetaData['cdek_uuid'];
+        if (count($query->num_rows) !== 0 && $query->row['created'] === 1) {
+            $this->log->write('event start');
+            $this->load->language('extension/shipping/cdek_official');
+            $scriptPath = DIR_APPLICATION . 'view/javascript/cdek_official/create_order.js';
+            $dataOrderForm['create_order_js'] = file_exists($scriptPath) ? file_get_contents($scriptPath) : '';
+            $dataOrderForm['user_token'] = $this->session->data['user_token'];
+            $dataOrderForm['order_id'] = $data['order_id'];
+            $dataOrderForm['products'] = $data['products'];
+            $dataOrderForm['cdek_order_create_info_name'] = $this->language->get('cdek_order_create_info_name');
+            $dataOrderForm['cdek_order_number_name'] = $this->language->get('cdek_order_number_name');
+            $dataOrderForm['cdek_order_customer_name'] = $this->language->get('cdek_order_customer_name');
+            $dataOrderForm['cdek_order_type_name'] = $this->language->get('cdek_order_type_name');
+            $dataOrderForm['cdek_order_payment_type_name'] = $this->language->get('cdek_order_payment_type_name');
+            $dataOrderForm['cdek_order_direction_name'] = $this->language->get('cdek_order_direction_name');
+            $dataOrderForm['cdek_order_get_bill_name'] = $this->language->get('cdek_order_get_bill_name');
+            $dataOrderForm['cdek_order_call_courier_name'] = $this->language->get('cdek_order_call_courier_name');
+            $dataOrderForm['cdek_order_delete_order_name'] = $this->language->get('cdek_order_delete_order_name');
+            $dataOrderForm['cdek_order_created'] = false;
 
-                if (!is_numeric($orderMetaData['cdek_number'])) {
-                    $settings = new Settings();
-                    $settings->init($this->model_setting_setting->getSetting('cdek_official'));
-                    $cdekApi = new CdekApi($this->registry, $settings);
-                    $order = $cdekApi->getOrderByUuid($orderMetaData['cdek_uuid']);
-                    $param = [
-                        'cdek_number' => $order->entity->cdek_number,
-                        'cdek_uuid' => $orderMetaData['cdek_uuid'],
-                        'name' => $order->entity->recipient->name,
-                        'type' => $this->getDeliveryModeName($order->entity->delivery_mode),
-                        'payment_type' => $orderMetaData['payment_type'],
-                        'to_location' => $order->entity->to_location->city . ', ' . $order->entity->to_location->address
-                    ];
-                    $this->insertOrderMeta($param, $dataOrderForm['order_id']);
-                    $dataOrderForm = array_merge($dataOrderForm, $param);
-                } else {
-                    $dataOrderForm['cdek_number'] = $orderMetaData['cdek_number'];
-                    $dataOrderForm['name'] = $orderMetaData['name'];
-                    $dataOrderForm['type'] = $orderMetaData['type'];
-                    $dataOrderForm['payment_type'] = $orderMetaData['payment_type'];
-                    $dataOrderForm['to_location'] = $orderMetaData['to_location'];
+            $stylePath = $this->dirApplication . 'view/stylesheet/cdek_official/create_order.css';
+            $dataOrderForm['create_order_style'] = file_exists($stylePath) ? file_get_contents($stylePath) : '';
+
+
+            if ($query->num_rows) {
+                $orderMetaData = $query->row;
+                if ($orderMetaData['cdek_uuid'] !== "") {
+                    $dataOrderForm['cdek_order_created'] = true;
+                    $dataOrderForm['cdek_uuid'] = $orderMetaData['cdek_uuid'];
+
+                    if (!is_numeric($orderMetaData['cdek_number'])) {
+                        $settings = new Settings();
+                        $settings->init($this->model_setting_setting->getSetting('cdek_official'));
+                        $cdekApi = new CdekApi($this->registry, $settings);
+                        $order = $cdekApi->getOrderByUuid($orderMetaData['cdek_uuid']);
+                        $param = [
+                            'cdek_number' => $order->entity->cdek_number,
+                            'cdek_uuid' => $orderMetaData['cdek_uuid'],
+                            'name' => $order->entity->recipient->name,
+                            'type' => $this->getDeliveryModeName($order->entity->delivery_mode),
+                            'payment_type' => $orderMetaData['payment_type'],
+                            'to_location' => $order->entity->to_location->city . ', ' . $order->entity->to_location->address
+                        ];
+                        $this->insertOrderMeta($param, $dataOrderForm['order_id']);
+                        $dataOrderForm = array_merge($dataOrderForm, $param);
+                    } else {
+                        $dataOrderForm['cdek_number'] = $orderMetaData['cdek_number'];
+                        $dataOrderForm['name'] = $orderMetaData['name'];
+                        $dataOrderForm['type'] = $orderMetaData['type'];
+                        $dataOrderForm['payment_type'] = $orderMetaData['payment_type'];
+                        $dataOrderForm['to_location'] = $orderMetaData['to_location'];
+                    }
                 }
             }
-        }
 
-        $customContent = $this->load->view('extension/shipping/cdek_official_create_order', $dataOrderForm);
+            $customContent = $this->load->view('extension/shipping/cdek_official_create_order', $dataOrderForm);
 
-        $search = '<div class="panel panel-default">';
-        $replace = $search . $customContent;
+            $search = '<div class="panel panel-default">';
+            $replace = $search . $customContent;
 
-        $offset = 0;
-        $count = 0;
-        $limit = 4;
+            $offset = 0;
+            $count = 0;
+            $limit = 4;
 
-        while (($pos = strpos($output, $search, $offset)) !== false) {
-            $count++;
-            $offset = $pos + 1;
-            if ($count === $limit) {
-                $output = substr_replace($output, $replace, $pos, strlen($search));
-                break;
+            while (($pos = strpos($output, $search, $offset)) !== false) {
+                $count++;
+                $offset = $pos + 1;
+                if ($count === $limit) {
+                    $output = substr_replace($output, $replace, $pos, strlen($search));
+                    break;
+                }
             }
         }
     }
@@ -136,6 +136,7 @@ class ControllerExtensionShippingCdekOfficial extends Controller
                 `payment_type` VARCHAR(255) NOT NULL,
                 `to_location` VARCHAR(255) NOT NULL,
                 `pvz_code` VARCHAR(255) NOT NULL,
+                `created` INT(1) NOT NULL,
                 PRIMARY KEY (`id`),
                 UNIQUE KEY `order_id_unique` (`order_id`),
                 FOREIGN KEY (`order_id`) REFERENCES `" . DB_PREFIX . "order`(`order_id`)

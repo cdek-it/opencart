@@ -1,20 +1,18 @@
 <?php
 
 require_once(DIR_SYSTEM . 'library/cdek_official/model/Tariffs.php');
+require_once(DIR_SYSTEM . 'library/cdek_official/Service.php');
 
 class ControllerExtensionShippingCdekOfficial extends Controller {
 
-    public function index() {
-        if ($this->request->server['REQUEST_METHOD'] == 'POST') {
-            // Process your form submission
-            $comment = strip_tags($this->request->post['comment']);
-            $cdekPvzCode = strip_tags($this->request->post['cdek_official_pvz_code']);
-
-            // Set data in session
-            $this->session->data['comment'] = $comment;
-            $this->session->data['cdek_official_pvz_code'] = $cdekPvzCode;
+    public function index()
+    {
+        if (isset($this->request->get['cdekRequest'])) {
+            $this->load->model('setting/setting');
+            $setting = $this->model_setting_setting->getSetting('cdek_official');
+            $service = new Service($setting['cdek_official_auth_id'], $setting['cdek_official_auth_secret']);
+            $service->process($this->request->get, file_get_contents('php://input'));
         }
-
     }
 
     public function cdek_official_checkout_shipping_after(&$route, &$data, &$output)
@@ -86,7 +84,7 @@ class ControllerExtensionShippingCdekOfficial extends Controller {
 
     public function cdek_official_checkout_confirm_after()
     {
-        if (isset($this->session->data['order_id'])) {
+        if (isset($this->session->data['order_id']) && isset($this->session->data['cdek_official_pvz_code'])) {
             $cdekPvzCode = $this->session->data['cdek_official_pvz_code'];
             $this->db->query(
                 "INSERT INTO oc_cdek_order_meta SET order_id = " . $this->session->data['order_id']
