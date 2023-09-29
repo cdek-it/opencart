@@ -1,5 +1,7 @@
 <?php
 $_['heading_title']     = 'Метод доставки CDEK';
+$_['text_home']     = 'Главная';
+$_['text_extension']     = 'Расширения';
 $_['cdek_success']      = 'Успешно: Вы изменили настройки доставки CDEK!';
 $_['cdek_auth']         = 'Авторизация';
 $_['cdek_auth_id']      = 'ID';
