@@ -25,7 +25,7 @@ class ControllerExtensionShippingCdekOfficial extends Controller {
                 $separate = explode('_', $key);
                 $tariffCode = end($separate);
                 $tariffModel = new Tariffs();
-                if ($tariffModel->getDirectionByCode((int)$tariffCode) === 'store') {
+                if ($tariffModel->getDirectionByCode((int)$tariffCode) === 'store' || $tariffModel->getDirectionByCode((int)$tariffCode) === 'postamat') {
                     $code[] = $quote['code'];
                     $mapLayout[$quote['code']] = $quote['extra'];
                     unset($data['shipping_methods']['cdek_official']['quote'][$key]['extra']);
@@ -70,7 +70,7 @@ class ControllerExtensionShippingCdekOfficial extends Controller {
             $shippingMethodTariffExplode = explode('_', $shippingMethodTariff);
             $tariffCode = end($shippingMethodTariffExplode);
             $tariffModel = new Tariffs();
-            if ($tariffModel->getDirectionByCode((int)$tariffCode) === 'store') {
+            if ($tariffModel->getDirectionByCode((int)$tariffCode) === 'store' || $tariffModel->getDirectionByCode((int)$tariffCode) === 'postamat') {
                 if (isset($this->request->post['cdek_official_pvz_code']) && !empty($this->request->post['cdek_official_pvz_code'])) {
                     $this->session->data['cdek_official_pvz_code'] = $this->request->post['cdek_official_pvz_code'];
                 } else {

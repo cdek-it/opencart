@@ -30,6 +30,20 @@ class Tariffs
             'to' => 'door',
             'code' => 139,
             'enable' => false
+        ],
+        [
+            'key' => 'cdek_shipping__tariff_name_366',
+            'from' => 'door',
+            'to' => 'postamat',
+            'code' => 366,
+            'enable' => false
+        ],
+        [
+            'key' => 'cdek_shipping__tariff_name_368',
+            'from' => 'store',
+            'to' => 'postamat',
+            'code' => 368,
+            'enable' => false
         ]
     ];
 

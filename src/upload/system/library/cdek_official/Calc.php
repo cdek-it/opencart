@@ -85,7 +85,7 @@ class Calc
                 ];
 
                 $tariffModel = new Tariffs();
-                if ($tariffModel->getDirectionByCode($tariff['code']) === 'store') {
+                if ($tariffModel->getDirectionByCode($tariff['code']) === 'store' || $tariffModel->getDirectionByCode($tariff['code']) === 'postamat') {
                     $quoteData['cdek_official_' . $tariff['code']]['extra'] = $this->registry->get('load')->view('extension/shipping/cdek_official_map', [
                         'tariff' => $tariff,
                         'apikey' => $this->settings->authSettings->apiKey,
