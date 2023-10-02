@@ -16,6 +16,12 @@ $(document).ready(function() {
                 dimensions: data,
                 order_id: orderId
             },
+            beforeSend: function() {
+                $('#cdek-loader').show();
+            },
+            complete: function() {
+                $('#cdek-loader').hide();
+            },
             success: function(response) {
                 console.log(response)
                 let resp = JSON.parse(response);
@@ -70,24 +76,10 @@ $(document).ready(function() {
 
     $('#cdek_get_bill_btn').click(function (event) {
         event.preventDefault();
-        $.ajax({
-            url: 'index.php?route=extension/shipping/cdek_official&user_token=' + userToken,
-            type: 'POST',
-            data: {
-                cdekRequest: 'getBill',
-                uuid: $(event.currentTarget).data('uuid')
-            },
-            success: function(response) {
-                console.log(response.link)
-                var link = document.createElement('a');
-                link.href = response;
-                link.target = '_blank';
-                link.download = 'your_filename.pdf';
-                link.click();
-            },
-            error: function(error) {
-                console.log(error);
-            }
-        });
+
+        var link = document.createElement('a');
+        link.target = '_blank';
+        link.href = 'index.php?route=extension/shipping/cdek_official&user_token=' + userToken +'&cdekRequest=getBill&&uuid=' + $(event.currentTarget).data('uuid');
+        link.click();
     })
 });

@@ -113,11 +113,11 @@ class ControllerExtensionShippingCdekOfficial extends Controller
         $data['user_token'] = $this->session->data['user_token'];
         $customContent = $this->load->view('extension/shipping/cdek_official_create_order', $data);
         $search = '<div class="panel panel-default">';
-        $replace = $search . $customContent;
+        $replace = $customContent . $search;
 
         $offset = 0;
         $count = 0;
-        $limit = 4;
+        $limit = 5;
 
         while (($pos = strpos($output, $search, $offset)) !== false) {
             $count++;

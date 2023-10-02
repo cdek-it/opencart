@@ -50,12 +50,17 @@ class CreateOrder
     private function validateCreateOrderRequest($dimensions, $orderId)
     {
         $validate = ['state' => true];
-        if (empty($dimensions['length'])) {
-            $validate = ['state' => false, 'message' => $this->registry->get('language')->get('cdek_error_dimensions_length_empty')];
-        } elseif (empty($dimensions['width'])) {
-            $validate = ['state' => false, 'message' => $this->registry->get('language')->get('cdek_error_dimensions_width_empty')];
-        } elseif (empty($dimensions['height'])) {
-            $validate = ['state' => false, 'message' => $this->registry->get('language')->get('cdek_error_dimensions_height_empty')];
+
+        $length = intval($dimensions['length']);
+        $width = intval($dimensions['width']);
+        $height = intval($dimensions['height']);
+
+        if ($length < 0 || !is_numeric($dimensions['length']) || $dimensions['length'] === '0') {
+            $validate = ['state' => false, 'message' => $this->registry->get('language')->get('cdek_error_dimensions_length_invalid')];
+        } elseif ($width < 0 || !is_numeric($dimensions['width']) || $dimensions['width'] === '0') {
+            $validate = ['state' => false, 'message' => $this->registry->get('language')->get('cdek_error_dimensions_width_invalid')];
+        } elseif ($height < 0 || !is_numeric($dimensions['height']) || $dimensions['height'] === '0') {
+            $validate = ['state' => false, 'message' => $this->registry->get('language')->get('cdek_error_dimensions_height_invalid')];
         } elseif (empty($orderId)) {
             $validate = ['state' => false, 'message' => $this->registry->get('language')->get('cdek_error_dimensions_order_id_empty')];
         }

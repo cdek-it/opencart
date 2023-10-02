@@ -77,7 +77,8 @@ $_['cdek_price__extra_price'] = 'Extra price';
 $_['cdek_price__insurance'] = 'insurance';
 $_['cdek_price__percentage_increase'] = 'Percent increase';
 $_['cdek_price__fix'] = 'Fix price';
-$_['cdek_price__free'] = 'Free shipping';
+$_['cdek_price__free'] = 'Free shipping from';
+$_['cdek_official_price__free_desc'] = 'Free shipping from the amount of the order';
 $_['error_permission']      = 'Error: ';
 $_['cdek_error_auth_unconnected']    = 'Authorization failed. Check integration keys.';
 $_['cdek_error_auth_id_empty']    = 'Auth id empty';
@@ -121,6 +122,7 @@ $_['cdek_error_dimensions_height_invalid'] = 'Height must be a numeric value';
 $_['cdek_error_dimensions_weight_invalid'] = 'Weight must be a numeric value';
 $_['cdek_error_dimensions_use_default_invalid'] = 'Use Default must be a numeric value';
 $_['cdek_error_cdek_number_empty'] = 'Cdek number will be available later';
+$_['cdek_dimensions__desc'] = 'The fields are intended for entering values of overall dimensions of one unit of goods. If the dimensions of the product are not specified, the values will be automatically substituted from the following fields. This allows you to avoid errors when calculating the delivery cost.';
 
 
 

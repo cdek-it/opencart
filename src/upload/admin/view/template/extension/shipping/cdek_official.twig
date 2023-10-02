@@ -426,6 +426,9 @@
                         <div id="cdek-map" style="width:800px;height:600px"></div>
                         <fieldset>
                             <legend>{{ cdek_dimensions }}</legend>
+                            <div class="alert alert-info">
+                                {{ cdek_dimensions__desc }}
+                            </div>
                             <div class="form-group required">
                                 <div class="col-sm-10">
                                     <div class="row" style="padding-bottom: 10px">
@@ -512,11 +515,12 @@
                                     <div class="row" style="padding-bottom: 10px">
                                         <label class="col-sm-2 control-label"
                                                for="cdek_official_price__free">{{ cdek_price__free }}</label>
-                                        <div class="col-sm-2">
+                                        <div class="col-sm-3">
                                             <input type="number" name="cdek_official_price__free"
                                                    id="cdek_official_price__free"
                                                    value="{{ cdek_official_price__free }}"
                                                    class="form-control" placeholder="{{ cdek_price__free }}"/>
+                                            <p>{{ cdek_official_price__free_desc }}</p>
                                         </div>
 {#                                        <div class="col-sm-6"></div>#}
 {#                                        <div class="col-sm-2 pull-right" style="display: flex; padding-top: 9px;">#}

@@ -8,4 +8,4 @@ $_['cdek_shipping__tariff_name_138'] = 'Door-to-warehouse parcel';
 $_['cdek_shipping__tariff_name_139'] = 'Door-to-door parcel';
 $_['cdek_shipping__tariff_name_366'] = 'Door-to-postamat parcel';
 $_['cdek_shipping__tariff_name_368'] = 'Warehouse-to-postamat parcel';
-$_['cdek_pvz_not_found'] = 'Pvz not found, select pvz on the map';
+$_['cdek_pvz_not_found'] = 'Office not found, select office on the map';

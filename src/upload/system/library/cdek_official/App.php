@@ -91,7 +91,7 @@ class App
         }
 
         $modelSettings = $this->modelSetting->getSetting('cdek_official');
-        if (!empty($modelSettings)) {
+        if (!empty($modelSettings) && $modelSettings['cdek_official_auth_secret'] !== "" && $modelSettings['cdek_official_auth_id'] !== "") {
             $this->settings->init($this->modelSetting->getSetting('cdek_official'));
             $this->settings->updateData($this->data);
             $this->data['map_pvz'] = $this->cdekApi->getPvzByCityCode($this->settings->shippingSettings->shippingCityCode ?? 44);
@@ -124,15 +124,19 @@ class App
 
     public function handleAjaxRequest()
     {
-        if (isset($this->request->post['cdekRequest'])) {
+        if (!isset($this->request->post['cdekRequest']) && !isset($this->request->get['cdekRequest'])) {
+            return;
+        }
+            $requestAction = $this->request->post['cdekRequest'] ?? $this->request->get['cdekRequest'];
+
             $this->settings->init($this->modelSetting->getSetting('cdek_official'));
 
-            if ($this->request->post['cdekRequest'] === 'map') {
+            if ($requestAction === 'map') {
                 $service = new Service($this->settings->authSettings->authId, $this->settings->authSettings->authSecret);
                 $service->process($this->request->get, file_get_contents('php://input'));
             }
 
-            if ($this->request->post['cdekRequest'] === 'getCity') {
+            if ($requestAction === 'getCity') {
                 if ($this->request->post['key'] === '') {
                     exit;
                 }
@@ -141,7 +145,7 @@ class App
                 exit;
             }
 
-            if ($this->request->post['cdekRequest'] === 'getPvz') {
+            if ($requestAction === 'getPvz') {
                 if ($this->request->post['key'] === '') {
                     exit;
                 }
@@ -150,12 +154,12 @@ class App
                 exit;
             }
 
-            if ($this->request->post['cdekRequest'] === 'createOrder') {
+            if ($requestAction === 'createOrder') {
                 $createOrder = new CreateOrder($this->registry, $this->settings, $this->cdekApi);
                 $createOrder->create();
             }
 
-            if ($this->request->post['cdekRequest'] === 'deleteOrder') {
+            if ($requestAction === 'deleteOrder') {
                 $response = $this->cdekApi->deleteOrder($this->request->post['uuid']);
                 if (CdekApiValidate::deleteOrder($response)) {
                     CdekOrderMetaRepository::deleteOrder($this->db, (int)$this->request->post['order_id']);
@@ -166,10 +170,10 @@ class App
                 exit;
             }
 
-            if ($this->request->post['cdekRequest'] === 'getBill') {
-                $this->cdekApi->getBill($this->request->post['uuid']);
+            if ($requestAction === 'getBill') {
+                $this->cdekApi->getBill($this->request->get['uuid']);
             }
-        }
+
     }
 
     public function checkState(&$data)

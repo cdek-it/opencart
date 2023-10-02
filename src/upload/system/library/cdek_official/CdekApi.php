@@ -196,11 +196,8 @@ class CdekApi
         sleep(5);
         $result = $this->sendRequest($url . '/' . $requestBill->entity->uuid, 'GET');
         CdekLog::sendLog('Result: ' . json_encode($result));
-        $pdf = $this->httpClient->sendRequestBill($result->entity->url, $this->getToken());
-        $tempFile = tmpfile();
-        $tempFilePath = stream_get_meta_data($tempFile)['uri'];
-        file_put_contents($tempFilePath, $pdf);
-        echo $tempFilePath;
+        header('Content-type', 'application/pdf');
+        echo $this->httpClient->sendRequestBill($result->entity->url, $this->getToken());
         exit();
     }
 }
