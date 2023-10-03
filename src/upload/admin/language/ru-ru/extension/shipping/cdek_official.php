@@ -51,6 +51,7 @@ $_['cdek_order_customer_name'] = 'Имя';
 $_['cdek_order_type_name'] = 'Тип';
 $_['cdek_order_payment_type_name'] = 'Способ оплаты';
 $_['cdek_order_direction_name'] = 'Направление';
+$_['cdek_order_pvz_code'] = 'Код ПВЗ';
 $_['cdek_order_get_bill_name'] = 'Получить накладную';
 $_['cdek_order_call_courier_name'] = 'Вызвать курьера';
 $_['cdek_order_delete_order_name'] = 'Удалить заказ';

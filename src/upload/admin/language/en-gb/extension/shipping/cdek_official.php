@@ -49,6 +49,7 @@ $_['cdek_order_customer_name'] = 'Name';
 $_['cdek_order_type_name'] = 'Type';
 $_['cdek_order_payment_type_name'] = 'Payment type';
 $_['cdek_order_direction_name'] = 'Direction';
+$_['cdek_order_pvz_code'] = 'Office code';
 $_['cdek_order_get_bill_name'] = 'Get the delivery note';
 $_['cdek_order_call_courier_name'] = 'Call a courier';
 $_['cdek_order_delete_order_name'] = 'Delete order';

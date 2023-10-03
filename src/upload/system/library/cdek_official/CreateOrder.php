@@ -26,6 +26,7 @@ class CreateOrder
         $order = new Order($this->settings, $orderData, $dimensions);
         $response = $this->cdekApi->createOrder($order);
         CdekLog::sendLog("Order created: " . json_encode($response));
+        //TODO 16 Если валидацию не проходит вернуть код ошибки
         if (CdekApiValidate::createApiValidate($response)) {
             sleep(5); //Ожидание формирования заказа
             $order = $this->cdekApi->getOrderByUuid($response->entity->uuid);
@@ -35,7 +36,8 @@ class CreateOrder
                 'name' => $order->entity->recipient->name,
                 'type' => isset($order->entity->delivery_mode) ? $this->getDeliveryModeName((int)$order->entity->delivery_mode) : null,
                 'payment_type' => $this->getPaymentTypeName($orderData['orderOC']['payment_code']),
-                'to_location' => $order->entity->to_location->city ?? '' . ', ' . $order->entity->to_location->address
+                'to_location' => $order->entity->to_location->city ?? '' . ', ' . $order->entity->to_location->address,
+                'pvz_code' => $order->entity->delivery_point ?? ''
             ];
             CdekOrderMetaRepository::insertOrderMeta($this->registry->get('db'), $data, $orderId);
             CdekLog::sendLog("Order validated");

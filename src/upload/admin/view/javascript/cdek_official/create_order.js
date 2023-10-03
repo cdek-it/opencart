@@ -37,6 +37,10 @@ $(document).ready(function() {
                 $('#cdek_order_type_name').text(resp.data.type);
                 $('#cdek_order_payment_type_name').text(resp.data.payment_type);
                 $('#cdek_order_direction_name').text(resp.data.to_location);
+                if (resp.data.pvz_code !== "") {
+                    $('#cdek_order_pvz_code').text(resp.data.pvz_code);
+                    $('#cdek_order_pvz_code_tr').show();
+                }
                 $('#cdek_delete_order_btn').attr('data-uuid', resp.data.cdek_uuid);
                 $('#cdek_get_bill_btn').attr('data-uuid', resp.data.cdek_uuid);
                 $('#cdek_order_create_form').hide();

@@ -1,5 +1,7 @@
 <?php
 
+require_once(DIR_SYSTEM . 'library/cdek_official/CdekApi.php');
+
 class Service extends Controller
 {
     /**

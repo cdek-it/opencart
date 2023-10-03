@@ -49,6 +49,10 @@
                 <td class="text-left">{{ cdek_order_direction_name }}</td>
                 <td id="cdek_order_direction_name" class="text-left">{% if cdek_order_created %} {{ to_location }} {% endif %}</td>
             </tr>
+            <tr id="cdek_order_pvz_code_tr" {% if pvz_code is empty %} style="display: none" {% endif %}>
+                <td class="text-left">{{ cdek_order_pvz_code }}</td>
+                <td id="cdek_order_pvz_code" class="text-left">{% if cdek_order_created %} {{ pvz_code }} {% endif %}</td>
+            </tr>
             </tbody>
         </table>
         <fieldset>

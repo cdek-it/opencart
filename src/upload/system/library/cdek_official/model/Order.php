@@ -30,6 +30,7 @@ class Order
     public function getRequestData()
     {
         $order = $this->getOrderData();
+        //TODO 18 Получить настройки и добавить данные отправителя
         $data = [
             "packages" => [
                 [
@@ -47,6 +48,14 @@ class Order
                 "phones" => [
                     [
                         "number" => $this->orderOC['telephone']
+                    ]
+                ]
+            ],
+            "sender" => [
+                "name" => $this->settings->sellerSettings->shippingSellerName,
+                "phones" => [
+                    [
+                        "number" => $this->settings->sellerSettings->shippingSellerPhone
                     ]
                 ]
             ],

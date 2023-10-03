@@ -2,16 +2,22 @@
 
 require_once(DIR_SYSTEM . 'library/cdek_official/model/Tariffs.php');
 require_once(DIR_SYSTEM . 'library/cdek_official/Service.php');
+require_once(DIR_SYSTEM . 'library/cdek_official/Settings.php');
 require_once(DIR_SYSTEM . 'library/cdek_official/CdekOrderMetaRepository.php');
 
-class ControllerExtensionShippingCdekOfficial extends Controller {
+class ControllerExtensionShippingCdekOfficial extends Controller
+{
 
     public function index()
     {
         if (isset($this->request->get['cdekRequest'])) {
             $this->load->model('setting/setting');
-            $setting = $this->model_setting_setting->getSetting('cdek_official');
-            $service = new Service($setting['cdek_official_auth_id'], $setting['cdek_official_auth_secret']);
+            $param = $this->model_setting_setting->getSetting('cdek_official');
+            $settings = new Settings();
+            $settings->init($param);
+            $cdekApi = new CdekApi($this->registry, $settings);
+            $authData = $cdekApi->getData();
+            $service = new Service($authData['client_id'], $authData['client_secret'], $authData['base_url']);
             $service->process($this->request->get, file_get_contents('php://input'));
         }
     }
@@ -20,7 +26,7 @@ class ControllerExtensionShippingCdekOfficial extends Controller {
     {
         $code = [];
         $mapLayout = [];
-        if (array_key_exists( 'cdek_official' ,$data['shipping_methods'])) {
+        if (array_key_exists('cdek_official', $data['shipping_methods'])) {
             foreach ($data['shipping_methods']['cdek_official']['quote'] as $key => $quote) {
                 $separate = explode('_', $key);
                 $tariffCode = end($separate);
@@ -35,13 +41,16 @@ class ControllerExtensionShippingCdekOfficial extends Controller {
 
         if (!empty($code)) {
             $cdekBlock = '<p><strong>CDEK Official Shipping</strong></p>';
-            $pvzCode = '<input type="hidden" id="cdek_official_pvz_code" name="cdek_official_pvz_code" value="">';
+            $pvzCode = '
+                <input class="cdek_official_pvz_code_address" id="cdek_official_pvz_code_address" name="cdek_official_pvz_code_address" value="" style="display: none; width: 250px;">
+                <input type="hidden" id="cdek_official_pvz_code" name="cdek_official_pvz_code" value="">
+            ';
             $this->searchAndReplace($output, $cdekBlock, $pvzCode);
             foreach ($code as $quoteCode) {
                 $cdekQuoteLayoutMap = $mapLayout[$quoteCode];
                 $cdekQuoteBlockPattern = '/<div class="radio">.*?value="' . preg_quote($quoteCode, '/') . '".*?<\/label>/s';
 
-                $output = preg_replace_callback($cdekQuoteBlockPattern, function($matches) use ($cdekQuoteLayoutMap) {
+                $output = preg_replace_callback($cdekQuoteBlockPattern, function ($matches) use ($cdekQuoteLayoutMap) {
                     return substr($matches[0], 0, -8) . $cdekQuoteLayoutMap . "</label>";
                 }, $output);
             }

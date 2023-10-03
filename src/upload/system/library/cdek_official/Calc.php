@@ -73,6 +73,8 @@ class Calc
                 ];
                 $result = $this->cdekApi->calculate($data);
 
+                //TODO 22 Добавить валидацию ответа от калькулятора. если нет расчета не добавлять тариф
+
                 $title = $this->registry->get('language')->get('cdek_shipping__tariff_name_' . $tariff['code']) . $this->getPeriod($result);
                 $total = $this->getTotalSum($result);
 
@@ -121,6 +123,7 @@ class Calc
 
     private function getDimensions($product)
     {
+        //TODO 21 Этой настройки нет, нужно смотреть габариты товара и если их нет то заменять с настроек
         if ($this->settings->dimensionsSettings->dimensionsUseDefault === 'on') {
             $dimensions = [
                 "height" => (int)$this->settings->dimensionsSettings->dimensionsHeight,

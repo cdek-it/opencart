@@ -152,19 +152,21 @@ class CdekApi
         return self::API_URL;
     }
 
-    private function getData(): array
+    public function getData(): array
     {
         if ($this->testModeActive()) {
             $data = [
                 'grant_type' => 'client_credentials',
                 'client_id' => 'EMscd6r9JnFiQ3bLoyjJY6eM78JrJceI',
-                'client_secret' => 'PjLZkKBHEiLK3YsjtNrt3TGNG0ahs3kG'
+                'client_secret' => 'PjLZkKBHEiLK3YsjtNrt3TGNG0ahs3kG',
+                'base_url' => substr(self::API_TEST_URL, 0, -1)
             ];
         } else {
             $data = [
                 'grant_type' => 'client_credentials',
                 'client_id' => $this->settings->authSettings->authId,
-                'client_secret' => $this->settings->authSettings->authSecret
+                'client_secret' => $this->settings->authSettings->authSecret,
+                'base_url' => substr(self::API_URL, 0, -1)
             ];
         }
         return $data;

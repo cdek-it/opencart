@@ -23,6 +23,7 @@ class SettingsPrice extends AbstractSettings
      */
     public function validate()
     {
+        //TODO 20 Добавить валидацию для модификаций, обработать десятичные
         if (!is_numeric($this->priceExtraPrice) && $this->priceExtraPrice !== '') {
             throw new Exception('cdek_error_price_extra_price_invalid');
         }

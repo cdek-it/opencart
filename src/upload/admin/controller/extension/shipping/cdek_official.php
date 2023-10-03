@@ -18,6 +18,7 @@ class ControllerExtensionShippingCdekOfficial extends Controller
         $app->run();
 
         $app->checkState($app->data);
+        //TODO 19 Получить код выбраного языка передать в карту
         $userToken = $this->session->data['user_token'];
         $app->data['action'] = $this->url->link('extension/shipping/cdek_official', 'user_token=' . $userToken);
         $app->data['cancel'] = $this->url->link('extension/shipping', 'user_token=' . $userToken);
@@ -52,13 +53,15 @@ class ControllerExtensionShippingCdekOfficial extends Controller
                     $settings->init($this->model_setting_setting->getSetting('cdek_official'));
                     $cdekApi = new CdekApi($this->registry, $settings);
                     $order = $cdekApi->getOrderByUuid($orderMetaData['cdek_uuid']);
+                    //TODO 15 Если в таблице есть pvz_code вывести в поле
                     $param = [
                         'cdek_number' => $order->entity->cdek_number,
                         'cdek_uuid' => $orderMetaData['cdek_uuid'],
                         'name' => $order->entity->recipient->name,
                         'type' => $this->getDeliveryModeName($order->entity->delivery_mode),
                         'payment_type' => $orderMetaData['payment_type'],
-                        'to_location' => $order->entity->to_location->city . ', ' . $order->entity->to_location->address
+                        'to_location' => $order->entity->to_location->city . ', ' . $order->entity->to_location->address,
+                        'pvz_code' => $order->entity->shipment_point ?? ''
                     ];
                     CdekOrderMetaRepository::insertOrderMeta($this->db, $param, $dataOrderForm['order_id']);
                     $dataOrderForm = array_merge($dataOrderForm, $param);
@@ -69,6 +72,7 @@ class ControllerExtensionShippingCdekOfficial extends Controller
                     $dataOrderForm['type'] = $orderMetaData['type'];
                     $dataOrderForm['payment_type'] = $orderMetaData['payment_type'];
                     $dataOrderForm['to_location'] = $orderMetaData['to_location'];
+                    $dataOrderForm['pvz_code'] = $orderMetaData['pvz_code'] ?? '';
                 }
             }
             $this->displayCreateOrderForm($output, $dataOrderForm);
