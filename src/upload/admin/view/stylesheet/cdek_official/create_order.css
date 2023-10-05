@@ -6,6 +6,14 @@
     padding-left: 15px;
 }
 
+.cdek-success {
+    color: #5cc05b;
+    font-weight: bold;
+    display: none;
+    padding-top: 10px;
+    padding-left: 15px;
+}
+
 /*#cdek_order_created {*/
 /*    display: none;*/
 /*}*/

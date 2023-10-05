@@ -30,7 +30,6 @@ class Order
     public function getRequestData()
     {
         $order = $this->getOrderData();
-        //TODO 18 Получить настройки и добавить данные отправителя
         $data = [
             "packages" => [
                 [

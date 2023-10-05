@@ -14,41 +14,6 @@ class Settings
     public SettingsDimensions $dimensionsSettings;
     public SettingsPrice $priceSettings;
 
-    const settingsId = [
-        'cdek_official_auth_id',
-        'cdek_official_auth_secret',
-        'cdek_official_auth__test_mode',
-        'cdek_official_shipping_seller_name',
-        'cdek_official_shipping_seller_phone',
-        'cdek_official_seller_international_shipping_checkbox',
-        'cdek_official_seller__true_seller_address',
-        'cdek_official_seller__shipper',
-        'cdek_official_seller__shipper_address',
-        'cdek_official_seller__passport_series',
-        'cdek_official_seller__passport_number',
-        'cdek_official_seller__passport_issue_date',
-        'cdek_official_seller__passport_issuing_authority',
-        'cdek_official_seller__tin',
-        'cdek_official_seller__date_of_birth',
-        'cdek_official_shipping__tariff_name',
-        'cdek_official_shipping__tariff_plug',
-        'cdek_official_shipping__many_packages',
-        'cdek_official_shipping__extra_days',
-        'cdek_official_shipping__city',
-        'cdek_official_shipping__city_address',
-        'cdek_official_shipping__pvz',
-        'cdek_official_dimensions__length',
-        'cdek_official_dimensions__width',
-        'cdek_official_dimensions__height',
-        'cdek_official_dimensions__weight',
-        'cdek_official_dimensions__use_default',
-        'cdek_official_price__extra_price',
-        'cdek_official_price__percentage_increase',
-        'cdek_official_price__fix',
-        'cdek_official_price__free',
-        'cdek_official_price__insurance',
-    ];
-
     public function __construct()
     {
         $this->authSettings = new SettingsAuth();

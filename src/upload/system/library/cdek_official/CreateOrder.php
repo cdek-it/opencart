@@ -44,7 +44,20 @@ class CreateOrder
             echo json_encode(['state' => true, 'data' => $data]);
         } else {
             CdekLog::sendLog("Order not validated");
-            echo json_encode(['state' => false, 'message' => 'Order wrong']);
+            $message = $response->requests[0]->errors[0]->message;
+
+            if (strpos($response->requests[0]->errors[0]->message, 'length')) {
+                $message = $this->registry->get('language')->get('cdek_error_dimensions_length_package_invalid');
+            }
+            if (strpos($response->requests[0]->errors[0]->message, 'width')) {
+                $message = $this->registry->get('language')->get('cdek_error_dimensions_width_package_invalid');
+            }
+            if (strpos($response->requests[0]->errors[0]->message, 'height')) {
+                $message = $this->registry->get('language')->get('cdek_error_dimensions_height_package_invalid');
+            }
+
+
+            echo json_encode(['state' => false, 'message' => $message]);
         }
         exit;
     }

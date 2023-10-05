@@ -3,6 +3,8 @@ $(document).ready(function() {
         event.preventDefault();
         console.log('default')
         console.log(orderId)
+        $('#cdek_order_create_success').hide();
+        $('#cdek_order_create_error').hide();
         let data = {
             length: $('#cdek_order_length').val(),
             width: $('#cdek_order_width').val(),
@@ -23,6 +25,7 @@ $(document).ready(function() {
                 $('#cdek-loader').hide();
             },
             success: function(response) {
+                //cdek_order_create_success
                 console.log(response)
                 let resp = JSON.parse(response);
                 if (resp.state === false) {
@@ -66,8 +69,10 @@ $(document).ready(function() {
             success: function(response) {
                 console.log(response)
                 let resp = JSON.parse(response);
+                $('#cdek_order_create_form').show()
+                $('#cdek_order_created').hide()
                 if (resp.state) {
-                    location.reload();
+                    $('#cdek_order_create_success').text(resp.message).show()
                 } else {
                     $('#cdek_order_create_error').text(resp.message).show()
                 }

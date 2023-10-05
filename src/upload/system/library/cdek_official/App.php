@@ -162,12 +162,20 @@ class App
 
             if ($requestAction === 'deleteOrder') {
                 $response = $this->cdekApi->deleteOrder($this->request->post['uuid']);
+                CdekOrderMetaRepository::deleteOrder($this->db, (int)$this->request->post['order_id']);
                 if (CdekApiValidate::deleteOrder($response)) {
-                    CdekOrderMetaRepository::deleteOrder($this->db, (int)$this->request->post['order_id']);
-                    echo json_encode(['state' => true, 'message' => '']);
+                    $message = 'Order successfully deleted';
+                    $state = true;
                 } else {
-                    echo json_encode(['state' => false, 'message' => 'The order could not be deleted']);
+                    $state = false;
+                    if ($response->requests[0]->errors[0]->code === 'v2_entity_invalid') {
+                        $orderResponse = $this->cdekApi->getOrderByUuid($this->request->post['uuid']);
+                        $message = $orderResponse->requests[0]->errors[0]->message;
+                    } else {
+                        $message = 'An error occurred during deletion. The order was marked as deleted. Error code: ' . $response->requests[0]->errors[0]->code . '. Contact the technical support of the module';
+                    }
                 }
+                echo json_encode(['state' => $state, 'message' => $message]);
                 exit;
             }
 

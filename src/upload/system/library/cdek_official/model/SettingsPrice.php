@@ -23,20 +23,19 @@ class SettingsPrice extends AbstractSettings
      */
     public function validate()
     {
-        //TODO 20 Добавить валидацию для модификаций, обработать десятичные
-        if (!is_numeric($this->priceExtraPrice) && $this->priceExtraPrice !== '') {
+        if ((float)$this->priceExtraPrice < 0) {
             throw new Exception('cdek_error_price_extra_price_invalid');
         }
 
-        if (!is_numeric($this->pricePercentageIncrease) && $this->pricePercentageIncrease !== '') {
+        if ((float)$this->pricePercentageIncrease < 0) {
             throw new Exception('cdek_error_price_percentage_increase_invalid');
         }
 
-        if (!is_numeric($this->priceFix) && $this->priceFix !== '') {
+        if ((float)$this->priceFix < 0) {
             throw new Exception('cdek_error_price_fix_invalid');
         }
 
-        if (!is_numeric($this->priceFree) && $this->priceFree !== '') {
+        if ((float)$this->priceFree < 0) {
             throw new Exception('cdek_error_price_free_invalid');
         }
     }

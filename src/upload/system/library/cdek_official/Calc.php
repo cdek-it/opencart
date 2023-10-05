@@ -28,14 +28,17 @@ class Calc
     public function getMethodData()
     {
         $quoteData = $this->getQuote();
+        $methodData = [];
 
-        $methodData = array(
-            'code' => 'cdek_official',
-            'title' => $this->registry->get('language')->get('text_title'),
-            'quote' => $quoteData,
-            'sort_order' => $this->registry->get('config')->get('shipping_cdek_official_sort_order'),
-            'error' => false
-        );
+        if (!empty($quoteData)) {
+            $methodData = array(
+                'code' => 'cdek_official',
+                'title' => $this->registry->get('language')->get('text_title'),
+                'quote' => $quoteData,
+                'sort_order' => $this->registry->get('config')->get('shipping_cdek_official_sort_order'),
+                'error' => false
+            );
+        }
 
         return $methodData;
     }
@@ -47,6 +50,9 @@ class Calc
         $quoteData = [];
         $this->registry->get('currency');
         $recipientLocation = $this->cdekApi->getCityByParam($this->address['city'], $this->address['postcode']);
+        if (empty($recipientLocation)) {
+            return [];
+        }
 //        if (empty($recipientLocation)) {
 //            $tariffPlugName = $this->getTariffPlugName();
 //            $quoteData['cdek_official_tariff_plug'] = [
@@ -73,7 +79,9 @@ class Calc
                 ];
                 $result = $this->cdekApi->calculate($data);
 
-                //TODO 22 Добавить валидацию ответа от калькулятора. если нет расчета не добавлять тариф
+                if (isset($result->errors)) {
+                    continue;
+                }
 
                 $title = $this->registry->get('language')->get('cdek_shipping__tariff_name_' . $tariff['code']) . $this->getPeriod($result);
                 $total = $this->getTotalSum($result);
@@ -123,22 +131,29 @@ class Calc
 
     private function getDimensions($product)
     {
-        //TODO 21 Этой настройки нет, нужно смотреть габариты товара и если их нет то заменять с настроек
-        if ($this->settings->dimensionsSettings->dimensionsUseDefault === 'on') {
-            $dimensions = [
-                "height" => (int)$this->settings->dimensionsSettings->dimensionsHeight,
-                "length" => (int)$this->settings->dimensionsSettings->dimensionsLength,
-                "width" => (int)$this->settings->dimensionsSettings->dimensionsWidth,
-                "weight" => (int)$this->settings->dimensionsSettings->dimensionsWeight
-            ];
-        } else {
-            $dimensions = [
-                "height" => (int)$product['height'],
-                "length" => (int)$product['length'],
-                "weight" => ($this->weight->convert((int)$product['weight'], $product['weight_class_id'], '2')) / (int)$product['quantity'],
-                "width" => (int)$product['width']
-            ];
+        $dimensions = [
+            "height" => (int)$product['height'],
+            "length" => (int)$product['length'],
+            "weight" => (int)($this->weight->convert((int)$product['weight'], $product['weight_class_id'], '2')) / (int)$product['quantity'],
+            "width" => (int)$product['width']
+        ];
+
+        if ($dimensions["height"] === 0) {
+            $dimensions["height"] = (int)$this->settings->dimensionsSettings->dimensionsHeight;
         }
+
+        if ($dimensions["width"] === 0) {
+            $dimensions["width"] = (int)$this->settings->dimensionsSettings->dimensionsWidth;
+        }
+
+        if ($dimensions["length"] === 0) {
+            $dimensions["length"] = (int)$this->settings->dimensionsSettings->dimensionsLength;
+        }
+
+        if ($dimensions["weight"] === 0) {
+            $dimensions["weight"] = (int)$this->settings->dimensionsSettings->dimensionsWeight;
+        }
+
         return $dimensions;
     }
 
@@ -159,21 +174,21 @@ class Calc
     {
         $total = $result->total_sum;
 
-        if ($this->settings->priceSettings->priceExtraPrice !== '') {
+        if ($this->settings->priceSettings->priceExtraPrice !== '' && $this->settings->priceSettings->priceExtraPrice >= 0) {
             $total = $total + $this->settings->priceSettings->priceExtraPrice;
         }
 
-        if ($this->settings->priceSettings->pricePercentageIncrease !== '') {
-            $added = $total/100*(int)$this->settings->priceSettings->pricePercentageIncrease;
+        if ($this->settings->priceSettings->pricePercentageIncrease !== '' && $this->settings->priceSettings->pricePercentageIncrease > 0) {
+            $added = $total/100*$this->settings->priceSettings->pricePercentageIncrease;
             $total = $total + $added;
             $total = round($total);
         }
 
-        if ($this->settings->priceSettings->priceFix !== '') {
+        if ($this->settings->priceSettings->priceFix !== '' && $this->settings->priceSettings->priceFix >= 0) {
             $total = (int)$this->settings->priceSettings->priceFix;
         }
 
-        if ($this->settings->priceSettings->priceFree !== '') {
+        if ($this->settings->priceSettings->priceFree !== '' && $this->settings->priceSettings->priceFree >= 0) {
             if ($this->cartProducts[0]['total'] > (float)$this->settings->priceSettings->priceFree) {
                 $total = 0;
             }

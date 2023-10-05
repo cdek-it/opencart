@@ -122,8 +122,12 @@ $_['cdek_error_dimensions_width_invalid'] = 'Width must be a numeric value';
 $_['cdek_error_dimensions_height_invalid'] = 'Height must be a numeric value';
 $_['cdek_error_dimensions_weight_invalid'] = 'Weight must be a numeric value';
 $_['cdek_error_dimensions_use_default_invalid'] = 'Use Default must be a numeric value';
+$_['cdek_error_dimensions_height_package_invalid'] = 'Height invalid';
+$_['cdek_error_dimensions_width_package_invalid'] = 'Width invalid';
+$_['cdek_error_dimensions_length_package_invalid'] = 'Length invalid';
 $_['cdek_error_cdek_number_empty'] = 'Cdek number will be available later';
 $_['cdek_dimensions__desc'] = 'The fields are intended for entering values of overall dimensions of one unit of goods. If the dimensions of the product are not specified, the values will be automatically substituted from the following fields. This allows you to avoid errors when calculating the delivery cost.';
+$_['cdek_official_v2_entity_invalid'] = 'An error occurred while creating an order. The order is incorrect';
 
 
 
