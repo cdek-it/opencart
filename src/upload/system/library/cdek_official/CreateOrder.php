@@ -26,7 +26,6 @@ class CreateOrder
         $order = new Order($this->settings, $orderData, $dimensions);
         $response = $this->cdekApi->createOrder($order);
         CdekLog::sendLog("Order created: " . json_encode($response));
-        //TODO 16 Если валидацию не проходит вернуть код ошибки
         if (CdekApiValidate::createApiValidate($response)) {
             sleep(5); //Ожидание формирования заказа
             $order = $this->cdekApi->getOrderByUuid($response->entity->uuid);
@@ -103,6 +102,8 @@ class CreateOrder
         $this->registry->get('load')->model('catalog/product');
         $modelSaleOrder = $this->registry->get('model_sale_order');
         $modelCatalogProduct = $this->registry->get('model_catalog_product');
+        $orderTotals = $modelSaleOrder->getOrderTotals($orderId);
+        $cost = $orderTotals[1]['value'];
         $weight = $this->registry->get('weight');
         $orderOC = $modelSaleOrder->getOrder($orderId);
         $products = $modelSaleOrder->getOrderProducts($orderId);
@@ -112,7 +113,8 @@ class CreateOrder
             "weight" => $weight,
             "orderId" => $orderId,
             "orderOC" => $orderOC,
-            "products" => $products
+            "products" => $products,
+            "cost" => $cost
         ];
     }
 

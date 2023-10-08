@@ -26,7 +26,6 @@ class ControllerExtensionShippingCdekOfficial extends Controller
         $app->data['column_left'] = $this->load->controller('common/column_left');
         $app->data['footer'] = $this->load->controller('common/footer');
         $app->data['user_token'] = $userToken;
-        $app->data['offices'] = $app->data['map_pvz'] ?? [];
         if ($app->data['status_auth']) {
             $app->data['city'] = $app->data['map_city'] ?? 44;
         } else {

@@ -2,25 +2,29 @@
         style="background-color: #dbdbdb; border-radius: 5px; padding: 3px;">Выбрать ПВЗ
 </button>
 <script type="text/javascript">
-    const widget_{{ tariff.code }} = new window.CDEKWidget({
-        apiKey: '{{ apikey }}',
-        defaultLocation: '{{ city }}',
-        popup: true,
-        canChoose: true,
-        hideDeliveryOptions: {
-            office: false,
-            door: true,
-        },
-        servicePath: '/index.php?route=extension/shipping/cdek_official&cdekRequest=1',
-        onChoose: function (type, tariff, address) {
-            console.log(type, tariff, address)
-            $('#cdek_official_pvz_code').val(address.code);
-            $('#cdek_official_pvz_code_address').val(`[${address.code}] ${address.address}`);
-            $('#cdek_official_pvz_code_address').show();
-        }
-    });
     document.getElementById('cdek_official_{{ tariff.code }}').addEventListener('click', () => {
-        widget_{{ tariff.code }}.open()
+        if(window.cdekWidget === undefined){
+            window.cdekWidget = new window.CDEKWidget({
+                apiKey: '{{ apikey }}',
+                defaultLocation: '{{ city }}',
+                popup: true,
+                canChoose: true,
+                hideDeliveryOptions: {
+                    office: false,
+                    door: true,
+                },
+                servicePath: '/index.php?route=extension/shipping/cdek_official&cdekRequest=1',
+                onChoose: function (type, tariff, address) {
+                    console.log(type, tariff, address)
+                    $('#cdek_official_pvz_code').val(address.code);
+                    $('#cdek_official_pvz_code_address').val(`[${address.code}] ${address.address}`);
+                    $('#cdek_official_pvz_code_address').show();
+                }
+            });
+        }else{
+            window.cdekWidget.updateLocation('{{ city }}');
+        }
+        window.cdekWidget.open()
     });
 </script>
 {# <script type="text/javascript"> #}

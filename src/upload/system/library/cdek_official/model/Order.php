@@ -10,6 +10,7 @@ class Order
     private $dimensions;
     private $model_catalog_product;
     private $weight;
+    private $cost;
     private $pvz;
     private Tariffs $tariffs;
     private $weightPackage;
@@ -20,6 +21,7 @@ class Order
         $this->settings = $settings;
         $this->orderOC = $orderData['orderOC'];
         $this->products = $orderData['products'];
+        $this->cost = $orderData['cost'];
         $this->dimensions = $dimensions;
         $this->model_catalog_product = $orderData['modelCatalogProduct'];
         $this->weight = $orderData['weight'];
@@ -61,12 +63,22 @@ class Order
             "tariff_code" => $order['tariffCodeCustomer']
         ];
 
+        $deliveryRecipientCost = [];
+        if ($this->orderOC['payment_code'] === 'cod') {
+            $deliveryRecipientCost = [
+                "delivery_recipient_cost" => [
+                    "value" => $this->cost
+                ]
+            ];
+        }
+
         $tariffCode = (int)$order['tariffCodeCustomer'];
 
         return array_merge(
             $data,
             $this->getFromByTariffCode($tariffCode),
-            $this->getToByTariffCode($tariffCode, $order)
+            $this->getToByTariffCode($tariffCode, $order),
+            $deliveryRecipientCost
         );
     }
 

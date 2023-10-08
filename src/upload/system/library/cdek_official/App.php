@@ -75,8 +75,14 @@ class App
         if ($this->requestMethod === 'POST') {
             $postSettings = $this->request->post;
             $this->settings->init($postSettings);
-            $this->data['status_auth'] = $this->cdekApi->checkAuth();
+            $this->settings->updateData($this->data);
             $this->modelSetting->editSetting('cdek_official', $postSettings);
+            $isAuth = $this->cdekApi->checkAuth();
+            $this->data['status_auth'] = $isAuth;
+            if (!$isAuth) {
+                $redirectUrl = $this->url->link('extension/shipping/cdek_official', "user_token={$this->userToken}");
+                $this->registry->get('response')->redirect($redirectUrl);
+            }
             try {
                 $this->settings->validate();
                 $this->session->data['success'] = $this->language->get('text_success');
@@ -90,18 +96,18 @@ class App
             $this->registry->get('response')->redirect($redirectUrl);
         }
 
-        $modelSettings = $this->modelSetting->getSetting('cdek_official');
-        if (!empty($modelSettings) && $modelSettings['cdek_official_auth_secret'] !== "" && $modelSettings['cdek_official_auth_id'] !== "") {
-            $this->settings->init($this->modelSetting->getSetting('cdek_official'));
-            $this->settings->updateData($this->data);
-            $this->data['map_pvz'] = $this->cdekApi->getPvzByCityCode($this->settings->shippingSettings->shippingCityCode ?? 44);
-            $this->data['map_city'] = $this->cdekApi->getCityByCode($this->settings->shippingSettings->shippingCityCode ?? 44)[0]->city;
-            $this->data['status_auth'] = $this->cdekApi->checkAuth();
-            $this->data['tariffs'] = $this->settings->shippingSettings->shippingTariffs;
-            $this->data['currencies'] = $this->settings->shippingSettings->shippingCurrencies;
+        $this->settings->init($this->modelSetting->getSetting('cdek_official'));
+        $isAuth = $this->cdekApi->checkAuth();
+        $this->data['status_auth'] = $isAuth;
+        $this->settings->updateData($this->data);
+        if ($isAuth) {
+            $city = $this->cdekApi->getCityByCode($this->settings->shippingSettings->shippingCityCode);
+            $this->data['map_city'] = $city[0]->city;
         } else {
-            $this->data['status_auth'] = false;
+            $this->data['map_city'] = 'Москва';
         }
+        $this->data['tariffs'] = $this->settings->shippingSettings->shippingTariffs;
+        $this->data['currencies'] = $this->settings->shippingSettings->shippingCurrencies;
     }
 
     public function breadcrumbs(): void
@@ -150,7 +156,7 @@ class App
                 if ($this->request->post['key'] === '') {
                     exit;
                 }
-                $result = $this->cdekApi->getPvz($this->request->post['key'], $this->request->post['street']);
+                $result = $this->cdekApi->getPvz($this->request->post['key']);
                 echo json_encode($result);
                 exit;
             }

@@ -68,8 +68,7 @@ class CdekTest
     protected function testGetPvz()
     {
         $cityCode = 44;
-        $street = 'Динамовская';
-        $response = $this->cdekApi->getPvz($cityCode, $street);
+        $response = $this->cdekApi->getPvz($cityCode);
         if (!is_array($response) || empty($response)) {
             return 'Test GetPvz was Fail';
         }

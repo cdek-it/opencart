@@ -60,16 +60,15 @@ class ControllerExtensionShippingCdekOfficial extends Controller
     public function cdek_official_checkout_checkout_after(&$route, &$data, &$output)
     {
         $header = "<head>";
-        $map = DIR_APPLICATION . 'view/theme/default/template/extension/shipping/cdek_official_map_script.twig';
-        $script = file_exists($map) ? file_get_contents($map) : '';
-        $this->searchAndReplace($output, $header, $script);
+        $map = $this->registry->get('load')->view('extension/shipping/cdek_official_map_script');
+        $this->searchAndReplace($output, $header, $map);
 
         $btnShippingMethod = "data: $('#collapse-shipping-method input[type=\'radio\']:checked, #collapse-shipping-method textarea')";
         $btnShippingMethodWithHide = "data: $('#collapse-shipping-method input[type=\'radio\']:checked, #collapse-shipping-method textarea, #collapse-shipping-method input[type=\'hidden\']')";
         $output = str_replace($btnShippingMethod, $btnShippingMethodWithHide, $output);
     }
 
-    public function cdek_official_checkout_shipping_controller_before()
+    public function cdek_official_checkout_shipping_controller_before(&$route, &$data, &$output)
     {
         $shippingMethod = $this->request->post['shipping_method'];
         $shippingMethodExplode = explode('.', $shippingMethod);
@@ -81,7 +80,22 @@ class ControllerExtensionShippingCdekOfficial extends Controller
             $tariffModel = new Tariffs();
             if ($tariffModel->getDirectionByCode((int)$tariffCode) === 'store' || $tariffModel->getDirectionByCode((int)$tariffCode) === 'postamat') {
                 if (isset($this->request->post['cdek_official_pvz_code']) && !empty($this->request->post['cdek_official_pvz_code'])) {
-                    $this->session->data['cdek_official_pvz_code'] = $this->request->post['cdek_official_pvz_code'];
+                    $cityName = $this->cart->customer->session->data['shipping_address']['city'];
+                    $this->load->model('setting/setting');
+                    $param = $this->model_setting_setting->getSetting('cdek_official');
+                    $settings = new Settings();
+                    $settings->init($param);
+                    $cdekApi = new CdekApi($this->registry, $settings);
+                    $city = $cdekApi->getCity($cityName);
+                    $cityCodeByPvz = $cdekApi->getCityCodeByPvz($this->request->post['cdek_official_pvz_code']);
+                    if ($city[0]->code === $cityCodeByPvz) {
+                        $this->session->data['cdek_official_pvz_code'] = $this->request->post['cdek_official_pvz_code'];
+                    } else {
+                        $this->load->language('extension/shipping/cdek_official');
+                        $json['error']['warning'] = $this->language->get('cdek_pvz_not_from_selected_city');
+                        $this->response->addHeader('Content-Type: application/json');
+                        $this->response->setOutput(json_encode($json));
+                    }
                 } else {
                     $this->load->language('extension/shipping/cdek_official');
                     $json['error']['warning'] = $this->language->get('cdek_pvz_not_found');

@@ -38,7 +38,11 @@ class CdekApi
 
     public function checkAuth(): bool
     {
-        return true;
+        $token = $this->getToken();
+        if ($token) {
+            return true;
+        }
+        return false;
     }
 
     public function testModeActive(): bool
@@ -69,11 +73,15 @@ class CdekApi
 
     public function getCityByCode($cityCode)
     {
+        if (empty($cityCode)) {
+            $cityCode = 44;
+        }
+
         $url = $this->getAuthUrl() . self::REGION_PATH;
         return $this->sendRequest($url, 'GET', ['code' => $cityCode]);
     }
 
-    public function getPvz($cityCode, $street, $weight = 0)
+    public function getPvz($cityCode, $weight = 0)
     {
         $url = $this->getAuthUrl() . self::PVZ_PATH;
 
@@ -84,19 +92,25 @@ class CdekApi
         $pvz = [];
         foreach ($result as $elem) {
             if (isset($elem->code, $elem->type, $elem->location->longitude, $elem->location->latitude, $elem->location->address)) {
-                if (strpos(mb_strtolower($elem->location->address), mb_strtolower($street)) !== false) {
-                    $pvz[] = [
-                        'code' => $elem->code,
-                        'type' => $elem->type,
-                        'longitude' => $elem->location->longitude,
-                        'latitude' => $elem->location->latitude,
-                        'address' => $elem->location->address
-                    ];
-                }
+                $pvz[] = [
+                    'code' => $elem->code,
+                    'type' => $elem->type,
+                    'longitude' => $elem->location->longitude,
+                    'latitude' => $elem->location->latitude,
+                    'address' => $elem->location->address
+                ];
             }
         }
 
         return $pvz;
+    }
+
+    public function getCityCodeByPvz($pvzCode)
+    {
+        $url = $this->getAuthUrl() . self::PVZ_PATH;
+        $params['code'] = $pvzCode;
+        $result = $this->sendRequest($url, 'GET', $params);
+        return $result[0]->location->city_code;
     }
 
     public function getPvzByCityCode($cityCode)
