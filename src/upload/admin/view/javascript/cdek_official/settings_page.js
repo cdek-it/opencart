@@ -63,4 +63,13 @@ $(document).ready(function() {
             });
         }, 1000);
     });
+
+
+    $('#clear-button-pvz').on('click', function() {
+        $('#cdek_official_shipping__pvz').val('');
+    })
+
+    $('#clear-button-address').on('click', function() {
+        $('#cdek_official_shipping__city_address').val('');
+    })
 });

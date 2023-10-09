@@ -134,13 +134,12 @@ class Order
         if ($this->tariffs->getFromByCode($tariffCode) === "door") {
             $result = [
                 "from_location" => [
-                    "code" => $this->settings->shippingSettings->shippingCityCode,
                     "address" => $this->settings->shippingSettings->shippingCityAddress
                 ]
             ];
         } else {
             $result = [
-                "shipment_point" => $this->settings->shippingSettings->shippingPvzCode
+                "shipment_point" => trim(explode(',', $this->settings->shippingSettings->shippingPvz)[1])
             ];
         }
         return $result;

@@ -101,8 +101,13 @@ class App
         $this->data['status_auth'] = $isAuth;
         $this->settings->updateData($this->data);
         if ($isAuth) {
-            $city = $this->cdekApi->getCityByCode($this->settings->shippingSettings->shippingCityCode);
-            $this->data['map_city'] = $city[0]->city;
+            if (!empty($this->settings->shippingSettings->shippingPvz)) {
+                $this->data['map_city'] = explode(',', $this->settings->shippingSettings->shippingPvz)[0];
+            } elseif (!empty($this->settings->shippingSettings->shippingCityAddress)) {
+                $this->data['map_city'] = trim(explode(',', $this->settings->shippingSettings->shippingCityAddress)[1]);
+            } else {
+                $this->data['map_city'] = 'Москва';
+            }
         } else {
             $this->data['map_city'] = 'Москва';
         }

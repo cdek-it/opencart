@@ -58,3 +58,22 @@
     display: flex;
     align-items: center;
 }
+
+.input-container {
+    position: relative;
+}
+
+.clear-button {
+    position: absolute;
+    top: 4px;
+    right: 21px;
+    padding: 5px 10px;
+    background-color: #dbdbdb;;
+    border: none;
+    cursor: pointer;
+}
+
+.clear-button:hover {
+    background-color: #aaa;
+    color: #fff;
+}

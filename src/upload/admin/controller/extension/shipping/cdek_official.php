@@ -27,9 +27,9 @@ class ControllerExtensionShippingCdekOfficial extends Controller
         $app->data['footer'] = $this->load->controller('common/footer');
         $app->data['user_token'] = $userToken;
         if ($app->data['status_auth']) {
-            $app->data['city'] = $app->data['map_city'] ?? 44;
+            $app->data['city'] = $app->data['map_city'] ?? 'Москва';
         } else {
-            $app->data['city'] = 44;
+            $app->data['city'] = 'Москва';
         }
         $app->data['apikey'] = $app->settings->authSettings->apiKey;
 
