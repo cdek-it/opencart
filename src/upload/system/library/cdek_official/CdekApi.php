@@ -10,7 +10,8 @@ class CdekApi
     protected const REGION_PATH = "location/cities";
     protected const ORDERS_PATH = "orders/";
     protected const PVZ_PATH = "deliverypoints";
-    protected const CALC_PATH = "calculator/tariff";
+//    protected const CALC_PATH = "calculator/tariff";
+    protected const CALC_PATH = "calculator/tarifflist";
     protected const WAYBILL_PATH = "print/orders";
     protected const CALL_COURIER = "intakes";
     protected const API_URL = "https://api.cdek.ru/v2/";

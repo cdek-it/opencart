@@ -64,46 +64,91 @@ class Calc
 //            ];
 //            return $quoteData;
 //        }
+
+        $data = [
+            "currency" => $currency->getSelectedCurrency(),
+            "from_location" => [
+                "code" => $this->settings->shippingSettings->shippingCityCode
+            ],
+            "to_location" => [
+                "code" => $recipientLocation[0]->code
+            ],
+            "packages" => $this->getPackage()
+        ];
+
+        $result = $this->cdekApi->calculate($data);
+
+        $tariffCodeEnable = [];
         foreach ($tariffs->data as $tariff) {
             if ($tariff['enable']) {
-                $data = [
-                    "currency" => $currency->getSelectedCurrency(),
-                    "tariff_code" => $tariff['code'],
-                    "from_location" => [
-                        "code" => $this->settings->shippingSettings->shippingCityCode
-                    ],
-                    "to_location" => [
-                        "code" => $recipientLocation[0]->code
-                    ],
-                    "packages" => $this->getPackage()
-                ];
-                $result = $this->cdekApi->calculate($data);
+                $tariffCodeEnable[] = $tariff['code'];
+            }
+        }
 
-                if (isset($result->errors)) {
-                    continue;
-                }
+        foreach ($result->tariff_codes as $tariff) {
+            if (in_array($tariff->tariff_code, $tariffCodeEnable)) {
+                $title = $this->registry->get('language')->get('cdek_shipping__tariff_name_' . $tariff->tariff_code) . $this->getPeriod($tariff);
+                $total = $this->getTotalSum($tariff);
 
-                $title = $this->registry->get('language')->get('cdek_shipping__tariff_name_' . $tariff['code']) . $this->getPeriod($result);
-                $total = $this->getTotalSum($result);
-
-                $quoteData['cdek_official_' . $tariff['code']] = [
-                    'code' => 'cdek_official.cdek_official_' . $tariff['code'],
+                $quoteData['cdek_official_' . $tariff->tariff_code] = [
+                    'code' => 'cdek_official.cdek_official_' . $tariff->tariff_code,
                     'title' => $title,
                     'cost' => $total,
-                    'tax_class_id' => $tariff['code'],
+                    'tax_class_id' => $tariff->tariff_code,
                     'text' => $this->registry->get('currency')->format($total, $this->registry->get('session')->data['currency'])
                 ];
 
                 $tariffModel = new Tariffs();
-                if ($tariffModel->getDirectionByCode($tariff['code']) === 'store' || $tariffModel->getDirectionByCode($tariff['code']) === 'postamat') {
-                    $quoteData['cdek_official_' . $tariff['code']]['extra'] = $this->registry->get('load')->view('extension/shipping/cdek_official_map', [
-                        'tariff' => $tariff,
+                if ($tariffModel->getDirectionByCode($tariff->tariff_code) === 'store' || $tariffModel->getDirectionByCode($tariff->tariff_code) === 'postamat') {
+                    $quoteData['cdek_official_' . $tariff->tariff_code]['extra'] = $this->registry->get('load')->view('extension/shipping/cdek_official_map', [
+                        'tariff' => $tariff->tariff_code,
                         'apikey' => $this->settings->authSettings->apiKey,
                         'city' => $recipientLocation[0]->city
                     ]);
                 }
             }
         }
+
+//        foreach ($tariffs->data as $tariff) {
+//            if ($tariff['enable']) {
+//                $data = [
+//                    "currency" => $currency->getSelectedCurrency(),
+//                    "tariff_code" => $tariff['code'],
+//                    "from_location" => [
+//                        "code" => $this->settings->shippingSettings->shippingCityCode
+//                    ],
+//                    "to_location" => [
+//                        "code" => $recipientLocation[0]->code
+//                    ],
+//                    "packages" => $this->getPackage()
+//                ];
+//                $result = $this->cdekApi->calculate($data);
+//
+//                if (isset($result->errors)) {
+//                    continue;
+//                }
+//
+//                $title = $this->registry->get('language')->get('cdek_shipping__tariff_name_' . $tariff['code']) . $this->getPeriod($result);
+//                $total = $this->getTotalSum($result);
+//
+//                $quoteData['cdek_official_' . $tariff['code']] = [
+//                    'code' => 'cdek_official.cdek_official_' . $tariff['code'],
+//                    'title' => $title,
+//                    'cost' => $total,
+//                    'tax_class_id' => $tariff['code'],
+//                    'text' => $this->registry->get('currency')->format($total, $this->registry->get('session')->data['currency'])
+//                ];
+//
+//                $tariffModel = new Tariffs();
+//                if ($tariffModel->getDirectionByCode($tariff['code']) === 'store' || $tariffModel->getDirectionByCode($tariff['code']) === 'postamat') {
+//                    $quoteData['cdek_official_' . $tariff['code']]['extra'] = $this->registry->get('load')->view('extension/shipping/cdek_official_map', [
+//                        'tariff' => $tariff,
+//                        'apikey' => $this->settings->authSettings->apiKey,
+//                        'city' => $recipientLocation[0]->city
+//                    ]);
+//                }
+//            }
+//        }
         return $quoteData;
     }
 
@@ -172,7 +217,7 @@ class Calc
 
     private function getTotalSum($result)
     {
-        $total = $result->total_sum;
+        $total = $result->delivery_sum;
 
         if ($this->settings->priceSettings->priceExtraPrice !== '' && $this->settings->priceSettings->priceExtraPrice >= 0) {
             $total = $total + $this->settings->priceSettings->priceExtraPrice;
