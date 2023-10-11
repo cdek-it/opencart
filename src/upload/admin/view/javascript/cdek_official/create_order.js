@@ -67,15 +67,17 @@ $(document).ready(function() {
                 order_id: orderId
             },
             success: function(response) {
-                console.log(response)
-                let resp = JSON.parse(response);
-                $('#cdek_order_create_form').show()
+                // console.log(response)
+                // let resp = JSON.parse(response);
+                // $('#cdek_order_create_form').show()
                 $('#cdek_order_created').hide()
-                if (resp.state) {
-                    $('#cdek_order_create_success').text(resp.message).show()
-                } else {
-                    $('#cdek_order_create_error').text(resp.message).show()
-                }
+                $('#cdek_order_deleted').show()
+
+                // if (resp.state) {
+                //     $('#cdek_order_create_success').text(resp.message).show()
+                // } else {
+                //     $('#cdek_order_create_error').text(resp.message).show()
+                // }
             },
             error: function(error) {
                 console.log(error);
@@ -90,5 +92,12 @@ $(document).ready(function() {
         link.target = '_blank';
         link.href = 'index.php?route=extension/shipping/cdek_official&user_token=' + userToken +'&cdekRequest=getBill&&uuid=' + $(event.currentTarget).data('uuid');
         link.click();
+    })
+
+    $('#cdek_recreate_btn').click(function (event) {
+        event.preventDefault();
+        $('#cdek_order_create_form').show();
+        $('#cdek_order_created').hide();
+        $('#cdek_order_deleted').hide();
     })
 });

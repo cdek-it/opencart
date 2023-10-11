@@ -2,9 +2,10 @@
     <div class="panel-heading">
         <h3 class="panel-title"><i class="fa fa-truck"></i> CDEK</h3>
     </div>
-    <div id="cdek_order_create_error" class="cdek-error"></div>
+    <div id="cdek_order_create_error" class="cdek-error" {% if cdek_order_error_create %} style="display: block" {% else %} style="display: none" {% endif %}>{{ cdek_order_create_error_template }}{{ cdek_order_error_create_message }}</div>
     <div id="cdek_order_create_success" class="cdek-success"></div>
-    <div id="cdek_order_create_form" class="panel-body" {% if cdek_order_created %} style="display: none" {% else %} style="display: block" {% endif %}>
+
+    <div id="cdek_order_create_form" class="panel-body" {% if cdek_order_created or cdek_order_deleted %} style="display: none" {% else %} style="display: block" {% endif %}>
         <div id="cdek-loader" style="display: none"></div>
         <form id="dimensions-form" action="" method="post">
             <div class="form-group">
@@ -22,6 +23,7 @@
             <button id="create-order" type="submit" class="btn btn-primary">{{ cdek_auth__btn_submit }}</button>
         </form>
     </div>
+
     <div id="cdek_order_created" class="panel-body" {% if cdek_order_created %} style="display: block" {% else %} style="display: none" {% endif %}>
         <table class="table table-bordered">
             <thead>
@@ -62,13 +64,58 @@
                     <div class="col-sm-8"></div>
                     <div id="cdek_order_action" class="col-sm-4" style="text-align: right; display: grid">
                         <a id="cdek_get_bill_btn" data-uuid="{% if cdek_order_created %}{{ cdek_uuid }}{% endif %}">{{ cdek_order_get_bill_name }}</a>
-{#                        <a href="">{{ cdek_order_call_courier_name }}</a>#}
                         <a id="cdek_delete_order_btn" data-uuid="{% if cdek_order_created %}{{ cdek_uuid }}{% endif %}">{{ cdek_order_delete_order_name }}</a>
                     </div>
                 </div>
             </div>
         </fieldset>
 
+    </div>
+
+    <div id="cdek_order_deleted" class="panel-body" {% if cdek_order_deleted %} style="display: block" {% else %} style="display: none" {% endif %}>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <td class="text-left" colspan=2>{{ cdek_order_deleted_info_name }}</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td style="width: 15%" class="text-left">{{ cdek_order_number_name }}</td>
+                <td id="cdek_order_number_name" class="text-left">{{ cdek_number }}</td>
+            </tr>
+            <tr>
+                <td class="text-left">{{cdek_order_customer_name}}</td>
+                <td id="cdek_order_customer_name" class="text-left">{{ name }}</td>
+            </tr>
+            <tr>
+                <td class="text-left">{{ cdek_order_type_name }}</td>
+                <td id="cdek_order_type_name" class="text-left">{{ type }}</td>
+            </tr>
+            <tr>
+                <td class="text-left">{{ cdek_order_payment_type_name }}</td>
+                <td id="cdek_order_payment_type_name" class="text-left">{{ payment_type }}</td>
+            </tr>
+            <tr>
+                <td class="text-left">{{ cdek_order_direction_name }}</td>
+                <td id="cdek_order_direction_name" class="text-left">{{ to_location }}</td>
+            </tr>
+            <tr id="cdek_order_pvz_code_tr" {% if pvz_code is empty %} style="display: none" {% endif %}>
+                <td class="text-left">{{ cdek_order_pvz_code }}</td>
+                <td id="cdek_order_pvz_code" class="text-left">{{ pvz_code }}</td>
+            </tr>
+            </tbody>
+        </table>
+        <fieldset>
+            <div class="col-sm-12">
+                <div class="row">
+                    <div class="col-sm-8"></div>
+                    <div id="cdek_order_action" class="col-sm-4" style="text-align: right; display: grid">
+                        <a id="cdek_recreate_btn">{{ cdek_recreate_info }}</a>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
     </div>
 </div>
 

@@ -48,3 +48,7 @@
     position: relative; /* Make sure it's a positioning context for the child element */
     /* Add other styles as needed */
 }
+
+#cdek_recreate_btn {
+    cursor: pointer;
+}

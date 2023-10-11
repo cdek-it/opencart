@@ -1,5 +1,9 @@
 <?php
-require_once(DIR_SYSTEM . 'library/cdek_official/Calc.php');
+
+use CDEK\Calc;
+
+require_once(DIR_SYSTEM . 'library/cdek_official/vendor/autoload.php');
+
 class ModelExtensionShippingCdekOfficial extends Model {
     public function getQuote($address) {
         $this->load->language('extension/shipping/cdek_official');

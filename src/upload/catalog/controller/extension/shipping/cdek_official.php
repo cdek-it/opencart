@@ -1,9 +1,12 @@
 <?php
 
-require_once(DIR_SYSTEM . 'library/cdek_official/model/Tariffs.php');
-require_once(DIR_SYSTEM . 'library/cdek_official/Service.php');
-require_once(DIR_SYSTEM . 'library/cdek_official/Settings.php');
-require_once(DIR_SYSTEM . 'library/cdek_official/CdekOrderMetaRepository.php');
+use CDEK\CdekApi;
+use CDEK\CdekOrderMetaRepository;
+use CDEK\model\Tariffs;
+use CDEK\Service;
+use CDEK\Settings;
+
+require_once(DIR_SYSTEM . 'library/cdek_official/vendor/autoload.php');
 
 class ControllerExtensionShippingCdekOfficial extends Controller
 {

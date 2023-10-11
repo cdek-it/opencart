@@ -1,7 +1,11 @@
 <?php
 
-require_once(DIR_SYSTEM . 'library/cdek_official/App.php');
-require_once(DIR_SYSTEM . 'library/cdek_official/CdekOrderMetaRepository.php');
+require_once(DIR_SYSTEM . 'library/cdek_official/vendor/autoload.php');
+
+use CDEK\App;
+use CDEK\CdekApi;
+use CDEK\CdekOrderMetaRepository;
+use CDEK\Settings;
 
 class ControllerExtensionShippingCdekOfficial extends Controller
 {
@@ -18,7 +22,6 @@ class ControllerExtensionShippingCdekOfficial extends Controller
         $app->run();
 
         $app->checkState($app->data);
-        //TODO 19 Получить код выбраного языка передать в карту
         $userToken = $this->session->data['user_token'];
         $app->data['action'] = $this->url->link('extension/shipping/cdek_official', 'user_token=' . $userToken);
         $app->data['cancel'] = $this->url->link('extension/shipping', 'user_token=' . $userToken);
@@ -40,40 +43,67 @@ class ControllerExtensionShippingCdekOfficial extends Controller
     {
         $orderId = (int)$data['order_id'];
         if ($this->isCdekShipping($orderId)) {
-            $dataOrderForm['order_id'] = $data['order_id'];
+            $remoteDelete = false;
+            $invalidOrder = false;
+            $dataOrderForm['cdek_order_deleted'] = false;
             $dataOrderForm['cdek_order_created'] = false;
-            $orderCreated = $this->isOrderCreated($orderId);
-            if ($orderCreated['create']) {
-                $dataOrderForm['cdek_order_created'] = true;
-                $dataOrderForm['products'] = $data['products'];
+            $dataOrderForm['order_id'] = $orderId;
+            $orderDeleted = CdekOrderMetaRepository::isOrderDeleted($this->db, $orderId);
+            $orderCreated = CdekOrderMetaRepository::isOrderCreated($this->db, $orderId);
+
+            //created
+            if ($orderCreated['created'] && !$orderDeleted['deleted']) {
                 $orderMetaData = $orderCreated['row'];
-                if ($orderMetaData['cdek_number'] === "" && $orderMetaData['created'] === 1) {
-                    $settings = new Settings();
-                    $settings->init($this->model_setting_setting->getSetting('cdek_official'));
-                    $cdekApi = new CdekApi($this->registry, $settings);
-                    $order = $cdekApi->getOrderByUuid($orderMetaData['cdek_uuid']);
-                    //TODO 15 Если в таблице есть pvz_code вывести в поле
-                    $param = [
-                        'cdek_number' => $order->entity->cdek_number,
-                        'cdek_uuid' => $orderMetaData['cdek_uuid'],
-                        'name' => $order->entity->recipient->name,
-                        'type' => $this->getDeliveryModeName($order->entity->delivery_mode),
-                        'payment_type' => $orderMetaData['payment_type'],
-                        'to_location' => $order->entity->to_location->city . ', ' . $order->entity->to_location->address,
-                        'pvz_code' => $order->entity->shipment_point ?? ''
-                    ];
-                    CdekOrderMetaRepository::insertOrderMeta($this->db, $param, $dataOrderForm['order_id']);
-                    $dataOrderForm = array_merge($dataOrderForm, $param);
-                } else {
-                    $dataOrderForm['cdek_uuid'] = $orderMetaData['cdek_uuid'];
-                    $dataOrderForm['cdek_number'] = $orderMetaData['cdek_number'];
-                    $dataOrderForm['name'] = $orderMetaData['name'];
-                    $dataOrderForm['type'] = $orderMetaData['type'];
-                    $dataOrderForm['payment_type'] = $orderMetaData['payment_type'];
-                    $dataOrderForm['to_location'] = $orderMetaData['to_location'];
-                    $dataOrderForm['pvz_code'] = $orderMetaData['pvz_code'] ?? '';
+                $settings = new Settings();
+                $settings->init($this->model_setting_setting->getSetting('cdek_official'));
+                $cdekApi = new CdekApi($this->registry, $settings);
+                $order = $cdekApi->getOrderByUuid($orderMetaData['cdek_uuid']);
+                if ($order->requests[0]->state === 'INVALID') {
+                    $errorsCode = [];
+                    foreach ($order->requests[0]->errors as $errors) {
+                        $errorsCode[$errors->code] = $errors->message;
+                    }
+                    if (in_array('v2_entity_not_found', array_keys($errorsCode))) {
+                        CdekOrderMetaRepository::deleteOrder($this->db, $orderId);
+                        $remoteDelete = true;
+                    } else {
+                        $invalidOrder = true;
+                    }
+                }
+
+                if (!$remoteDelete && !$invalidOrder) {
+                    $dataOrderForm['cdek_order_created'] = true;
+                    $dataOrderForm['cdek_order_deleted'] = false;
+                    $dataOrderForm['products'] = $data['products'];
+                    if ($orderMetaData['cdek_number'] === "") {
+                        $param = [
+                            'cdek_number' => $order->entity->cdek_number,
+                            'cdek_uuid' => $orderMetaData['cdek_uuid'],
+                            'name' => $order->entity->recipient->name,
+                            'type' => $this->getDeliveryModeName($order->entity->delivery_mode),
+                            'payment_type' => $orderMetaData['payment_type'],
+                            'to_location' => $order->entity->to_location->city . ', ' . $order->entity->to_location->address,
+                            'pvz_code' => $order->entity->shipment_point ?? ''
+                        ];
+                        CdekOrderMetaRepository::insertOrderMeta($this->db, $param, $dataOrderForm['order_id']);
+                        $orderMetaData = CdekOrderMetaRepository::getOrder($this->db, $orderId);
+                    }
+                    $dataOrderForm = array_merge($dataOrderForm, $orderMetaData);
                 }
             }
+
+            //deleted
+            if (!$invalidOrder) {
+                if ((!$orderCreated['created'] && $orderDeleted['deleted']) || $remoteDelete) {
+                    $dataOrderForm['cdek_order_deleted'] = true;
+                    $dataOrderForm['cdek_order_created'] = false;
+                    $data = CdekOrderMetaRepository::getOrder($this->db, $orderId);
+                    $dataOrderForm = array_merge($dataOrderForm, $data->rows[0]);
+                }
+            } else {
+                $dataOrderForm['cdek_order_error_create_message'] = array_values($errorsCode)[0];
+            }
+
             $this->displayCreateOrderForm($output, $dataOrderForm);
         }
     }
@@ -130,15 +160,6 @@ class ControllerExtensionShippingCdekOfficial extends Controller
                 break;
             }
         }
-    }
-
-    protected function isOrderCreated($orderId)
-    {
-        $query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "cdek_order_meta` WHERE `order_id` = " . $orderId);
-        if ($query->num_rows !== 0 && $query->row['created'] == 1) {
-            return ['create' => true, 'row' => $query->row];
-        }
-        return ['create' => false];
     }
 
     protected function isCdekShipping(int $orderId)
