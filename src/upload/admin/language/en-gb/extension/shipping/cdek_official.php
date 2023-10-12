@@ -1,5 +1,5 @@
 <?php
-$_['heading_title']     = 'CDEK Delivery Shipping Method';
+$_['heading_title']     = 'CDEK Shipping Method';
 $_['text_extension']     = 'Extensions';
 $_['cdek_success']      = 'Success: You have modified CDEK Shipping settings!';
 $_['cdek_auth']         = 'Authorize';

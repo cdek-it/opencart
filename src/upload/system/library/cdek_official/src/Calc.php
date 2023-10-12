@@ -124,7 +124,7 @@ class Calc
 
                 $quoteData['cdek_official_' . $tariff->tariff_code] = [
                     'code' => 'cdek_official.cdek_official_' . $tariff->tariff_code,
-                    'title' => $title,
+                    'title' => 'CDEK: ' . $title,
                     'cost' => $total,
                     'tax_class_id' => $tariff->tariff_code,
                     'text' => $this->registry->get('currency')->format($total, $this->registry->get('session')->data['currency'])
