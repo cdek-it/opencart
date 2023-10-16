@@ -9,6 +9,7 @@
                 canChoose: true,
                 servicePath: '/index.php?route=extension/shipping/cdek_official&cdekRequest=map',
                 sender: true,
+                lang: '{{ map_lang }}',
                 hideDeliveryOptions: {
                     office: false,
                     door: false,
@@ -88,6 +89,14 @@
                                         <input type="text" name="cdek_official_api_key"
                                                value="{{ cdek_official_api_key }}" placeholder="{{ cdek_api_key }}"
                                                id="input-length" class="form-control">
+                                    </div>
+                                    <label class="col-sm-2 control-label"
+                                           for="cdek_official_map_lang_code">{{ cdek_map_lang }}</label>
+                                    <div class="col-sm-4">
+                                        <select class="form-control" id="cdek_official_map_lang_code" name="cdek_official_map_lang_code">
+                                            <option value="rus" {% if map_lang is same as('rus') %} selected="selected" {% endif %}>Русский</option>
+                                            <option value="eng" {% if map_lang  is same as('eng') %} selected="selected" {% endif %}>English</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>

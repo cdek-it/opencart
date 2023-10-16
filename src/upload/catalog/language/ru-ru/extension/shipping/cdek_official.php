@@ -11,3 +11,4 @@ $_['cdek_shipping__tariff_name_366'] = 'Посылка дверь-постама
 $_['cdek_shipping__tariff_name_368'] = 'Посылка склад-постамат';
 $_['thousand_point'] = ',';
 $_['decimal_point'] = ',';
+$_['cdek_shipping__days'] = 'дней';

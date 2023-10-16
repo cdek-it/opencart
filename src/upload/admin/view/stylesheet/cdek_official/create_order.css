@@ -52,3 +52,12 @@
 #cdek_recreate_btn {
     cursor: pointer;
 }
+
+.cdek_info_alert {
+    background-color: #d9edf7;
+    border-color: #bce8f1;
+    color: #214c61;
+    padding: 10px;
+    margin-bottom: 18px;
+    border-radius: 3px;
+}

@@ -8,6 +8,9 @@
     <div id="cdek_order_create_form" class="panel-body" {% if cdek_order_created or cdek_order_deleted %} style="display: none" {% else %} style="display: block" {% endif %}>
         <div id="cdek-loader" style="display: none"></div>
         <form id="dimensions-form" action="" method="post">
+            <div class="cdek_info_alert">
+                {{ cdek_package_info }} 12х12х12
+            </div>
             <div class="form-group">
                 <label for="cdek_order_length">{{ cdek_dimensions__length }}:</label>
                 <input type="number" class="form-control" id="cdek_order_length" name="cdek_order_length" required>

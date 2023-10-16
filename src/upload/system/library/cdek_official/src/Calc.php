@@ -68,16 +68,24 @@ class Calc
 
         //От двери
         $tariffCalculatedToDoor = [];
+        $package = $this->getPackage();
+
+        if (empty($package)) {
+            return [];
+        }
+
+        $currencySelected = $currency->getSelectedCurrency();
+        $toLocationCode = $recipientLocation[0]->code;
         if (!empty($this->settings->shippingSettings->shippingCityAddress)) {
             $data = [
-                "currency" => $currency->getSelectedCurrency(),
+                "currency" => $currencySelected,
                 "from_location" => [
                     "address" => $this->settings->shippingSettings->shippingCityAddress
                 ],
                 "to_location" => [
-                    "code" => $recipientLocation[0]->code
+                    "code" => $toLocationCode
                 ],
-                "packages" => $this->getPackage()
+                "packages" => $package
             ];
             $result = $this->cdekApi->calculate($data);
             foreach ($result->tariff_codes as $tariff) {
@@ -91,14 +99,14 @@ class Calc
         $tariffCalculatedToPvz = [];
         if (!empty($this->settings->shippingSettings->shippingPvz)) {
             $data = [
-                "currency" => $currency->getSelectedCurrency(),
+                "currency" => $currencySelected,
                 "from_location" => [
                     "address" => explode(',', $this->settings->shippingSettings->shippingPvz)[0]
                 ],
                 "to_location" => [
-                    "code" => $recipientLocation[0]->code
+                    "code" => $toLocationCode
                 ],
-                "packages" => $this->getPackage()
+                "packages" => $package
             ];
             $result = $this->cdekApi->calculate($data);
             foreach ($result->tariff_codes as $tariff) {
@@ -148,7 +156,7 @@ class Calc
         $extraDays = (int)$this->settings->shippingSettings->shippingExtraDays;
         $min = $calc->period_min + $extraDays;
         $max = $calc->period_max + $extraDays;
-        return ' (' . $min . '-' . $max . ')';
+        return ' (' . $min . '-' . $max . ' ' . $this->registry->get('language')->get('cdek_shipping__days') . ')';
 
     }
 
@@ -156,9 +164,11 @@ class Calc
     {
         $packages = [];
         foreach ($this->cartProducts as $product) {
-            $dimensions = $this->getDimensions($product);
-            for ($i = 0; $i < (int)$product['quantity']; $i++) {
-                $packages[] = $dimensions;
+            if ((int)$product['tax_class_id'] !== 10) {
+                $dimensions = $this->getDimensions($product);
+                for ($i = 0; $i < (int)$product['quantity']; $i++) {
+                    $packages[] = $dimensions;
+                }
             }
         }
 

@@ -35,6 +35,7 @@ class ControllerExtensionShippingCdekOfficial extends Controller
             $app->data['city'] = 'Москва';
         }
         $app->data['apikey'] = $app->settings->authSettings->apiKey;
+        $app->data['map_lang'] = $app->settings->authSettings->mapLangCode ?? 'rus';
 
         $this->response->setOutput($this->load->view('extension/shipping/cdek_official', $app->data));
     }
@@ -104,6 +105,8 @@ class ControllerExtensionShippingCdekOfficial extends Controller
                 $dataOrderForm['cdek_order_error_create_message'] = array_values($errorsCode)[0];
             }
 
+            $getRecommendedDimensions = $this->getRecommendedPackage($orderId);
+
             $this->displayCreateOrderForm($output, $dataOrderForm);
         }
     }
@@ -170,5 +173,30 @@ class ControllerExtensionShippingCdekOfficial extends Controller
             return true;
         }
         return false;
+    }
+
+    protected function getRecommendedPackage(int $orderId)
+    {
+        $setting = $this->registry->get('model_setting_setting')->getSetting('cdek_official');
+        $lengthDefault = (int)$setting['cdek_official_dimensions__length'];
+        $widthDefault = (int)$setting['cdek_official_dimensions__width'];
+        $heightDefault = (int)$setting['cdek_official_dimensions__height'];
+        $this->load->model('catalog/product');
+        $products = $this->model_sale_order->getOrderProducts($orderId);
+        $dimensions = [];
+        foreach ($products as $product) {
+            $productOC = $this->model_catalog_product->getProduct($product['product_id']);
+            $lengthOC = (int)$productOC['length'];
+            $widthOC = (int)$productOC['width'];
+            $heightOC = (int)$productOC['height'];
+            $dimensions[] = [
+                (int)$product['quantity'] => [
+                    'length' => $lengthOC === 0 ? $lengthDefault : $lengthOC,
+                    'width' => $widthOC === 0 ? $widthDefault : $widthOC,
+                    'height' => $heightOC === 0 ? $heightDefault : $heightOC
+                ]
+            ];
+        }
+        return $dimensions;
     }
 }

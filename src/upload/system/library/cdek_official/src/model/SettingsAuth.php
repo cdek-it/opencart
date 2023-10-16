@@ -8,12 +8,14 @@ class SettingsAuth extends AbstractSettings
     public $authId;
     public $authSecret;
     public $apiKey;
+    public $mapLangCode;
     public $authTestMode;
 
     const PARAM_ID = [
         'cdek_official_auth_id' => 'authId',
         'cdek_official_auth_secret' => 'authSecret',
         'cdek_official_api_key' => 'apiKey',
+        'cdek_official_map_lang_code' => 'mapLangCode',
         'cdek_official_auth__test_mode' => 'authTestMode',
     ];
 

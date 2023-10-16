@@ -104,6 +104,11 @@ class Order
         foreach ($this->products as $product) {
             $productOC = $this->model_catalog_product->getProduct($product['product_id']);
             //            weight_class_id
+
+            if ((int)$productOC['tax_class_id'] === 10) {
+                continue;
+            }
+
             $weight = (int)$this->weight->convert((int)$productOC['weight'], $productOC['weight_class_id'], '2');
             if ($weight === 0) {
                 $weight = $this->settings->dimensionsSettings->dimensionsWeight;

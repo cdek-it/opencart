@@ -91,12 +91,6 @@ class CreateOrder
 
     protected function getPvz($query)
     {
-//        $pvz = '';
-//        if ($query->num_rows && $query->row['pvz_code'] !== "") {
-//            $pvz = $query->row['pvz_code'];
-//        }
-//        return $pvz;
-
         return !empty($query->row['pvz_code']) ? $query->row['pvz_code'] : '';
     }
 
