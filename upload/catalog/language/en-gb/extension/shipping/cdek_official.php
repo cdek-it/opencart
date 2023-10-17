@@ -1,6 +1,8 @@
 <?php
 $_['text_title']       = 'CDEK Official Shipping';
 $_['text_description'] = 'CDEK Official Shipping Method Description';
+$_['cdek_pvz_not_found'] = 'CDEK office not found, please select it from map';
+$_['cdek_pvz_not_from_selected_city'] = 'The selected office is not from the destination city. Change the city in the office settings and specify the correct office to place the order. Or select a office from the selected city';
 $_['cdek_shipping__tariff_name_plug'] = 'CDEK plug';
 $_['cdek_shipping__tariff_name_136'] = 'Parcel warehouse-warehouse';
 $_['cdek_shipping__tariff_name_137'] = 'Parcel warehouse-door';
@@ -34,5 +36,6 @@ $_['cdek_shipping__tariff_name_485'] = 'Express door-to-parcel locker';
 $_['cdek_shipping__tariff_name_486'] = 'Express warehouse-to-parcel locker';
 $_['cdek_shipping__tariff_name_497'] = 'E-com Standard door-to-parcel locker';
 $_['cdek_shipping__tariff_name_498'] = 'E-com Standard warehouse-to-parcel locker';
-$_['cdek_pvz_not_from_selected_city'] = 'The selected office is not from the destination city. Change the city in the office settings and specify the correct office to place the order. Or select a office from the selected city';
+$_['thousand_point'] = ',';
+$_['decimal_point'] = ',';
 $_['cdek_shipping__days'] = 'days';
