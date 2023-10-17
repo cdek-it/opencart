@@ -52,7 +52,9 @@ build_custom:
     - export RELEASE_VERSION="${CI_COMMIT_REF_NAME}#${CI_COMMIT_SHORT_SHA}"
   script:
     - sed -i "s/\(<version>\)\( *\).*/\1\2${RELEASE_VERSION}/" install.xml
-    - cd upload/system/library/cdek_official && composer i -a
+    - cd upload/system/library/cdek_official
+    - composer i -a
+    - cd ../../../../
     - mkdir /cdek
     - cp -r * /cdek
     - mv /cdek .
