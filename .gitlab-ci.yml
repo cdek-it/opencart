@@ -28,7 +28,7 @@ build_tag:
     - cd upload/system/library/cdek_official
     - composer i -a
   artifacts:
-    name: cdek-integration
+    name: cdek-integration.ocmod
     paths:
       - upload
       - install.xml
@@ -40,7 +40,7 @@ build_custom:
   tags:
     - docker
   artifacts:
-    name: cdek-integration
+    name: cdek-integration.ocmod
     paths:
       - upload
       - install.xml
