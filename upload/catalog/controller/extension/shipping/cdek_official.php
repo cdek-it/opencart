@@ -36,7 +36,7 @@ class ControllerExtensionShippingCdekOfficial extends Controller
                 $tariffModel = new Tariffs();
                 if ($tariffModel->getDirectionByCode((int)$tariffCode) === 'store' || $tariffModel->getDirectionByCode((int)$tariffCode) === 'postamat') {
                     $code[] = $quote['code'];
-                    $mapLayout[$quote['code']] = $quote['extra'];
+                    $mapLayout[$quote['code']] = $quote['extra'] ?? '';
                     unset($data['shipping_methods']['cdek_official']['quote'][$key]['extra']);
                 }
             }
