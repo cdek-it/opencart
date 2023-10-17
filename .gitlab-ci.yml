@@ -56,6 +56,7 @@ build_custom:
     - mkdir /cdek
     - cp -r * /cdek
     - mv /cdek .
+    - ls -la
 
 upload:
   stage: upload
