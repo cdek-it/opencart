@@ -32,8 +32,8 @@ class ControllerExtensionShippingCdekOfficial extends Controller
 
         $app->checkState($app->data);
         $userToken = $this->session->data['user_token'];
-        $app->data['action'] = $this->url->link('extension/shipping/cdek_official', 'user_token=' . $userToken);
-        $app->data['cancel'] = $this->url->link('extension/shipping', 'user_token=' . $userToken);
+        $app->data['action'] = $this->url->link('extension/shipping/cdek_official', 'user_token=' . $userToken, true);
+        $app->data['cancel'] = $this->url->link('extension/shipping', 'user_token=' . $userToken, true);
         $app->data['header'] = $this->load->controller('common/header');
         $app->data['column_left'] = $this->load->controller('common/column_left');
         $app->data['footer'] = $this->load->controller('common/footer');
