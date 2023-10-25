@@ -77,7 +77,7 @@ class App
             $isAuth = $this->cdekApi->checkAuth();
             $this->data['status_auth'] = $isAuth;
             if (!$isAuth) {
-                $redirectUrl = $this->url->link('extension/shipping/cdek_official', "user_token={$this->userToken}");
+                $redirectUrl = $this->url->link('extension/shipping/cdek_official', "user_token=$this->userToken", true);
                 $this->registry->get('response')->redirect($redirectUrl);
             }
             try {
@@ -89,7 +89,7 @@ class App
                     $this->language->get($exception->getMessage());
             }
 
-            $redirectUrl = $this->url->link('extension/shipping/cdek_official', "user_token={$this->userToken}");
+            $redirectUrl = $this->url->link('extension/shipping/cdek_official', "user_token=$this->userToken", true);
             $this->registry->get('response')->redirect($redirectUrl);
         }
 
@@ -117,15 +117,15 @@ class App
         $this->data['breadcrumbs'] = [
             [
                 'text' => $this->language->get('text_home'),
-                'href' => $this->url->link('common/dashboard', "user_token={$this->userToken}", true)
+                'href' => $this->url->link('common/dashboard', "user_token=$this->userToken", true)
             ],
             [
                 'text' => $this->language->get('text_extension'),
-                'href' => $this->url->link('marketplace/extension', "user_token={$this->userToken}&type=shipping", true)
+                'href' => $this->url->link('marketplace/extension', "user_token=$this->userToken&type=shipping", true)
             ],
             [
                 'text' => $this->language->get('heading_title'),
-                'href' => $this->url->link('extension/shipping/cdek_official', "user_token={$this->userToken}", true)
+                'href' => $this->url->link('extension/shipping/cdek_official', "user_token=$this->userToken", true)
             ]
         ];
     }

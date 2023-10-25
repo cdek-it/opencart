@@ -104,7 +104,7 @@ class Service
         }
 
         curl_setopt_array($ch, array(
-            CURLOPT_USERAGENT => 'widget/2.0',
+            CURLOPT_USERAGENT => 'opencart/1.0',
             CURLOPT_HTTPHEADER => $headers,
             CURLOPT_RETURNTRANSFER => true,
         ));
