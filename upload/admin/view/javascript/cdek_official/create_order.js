@@ -1,8 +1,6 @@
 $(document).ready(function() {
     $('#create-order').click(function (event) {
         event.preventDefault();
-        console.log('default')
-        console.log(orderId)
         $('#cdek_order_create_success').hide();
         $('#cdek_order_create_error').hide();
         let data = {
@@ -25,16 +23,11 @@ $(document).ready(function() {
                 $('#cdek-loader').hide();
             },
             success: function(response) {
-                //cdek_order_create_success
-                console.log(response)
                 let resp = JSON.parse(response);
                 if (resp.state === false) {
                     $('#cdek_order_create_error').text(resp.message).show()
                     return;
                 }
-                console.log(resp.data)
-                console.log(resp.data.cdek_number)
-                console.log(resp.data.cdek_uuid)
                 $('#cdek_order_number_name').text(resp.data.cdek_number);
                 $('#cdek_order_customer_name').text(resp.data.name);
                 $('#cdek_order_type_name').text(resp.data.type);
@@ -48,7 +41,6 @@ $(document).ready(function() {
                 $('#cdek_get_bill_btn').attr('data-uuid', resp.data.cdek_uuid);
                 $('#cdek_order_create_form').hide();
                 $('#cdek_order_created').show();
-                console.log(resp);
             },
             error: function(error) {
                 console.log(error);
@@ -67,17 +59,20 @@ $(document).ready(function() {
                 order_id: orderId
             },
             success: function(response) {
-                // console.log(response)
-                // let resp = JSON.parse(response);
-                // $('#cdek_order_create_form').show()
+                console.log(response)
+                let resp = JSON.parse(response);
+                if (!resp.state) {
+                    $('#cdek_order_create_error').text(resp.message).show()
+                    return;
+                }
+                $('#cdek_order_deleted #cdek_order_number_name').html(resp.order.cdek_number)
+                $('#cdek_order_deleted #cdek_order_customer_name').html(resp.order.name)
+                $('#cdek_order_deleted #cdek_order_type_name').html(resp.order.type)
+                $('#cdek_order_deleted #cdek_order_payment_type_name').html(resp.order.payment_type)
+                $('#cdek_order_deleted #cdek_order_direction_name').html(resp.order.to_location)
+                $('#cdek_order_deleted #cdek_order_pvz_code').html(resp.order.pvz_code)
                 $('#cdek_order_created').hide()
                 $('#cdek_order_deleted').show()
-
-                // if (resp.state) {
-                //     $('#cdek_order_create_success').text(resp.message).show()
-                // } else {
-                //     $('#cdek_order_create_error').text(resp.message).show()
-                // }
             },
             error: function(error) {
                 console.log(error);

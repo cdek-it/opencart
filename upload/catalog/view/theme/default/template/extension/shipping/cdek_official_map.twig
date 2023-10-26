@@ -15,7 +15,6 @@
                 },
                 servicePath: '/index.php?route=extension/shipping/cdek_official&cdekRequest=1',
                 onChoose: function (type, tariff, address) {
-                    console.log(type, tariff, address)
                     $('#cdek_official_pvz_code').val(address.code);
                     $('#cdek_official_pvz_code_address').val(`[${address.code}] ${address.address}`);
                     $('#cdek_official_pvz_code_address').show();
