@@ -90,7 +90,7 @@ class Order
         $tariffNameParts = explode('_', $this->orderOC['shipping_code']);
         $tariffCodeCustomer = end($tariffNameParts);
         return [
-            'nameCustomer' => $this->orderOC['customer'],
+            'nameCustomer' => $this->orderOC['firstname'] . ' ' . $this->orderOC['lastname'],
             'addressCustomer' => $this->orderOC['shipping_address_1'] . ' ' . $this->orderOC['shipping_address_2'],
             'postcodeCustomer' => $this->orderOC['shipping_postcode'],
             'tariffCodeCustomer' => $tariffCodeCustomer,
