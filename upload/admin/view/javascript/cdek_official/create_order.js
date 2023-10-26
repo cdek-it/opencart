@@ -59,7 +59,6 @@ $(document).ready(function() {
                 order_id: orderId
             },
             success: function(response) {
-                console.log(response)
                 let resp = JSON.parse(response);
                 if (!resp.state) {
                     $('#cdek_order_create_error').text(resp.message).show()
