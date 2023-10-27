@@ -169,6 +169,7 @@ class App
             }
 
             if ($requestAction === 'deleteOrder') {
+                $order = CdekOrderMetaRepository::getOrder($this->db, (int)$this->request->post['order_id']);
                 CdekOrderMetaRepository::deleteOrder($this->db, (int)$this->request->post['order_id']);
                 $response = $this->cdekApi->deleteOrder($this->request->post['uuid']);
                 if (CdekApiValidate::deleteOrder($response)) {
@@ -183,7 +184,7 @@ class App
                         $message = 'An error occurred during deletion. The order was marked as deleted. Error code: ' . $response->requests[0]->errors[0]->code . '. Contact the technical support of the module';
                     }
                 }
-                echo json_encode(['state' => $state, 'message' => $message]);
+                echo json_encode(['state' => $state, 'message' => $message, 'order' => $order->rows[0]]);
                 exit;
             }
 

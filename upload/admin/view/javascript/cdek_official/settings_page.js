@@ -29,7 +29,6 @@ $(document).ready(function() {
                 },
                 dataType: 'json',
                 success: function(response) {
-                    console.log("Success: ", response);
                     $('#city-choices').empty();
                     $.each(response, function(index, item) {
                         $('#city-choices').append('<div class="city-choice" data-code="' + item.code + '">' + item.country + ', ' + item.region + ', ' + item.city + '</div>');
