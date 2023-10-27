@@ -43,7 +43,7 @@ class ControllerExtensionShippingCdekOfficial extends Controller
         }
 
         if (!empty($code)) {
-            $cdekBlock = '<p><strong>CDEK Official Shipping</strong></p>';
+            $cdekBlock = '<p>/<[^>]*>CDEK Official Shipping</[^>]*></p>';
             $pvzCode = '
                 <input class="cdek_official_pvz_code_address" id="cdek_official_pvz_code_address" name="cdek_official_pvz_code_address" value="" style="display: none; width: 250px;">
                 <input type="hidden" id="cdek_official_pvz_code" name="cdek_official_pvz_code" value="">
