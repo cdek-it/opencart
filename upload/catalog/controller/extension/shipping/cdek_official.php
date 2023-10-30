@@ -11,7 +11,7 @@ require_once(DIR_SYSTEM . 'library/cdek_official/vendor/autoload.php');
 class ControllerExtensionShippingCdekOfficial extends Controller
 {
 
-    public function index()
+    public function index(): void
     {
         if (isset($this->request->get['cdekRequest'])) {
             $this->load->model('setting/setting');
@@ -25,47 +25,14 @@ class ControllerExtensionShippingCdekOfficial extends Controller
         }
     }
 
-    public function cdek_official_checkout_shipping_after(&$route, &$data, &$output)
+    public function addMapScript(): void
     {
-        $code = [];
-        $mapLayout = [];
-        if (array_key_exists('cdek_official', $data['shipping_methods'])) {
-            foreach ($data['shipping_methods']['cdek_official']['quote'] as $key => $quote) {
-                $separate = explode('_', $key);
-                $tariffCode = end($separate);
-                $tariffModel = new Tariffs();
-                if ($tariffModel->getDirectionByCode((int)$tariffCode) === 'store' || $tariffModel->getDirectionByCode((int)$tariffCode) === 'postamat') {
-                    $code[] = $quote['code'];
-                    $mapLayout[$quote['code']] = $quote['extra'] ?? '';
-                    unset($data['shipping_methods']['cdek_official']['quote'][$key]['extra']);
-                }
-            }
-        }
-
-        if (!empty($code)) {
-            $cdekBlock = '<p><strong>CDEK Official Shipping</strong></p>';
-            $pvzCode = '
-                <input class="cdek_official_pvz_code_address" id="cdek_official_pvz_code_address" name="cdek_official_pvz_code_address" value="" style="display: none; width: 250px;">
-                <input type="hidden" id="cdek_official_pvz_code" name="cdek_official_pvz_code" value="">
-            ';
-            $this->searchAndReplace($output, $cdekBlock, $pvzCode);
-            foreach ($code as $quoteCode) {
-                $cdekQuoteLayoutMap = $mapLayout[$quoteCode];
-                $cdekQuoteBlockPattern = '/<div class="radio">.*?value="' . preg_quote($quoteCode, '/') . '".*?<\/label>/s';
-
-                $output = preg_replace_callback($cdekQuoteBlockPattern, function ($matches) use ($cdekQuoteLayoutMap) {
-                    return substr($matches[0], 0, -8) . $cdekQuoteLayoutMap . "</label>";
-                }, $output);
-            }
-        }
+        $this->document->addScript('https://cdn.jsdelivr.net/gh/cdek-it/widget@3.4/dist/cdek-widget.umd.js');
+        $this->document->addStyle('catalog/view/theme/default/stylesheet/cdek_official/map.css');
     }
 
     public function cdek_official_checkout_checkout_after(&$route, &$data, &$output)
     {
-        $header = "<head>";
-        $map = $this->registry->get('load')->view('extension/shipping/cdek_official_map_script');
-        $this->searchAndReplace($output, $header, $map);
-
         $btnShippingMethod = "data: $('#collapse-shipping-method input[type=\'radio\']:checked, #collapse-shipping-method textarea')";
         $btnShippingMethodWithHide = "data: $('#collapse-shipping-method input[type=\'radio\']:checked, #collapse-shipping-method textarea, #collapse-shipping-method input[type=\'hidden\']')";
         $output = str_replace($btnShippingMethod, $btnShippingMethodWithHide, $output);

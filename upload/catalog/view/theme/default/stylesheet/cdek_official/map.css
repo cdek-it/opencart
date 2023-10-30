@@ -1,0 +1,3 @@
+input[type=radio]:checked ~ button.cdek_pvz_map_btn {display: block}
+
+button.cdek_pvz_map_btn {display: none}
