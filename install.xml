@@ -32,4 +32,14 @@
             </add>
         </operation>
     </file>
+    <file path="catalog/controller/checkout/shipping_method.php">
+        <operation>
+            <search>
+                <![CDATA['quote'      => $quote['quote']]]>
+            </search>
+            <add position="after">
+                <![CDATA['extra'      => $quote['extra'] ?? '',]]>
+            </add>
+        </operation>
+    </file>
 </modification>

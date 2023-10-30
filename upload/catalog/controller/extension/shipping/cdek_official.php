@@ -28,7 +28,7 @@ class ControllerExtensionShippingCdekOfficial extends Controller
     public function addMapScript(): void
     {
         $this->document->addScript('https://cdn.jsdelivr.net/gh/cdek-it/widget@3.4/dist/cdek-widget.umd.js');
-        $this->document->addStyle('catalog/view/theme/default/stylesheet/cdek/map.css');
+        $this->document->addStyle('catalog/view/theme/default/stylesheet/cdek_official/map.css');
     }
 
     public function cdek_official_checkout_checkout_after(&$route, &$data, &$output)
