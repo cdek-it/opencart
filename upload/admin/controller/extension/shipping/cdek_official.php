@@ -9,7 +9,7 @@ use CDEK\Settings;
 
 class ControllerExtensionShippingCdekOfficial extends Controller
 {
-    public function uninstall()
+    public function uninstall(): void
     {
         $this->load->model('setting/setting');
         $data['shipping_cdek_official_status'] = 0;
@@ -120,7 +120,7 @@ class ControllerExtensionShippingCdekOfficial extends Controller
         }
     }
 
-    public function install()
+    public function install(): void
     {
         $this->load->model('setting/setting');
         $data['shipping_cdek_official_status'] = 1;
