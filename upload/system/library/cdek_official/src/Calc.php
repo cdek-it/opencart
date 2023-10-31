@@ -35,11 +35,10 @@ class Calc
         if (!empty($quoteData)) {
             $methodData = array(
                 'code' => 'cdek_official',
-                'title' => $this->registry->get('language')->get('text_title'),
+                'title' => $this->registry->get('language')->get('text_title') . $this->registry->get('load')->view('extension/shipping/cdek_official_checkout_inputs'),
                 'quote' => $quoteData,
                 'sort_order' => $this->registry->get('config')->get('shipping_cdek_official_sort_order'),
                 'error' => false,
-                'extra' => $this->registry->get('load')->view('extension/shipping/cdek_official_checkout_inputs'),
             );
         }
 
@@ -143,7 +142,7 @@ class Calc
 
                 $tariffModel = new Tariffs();
                 if ($tariffModel->getDirectionByCode($tariff->tariff_code) === 'store' || $tariffModel->getDirectionByCode($tariff->tariff_code) === 'postamat') {
-                    $quoteData['cdek_official_' . $tariff->tariff_code]['extra'] = $this->registry->get('load')->view('extension/shipping/cdek_official_map',
+                    $quoteData['cdek_official_' . $tariff->tariff_code]['title'] .= $this->registry->get('load')->view('extension/shipping/cdek_official_map',
                         [
                             'tariff' => $tariff->tariff_code,
                             'apikey' => $this->settings->authSettings->apiKey,
