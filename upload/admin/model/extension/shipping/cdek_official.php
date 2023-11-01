@@ -16,13 +16,11 @@ class ModelExtensionShippingCdekOfficial extends Model
         'catalog/controller/checkout/confirm/after' => [
             'cdek_official_checkout_confirm' => 'extension/shipping/cdek_official/cdek_official_checkout_confirm_after',
         ],
-        'catalog/controller/checkout/checkout/before' => [
-            'cdek_official_checkout_map' => 'extension/shipping/cdek_official/addMapScript'
-        ],
     ];
 
     private const OBSOLETE_EVENTS = [
         'cdek_official_shipping',
+        'cdek_official_checkout_map',
     ];
 
     public function createEvents()
