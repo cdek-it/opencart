@@ -1,66 +1,33 @@
-<button class="cdek_pvz_map_btn" id="cdek_official_{{ tariff }}"
-        style="background-color: #dbdbdb; border-radius: 5px; padding: 3px;">Выбрать ПВЗ
-</button>
 <script type="text/javascript">
-    document.getElementById('cdek_official_{{ tariff }}').addEventListener('click', () => {
-        if(window.cdekWidget === undefined){
-            window.cdekWidget = new window.CDEKWidget({
-                apiKey: '{{ apikey }}',
-                defaultLocation: '{{ city }}',
-                popup: true,
-                canChoose: true,
-                hideDeliveryOptions: {
-                    office: false,
-                    door: true,
-                },
-                servicePath: '/index.php?route=extension/shipping/cdek_official&cdekRequest=1',
-                onChoose: function (type, tariff, address) {
-                    $('#cdek_official_pvz_code').val(address.code);
-                    $('#cdek_official_pvz_code_address').val(`[${address.code}] ${address.address}`);
-                    $('#cdek_official_pvz_code_address').show();
-                }
-            });
-        }else{
-            window.cdekWidget.updateLocation('{{ city }}');
-        }
-        window.cdekWidget.open()
-    });
+    if(document.getElementById('cdek_official_office_button_{{ tariff }}') === null){
+        var btn = document.createElement('button');
+        btn.classList.add('cdek_pvz_map_btn');
+        btn.innerText='Выбрать ПВЗ';
+        btn.id='cdek_official_office_button_{{ tariff }}';
+        btn.addEventListener('click', () => {
+            if(window.cdekWidget === undefined){
+                window.cdekWidget = new window.CDEKWidget({
+                                                              apiKey: '{{ apikey }}',
+                                                              defaultLocation: '{{ city }}',
+                                                              popup: true,
+                                                              canChoose: true,
+                                                              hideDeliveryOptions: {
+                                                                  office: false,
+                                                                  door: true,
+                                                              },
+                                                              servicePath: '/index.php?route=extension/shipping/cdek_official&cdekRequest=1',
+                                                              onChoose: function (type, tariff, address) {
+                                                                  $('#cdek_official_pvz_code').val(address.code);
+                                                                  $('#cdek_official_pvz_code_address').val(`[${address.code}] ${address.address}`);
+                                                                  $('#cdek_official_pvz_code_address').show();
+                                                                  $('#cdek_official_pvz_code_address').attr('disabled', '1');
+                                                              }
+                                                          });
+            }else{
+                window.cdekWidget.updateLocation('{{ city }}');
+            }
+            window.cdekWidget.open()
+        });
+        document.querySelector("label[for='cdek_official.cdek_official_{{ tariff }}'] input").after(btn);
+    }
 </script>
-{# <script type="text/javascript"> #}
-{#    (() => { #}
-{#        const widget_{{ tariff.code }} = new window.CDEKWidget({ #}
-{#            apiKey: '8b88b1d3-462b-4d8a-b2ca-ef519d70aaf9', #}
-{#            defaultLocation: 'Новосибирск', #}
-{#            popup: true, #}
-{#            canChoose: true, #}
-{#            hideDeliveryOptions: { #}
-{#                office: false, #}
-{#                door: true, #}
-{#            }, #}
-{#            offices: [ #}
-{#                {% for office in offices %} #}
-{#                } #}
-{#                    city_code: '{{office.city_code}}', #}
-{#                    type: '{{ office.type }}', #}
-{#                    country_code: '{{office.country_code}}', #}
-{#                    have_cashless: {{office.have_cashless}}, #}
-{#                    have_cash: {{office.have_cash}}, #}
-{#                    allowed_cod: {{office.allowed_cod}}, #}
-{#                    is_dressing_room: {{office.is_dressing_room}}, #}
-{#                    code: '{{office.code}}', #}
-{#                    name: '{{office.name}}', #}
-{#                    address: '{{office.address}}', #}
-{#                    work_time: '{{office.work_time}}', #}
-{#                    location: [{{office.location[0]}},'{{office.location[1]}}'], #}
-{#                }, #}
-{#                {% endfor %} #}
-{#            ], #}
-{#            onChoose: function (type, tariff, address) { #}
-{#                console.log(type, tariff, address) #}
-{#                $('#cdek_official_pvz_code').val(address.code); #}
-{#            } #}
-{#        }); #}
-{#        document.getElementById('cdek_official_{{ tariff.code }}').addEventListener('click', () => {widget_{{ tariff.code }}.open()}); #}
-{#    })(); #}
-{# </script> #}
-
