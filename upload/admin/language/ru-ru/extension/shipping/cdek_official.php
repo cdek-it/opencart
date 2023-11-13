@@ -136,6 +136,7 @@ $_['cdek_error_shipping_many_packages_empty'] = 'Много упаковок н�
 $_['cdek_error_shipping_extra_days_empty'] = 'Дополнительные дни не указаны';
 $_['cdek_error_shipping_city_empty'] = 'Город не указан';
 $_['cdek_error_shipping_city_address_empty'] = 'Адрес города не указан';
+$_['cdek_error_shipping_sender_locality'] = 'Пожалуйста. Уточните адрес отправки на карте еще раз. Чтобы пересохранить его';
 $_['cdek_error_shipping_pvz_empty'] = 'Пункт самовывоза не указан';
 $_['cdek_error_shipping_seller_name_empty'] = 'Имя продавца не указано';
 $_['cdek_error_shipping_seller_name_too_long'] = 'Имя продавца не должно превышать 255 символов';

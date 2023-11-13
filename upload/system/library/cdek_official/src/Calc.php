@@ -79,14 +79,15 @@ class Calc
         $toLocationCode = $recipientLocation[0]->code;
         if (!empty($this->settings->shippingSettings->shippingCityAddress)) {
             //[0] - country_code, [1] - postal_code, [2] - city,
-            $senderLocality = explode(':', $this->settings->shippingSettings->shippingSenderLocality);
+            $shippingSenderLocality = $this->settings->shippingSettings->shippingSenderLocality;
+            $senderLocality = explode(':', $shippingSenderLocality);
             $data = [
                 "currency" => $currencySelected,
                 "from_location" => [
                     "address" => $this->settings->shippingSettings->shippingCityAddress,
-                    'country_code' => $senderLocality[0],
-                    'postal_code' => $senderLocality[1],
-                    'city' => $senderLocality[2],
+                    'country_code' => $shippingSenderLocality ?? $senderLocality[0],
+                    'postal_code' => $shippingSenderLocality ?? $senderLocality[1],
+                    'city' => $shippingSenderLocality ??$senderLocality[2],
                 ],
                 "to_location" => [
                     "code" => $toLocationCode

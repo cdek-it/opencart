@@ -134,6 +134,7 @@ $_['cdek_error_shipping_many_packages_empty'] = 'Shipping many packages is empty
 $_['cdek_error_shipping_extra_days_empty'] = 'Shipping extra days is empty';
 $_['cdek_error_shipping_city_empty'] = 'Shipping city is empty';
 $_['cdek_error_shipping_city_address_empty'] = 'Shipping city address is empty';
+$_['cdek_error_shipping_sender_locality'] = 'Please clarify the shipping address on the map again. To resave it';
 $_['cdek_error_shipping_pvz_empty'] = 'Shipping PVZ is empty';
 $_['cdek_error_shipping_seller_name_empty'] = 'Seller name is empty';
 $_['cdek_error_shipping_seller_name_too_long'] = 'Seller name should not exceed 255 characters';
