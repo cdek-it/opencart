@@ -1,5 +1,6 @@
 <script type="text/javascript">
     if(document.getElementById('cdek_official_office_button_{{ tariff }}') === null){
+        console.log({{ offices }})
         var btn = document.createElement('button');
         btn.classList.add('cdek_pvz_map_btn');
         btn.innerText='Выбрать ПВЗ';
@@ -15,6 +16,7 @@
                                                                   office: false,
                                                                   door: true,
                                                               },
+                                                              officesRaw: {{ offices }},
                                                               servicePath: '/index.php?route=extension/shipping/cdek_official&cdekRequest=1',
                                                               onChoose: function (type, tariff, address) {
                                                                   $('#cdek_official_pvz_code').val(address.code);
@@ -28,6 +30,8 @@
             }
             window.cdekWidget.open()
         });
-        document.querySelector("label[for='cdek_official.cdek_official_{{ tariff }}'] input").after(btn);
+
+        {#console.log(document.querySelector("label input[value='cdek_official.cdek_official_{{ tariff }}']").parentElement)#}
+        document.querySelector("label input[value='cdek_official.cdek_official_{{ tariff }}']").after(btn);
     }
 </script>

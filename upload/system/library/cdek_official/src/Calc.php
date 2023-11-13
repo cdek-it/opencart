@@ -78,10 +78,15 @@ class Calc
         $currencySelected = $currency->getSelectedCurrency();
         $toLocationCode = $recipientLocation[0]->code;
         if (!empty($this->settings->shippingSettings->shippingCityAddress)) {
+            //[0] - country_code, [1] - postal_code, [2] - city,
+            $senderLocality = explode(':', $this->settings->shippingSettings->shippingSenderLocality);
             $data = [
                 "currency" => $currencySelected,
                 "from_location" => [
-                    "address" => $this->settings->shippingSettings->shippingCityAddress
+                    "address" => $this->settings->shippingSettings->shippingCityAddress,
+                    'country_code' => $senderLocality[0],
+                    'postal_code' => $senderLocality[1],
+                    'city' => $senderLocality[2],
                 ],
                 "to_location" => [
                     "code" => $toLocationCode
@@ -142,11 +147,14 @@ class Calc
 
                 $tariffModel = new Tariffs();
                 if ($tariffModel->getDirectionByCode($tariff->tariff_code) === 'store' || $tariffModel->getDirectionByCode($tariff->tariff_code) === 'postamat') {
+                    $offices = $this->cdekApi->getOffices($recipientLocation[0]->code);
+
                     $quoteData['cdek_official_' . $tariff->tariff_code]['title'] .= $this->registry->get('load')->view('extension/shipping/cdek_official_map',
                         [
                             'tariff' => $tariff->tariff_code,
                             'apikey' => $this->settings->authSettings->apiKey,
-                            'city' => $recipientLocation[0]->city
+                            'city' => $recipientLocation[0]->city,
+                            'offices' => json_encode($offices)
                         ]);
                 }
             }

@@ -22,6 +22,10 @@
                         // $('#cdek_official_shipping__pvz_code').val(address.code);
                         $('#cdek_official_shipping__pvz').val(address.city + ', ' + address.code);
                     } else {
+                        console.log(address.country_code)
+                        console.log(address.postal_code)
+                        console.log(address.city)
+                        $('#cdek_official_sender_locality').val(address.country_code + ':' + address.postal_code + ':' + address.city)
                         $('#cdek_official_shipping__city_address').val(address.formatted)
                     }
                 }
@@ -451,6 +455,9 @@
                             </fieldset>
 
                             <div id="cdek-map" style="width:auto;height:600px"></div>
+
+                            <input type="hidden" name="cdek_official_sender_locality" id="cdek_official_sender_locality"/>
+
                             <fieldset>
                                 <legend>{{ cdek_dimensions }}</legend>
                                 <div class="alert alert-info">

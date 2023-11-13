@@ -106,6 +106,11 @@ class CdekApi
         return $pvz;
     }
 
+    public function getOffices($cityCode)
+    {
+        return $this->sendRequest($this->getAuthUrl() . self::PVZ_PATH, 'GET', ['city_code' => $cityCode]);
+    }
+
     public function getCityCodeByPvz($pvzCode)
     {
         $url = $this->getAuthUrl() . self::PVZ_PATH;
