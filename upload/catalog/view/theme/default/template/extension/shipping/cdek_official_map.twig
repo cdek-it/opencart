@@ -17,10 +17,9 @@
                                                               },
                                                               servicePath: '/index.php?route=extension/shipping/cdek_official&cdekRequest=1',
                                                               onChoose: function (type, tariff, address) {
-                                                                  $('#cdek_official_pvz_code').val(address.code);
-                                                                  $('#cdek_official_pvz_code_address').val(`[${address.code}] ${address.address}`);
-                                                                  $('#cdek_official_pvz_code_address').show();
-                                                                  $('#cdek_official_pvz_code_address').attr('disabled', '1');
+                                                                  $('input[name=cdek_official_pvz_code]').val(address.code);
+                                                                  $('input[name=cdek_official_pvz_code_address]').val(`[${address.code}] ${address.address}`);
+                                                                  $('.cdek_official_pvz_code_address').html(`[${address.code}] ${address.address}`).show();
                                                               }
                                                           });
             }else{
