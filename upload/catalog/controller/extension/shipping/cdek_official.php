@@ -13,18 +13,13 @@ class ControllerExtensionShippingCdekOfficial extends Controller
 
     public function index()
     {
-        if (isset($this->request->get['cdekRequest'])) {
-            $this->load->model('setting/setting');
-            $param = $this->model_setting_setting->getSetting('cdek_official');
-            $settings = new Settings();
-            $settings->init($param);
-            $cdekApi = new CdekApi($this->registry, $settings);
-//            $authData = $cdekApi->getData();
-            $city = $cdekApi->getCity($this->request->get['recipientCity']);
-            return json_encode($cdekApi->getOffices($city[0]->code));
-//            $service = new Service($authData['client_id'], $authData['client_secret'], $authData['base_url'], $this->request->get['recipientCity']);
-//            $service->process($this->request->get, file_get_contents('php://input'));
-        }
+        $this->load->model('setting/setting');
+        $param = $this->model_setting_setting->getSetting('cdek_official');
+        $settings = new Settings();
+        $settings->init($param);
+        $cdekApi = new CdekApi($this->registry, $settings);
+        $city = $cdekApi->getCity($this->session->data['shipping_address']['city']);
+        $this->response->setOutput($cdekApi->getOffices($city[0]->code));
     }
 
     public function cdek_official_checkout_checkout_after(&$route, &$data, &$output)
@@ -65,7 +60,8 @@ class ControllerExtensionShippingCdekOfficial extends Controller
     {
         if (isset($this->session->data['order_id']) && isset($this->session->data['cdek_official_pvz_code'])) {
             $cdekPvzCode = $this->session->data['cdek_official_pvz_code'];
-            CdekOrderMetaRepository::insertPvzCode($this->db, DB_PREFIX, $this->session->data['order_id'], $cdekPvzCode);
+            CdekOrderMetaRepository::insertPvzCode($this->db, DB_PREFIX, $this->session->data['order_id'],
+                $cdekPvzCode);
             unset($this->session->data['cdek_official_pvz_code']);
         }
     }

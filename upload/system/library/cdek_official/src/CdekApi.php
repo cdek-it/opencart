@@ -27,9 +27,9 @@ class CdekApi
         $this->registry = $registry;
     }
 
-    private function sendRequest(string $url, string $method, $data = null)
+    private function sendRequest(string $url, string $method, $data = null, $raw = false)
     {
-        return $this->httpClient->sendRequest($url, $method, $this->getToken(), $data);
+        return $this->httpClient->sendRequest($url, $method, $this->getToken(), $data, $raw);
     }
 
     protected function getToken()
@@ -108,7 +108,7 @@ class CdekApi
 
     public function getOffices($cityCode)
     {
-        return $this->sendRequest($this->getAuthUrl() . self::PVZ_PATH, 'GET', ['city_code' => $cityCode]);
+        return $this->sendRequest($this->getAuthUrl() . self::PVZ_PATH, 'GET', ['city_code' => $cityCode], true);
     }
 
     public function getCityCodeByPvz($pvzCode)

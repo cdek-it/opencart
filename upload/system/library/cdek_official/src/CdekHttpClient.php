@@ -4,7 +4,7 @@ namespace CDEK;
 
 class CdekHttpClient
 {
-    public function sendRequest($url, $method, $token, $data = null)
+    public function sendRequest($url, $method, $token, $data = null, $raw = false)
     {
         if (strtoupper($method) === 'GET' && is_array($data)) {
             $data = http_build_query($data);
@@ -27,7 +27,7 @@ class CdekHttpClient
         $output = curl_exec($ch);
         curl_close($ch);
 
-        return json_decode($output);
+        return $raw ? $output : json_decode($output);
     }
 
     public function sendRequestAuth($url, $data)

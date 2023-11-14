@@ -1,6 +1,5 @@
 <script type="text/javascript">
     if(document.getElementById('cdek_official_office_button_{{ tariff }}') === null){
-        {#console.log({{ offices }})#}
         var btn = document.createElement('button');
         btn.classList.add('cdek_pvz_map_btn');
         btn.innerText='Выбрать ПВЗ';
@@ -16,8 +15,7 @@
                                                                   office: false,
                                                                   door: true,
                                                               },
-                                                              {#officesRaw: {{ offices }},#}
-                                                              servicePath: '/index.php?route=extension/shipping/cdek_official&cdekRequest=1&recipientCity={{city}}',
+                                                              servicePath: '/index.php?route=extension/shipping/cdek_official',
                                                               onChoose: function (type, tariff, address) {
                                                                   $('#cdek_official_pvz_code').val(address.code);
                                                                   $('#cdek_official_pvz_code_address').val(`[${address.code}] ${address.address}`);
