@@ -11,7 +11,7 @@ require_once(DIR_SYSTEM . 'library/cdek_official/vendor/autoload.php');
 class ControllerExtensionShippingCdekOfficial extends Controller
 {
 
-    public function index()
+    public function index(): void
     {
         $this->load->model('setting/setting');
         $param = $this->model_setting_setting->getSetting('cdek_official');
@@ -20,10 +20,10 @@ class ControllerExtensionShippingCdekOfficial extends Controller
         $cdekApi = new CdekApi($this->registry, $settings);
 
         if (isset($this->request->get['cdekRequest']) && $this->request->get['cdekRequest'] === 'adminMap') {
-            $this->response->setOutput($cdekApi->getOffices(null));
+            $this->response->setOutput($cdekApi->getOffices(['city_code' => null, 'is_reception' => true]));
         } else {
             $city = $cdekApi->getCity($this->session->data['shipping_address']['city']);
-            $this->response->setOutput($cdekApi->getOffices($city[0]->code));
+            $this->response->setOutput($cdekApi->getOffices(['city_code' => $city[0]->code]));
         }
     }
 
