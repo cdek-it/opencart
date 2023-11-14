@@ -51,9 +51,6 @@ class App
 
     public function connectScripts(): void
     {
-        $scriptPath = $this->dirApplication . 'view/javascript/cdek_official/settings_page.js';
-        $this->data['settings_page'] = file_exists($scriptPath) ? file_get_contents($scriptPath) : '';
-
         $stylePath = $this->dirApplication . 'view/stylesheet/cdek_official/settings_page.css';
         $this->data['settings_page_style'] = file_exists($stylePath) ? file_get_contents($stylePath) : '';
     }
@@ -137,24 +134,6 @@ class App
             $requestAction = $this->request->post['cdekRequest'] ?? $this->request->get['cdekRequest'];
 
             $this->settings->init($this->modelSetting->getSetting('cdek_official'));
-
-            if ($requestAction === 'getCity') {
-                if ($this->request->post['key'] === '') {
-                    exit;
-                }
-                $result = $this->cdekApi->getCity($this->request->post['key']);
-                echo json_encode($result);
-                exit;
-            }
-
-            if ($requestAction === 'getPvz') {
-                if ($this->request->post['key'] === '') {
-                    exit;
-                }
-                $result = $this->cdekApi->getPvz($this->request->post['key']);
-                echo json_encode($result);
-                exit;
-            }
 
             if ($requestAction === 'createOrder') {
                 $createOrder = new CreateOrder($this->registry, $this->settings, $this->cdekApi);
