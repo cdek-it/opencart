@@ -78,19 +78,14 @@ class Calc
         $currencySelected = $currency->getSelectedCurrency();
         $toLocationCode = $recipientLocation[0]->code;
         if (!empty($this->settings->shippingSettings->shippingCityAddress)) {
-            //[0] - country_code, [1] - postal_code, [2] - city,
-            $shippingSenderLocality = $this->settings->shippingSettings->shippingSenderLocality;
-            $senderLocality = explode(':', $shippingSenderLocality);
-            if (empty($shippingSenderLocality)) {
-                $senderLocality = ['', '', ''];
-            }
+            $locality = CdekHelper::getLocality($this->settings->shippingSettings->shippingCityAddress);
             $data = [
                 "currency" => $currencySelected,
                 "from_location" => [
-                    "address" => $this->settings->shippingSettings->shippingCityAddress,
-                    'country_code' => $senderLocality[0],
-                    'postal_code' => $senderLocality[1],
-                    'city' => $senderLocality[2],
+                    "address" => $locality->address,
+                    'country_code' => $locality->country,
+                    'postal_code' => $locality->postal,
+                    'city' => $locality->city,
                 ],
                 "to_location" => [
                     "code" => $toLocationCode
@@ -108,10 +103,13 @@ class Calc
         //От пвз
         $tariffCalculatedToPvz = [];
         if (!empty($this->settings->shippingSettings->shippingPvz)) {
+            $locality = CdekHelper::getLocality($this->settings->shippingSettings->shippingPvz);
             $data = [
                 "currency" => $currencySelected,
                 "from_location" => [
-                    "address" => explode(',', $this->settings->shippingSettings->shippingPvz)[0]
+                    "country_code" => $locality->country,
+                    "postal_code" => $locality->postal,
+                    "city" => $locality->city
                 ],
                 "to_location" => [
                     "code" => $toLocationCode

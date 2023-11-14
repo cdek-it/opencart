@@ -160,7 +160,8 @@ $_['cdek_error_dimensions_length_package_invalid'] = 'Length invalid';
 $_['cdek_error_cdek_number_empty'] = 'Cdek number will be available later';
 $_['cdek_dimensions__desc'] = 'The fields are intended for entering values of overall dimensions of one unit of goods. If the dimensions of the product are not specified, the values will be automatically substituted from the following fields. This allows you to avoid errors when calculating the delivery cost.';
 $_['cdek_official_v2_entity_invalid'] = 'An error occurred while creating an order. The order is incorrect';
-
-
+$_['cdek_official_shipping__pvz_view_text'] = 'Selected office';
+$_['cdek_official_shipping__city_address_view'] = 'Selected address';
+$_['cdek_official_shipping__not_selected'] = 'Not selected';
 
 

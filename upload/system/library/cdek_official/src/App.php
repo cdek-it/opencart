@@ -97,17 +97,16 @@ class App
         $isAuth = $this->cdekApi->checkAuth();
         $this->data['status_auth'] = $isAuth;
         $this->settings->updateData($this->data);
-        if ($isAuth) {
-            if (!empty($this->settings->shippingSettings->shippingPvz)) {
-                $this->data['map_city'] = explode(',', $this->settings->shippingSettings->shippingPvz)[0];
-            } elseif (!empty($this->settings->shippingSettings->shippingCityAddress)) {
-                $this->data['map_city'] = trim(explode(',', $this->settings->shippingSettings->shippingCityAddress)[1]);
-            } else {
-                $this->data['map_city'] = 'Москва';
-            }
-        } else {
-            $this->data['map_city'] = 'Москва';
+
+        $this->data['map_city'] = 'Москва';
+        if (!empty($this->settings->shippingSettings->shippingPvz)) {
+            $locality = CdekHelper::getLocality($this->settings->shippingSettings->shippingPvz);
+            $this->data['map_city'] = $locality->city;
+        } elseif (!empty($this->settings->shippingSettings->shippingCityAddress)) {
+            $locality = CdekHelper::getLocality($this->settings->shippingSettings->shippingCityAddress);
+            $this->data['map_city'] = $locality->city;
         }
+
         $this->data['tariffs'] = $this->settings->shippingSettings->shippingTariffs;
         $this->data['currencies'] = $this->settings->shippingSettings->shippingCurrencies;
     }
