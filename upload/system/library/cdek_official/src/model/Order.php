@@ -142,12 +142,15 @@ class Order
         if ($this->tariffs->getFromByCode($tariffCode) === "door") {
             $shippingSenderLocality = $this->settings->shippingSettings->shippingSenderLocality;
             $senderLocality = explode(':', $shippingSenderLocality);
+            if (empty($shippingSenderLocality)) {
+                $senderLocality = ['', '', ''];
+            }
             $result = [
                 "from_location" => [
                     "address" => $this->settings->shippingSettings->shippingCityAddress,
-                    'country_code' => $shippingSenderLocality ?? $senderLocality[0],
-                    'postal_code' => $shippingSenderLocality ??$senderLocality[1],
-                    'city' => $shippingSenderLocality ?? $senderLocality[2],
+                    'country_code' => $senderLocality[0],
+                    'postal_code' => $senderLocality[1],
+                    'city' => $senderLocality[2],
                 ]
             ];
         } else {

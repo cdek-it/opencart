@@ -11,7 +11,7 @@ require_once(DIR_SYSTEM . 'library/cdek_official/vendor/autoload.php');
 class ControllerExtensionShippingCdekOfficial extends Controller
 {
 
-    public function index(): void
+    public function index()
     {
         if (isset($this->request->get['cdekRequest'])) {
             $this->load->model('setting/setting');
@@ -19,9 +19,11 @@ class ControllerExtensionShippingCdekOfficial extends Controller
             $settings = new Settings();
             $settings->init($param);
             $cdekApi = new CdekApi($this->registry, $settings);
-            $authData = $cdekApi->getData();
-            $service = new Service($authData['client_id'], $authData['client_secret'], $authData['base_url']);
-            $service->process($this->request->get, file_get_contents('php://input'));
+//            $authData = $cdekApi->getData();
+            $city = $cdekApi->getCity($this->request->get['recipientCity']);
+            return json_encode($cdekApi->getOffices($city[0]->code));
+//            $service = new Service($authData['client_id'], $authData['client_secret'], $authData['base_url'], $this->request->get['recipientCity']);
+//            $service->process($this->request->get, file_get_contents('php://input'));
         }
     }
 
