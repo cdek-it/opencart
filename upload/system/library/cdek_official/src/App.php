@@ -139,12 +139,6 @@ class App
 
             $this->settings->init($this->modelSetting->getSetting('cdek_official'));
 
-            if ($requestAction === 'map') {
-                $authData = $this->cdekApi->getData();
-                $service = new Service($authData['client_id'], $authData['client_secret']);
-                $service->process($this->request->get, file_get_contents('php://input'));
-            }
-
             if ($requestAction === 'getCity') {
                 if ($this->request->post['key'] === '') {
                     exit;

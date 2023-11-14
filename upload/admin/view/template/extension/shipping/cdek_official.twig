@@ -7,7 +7,7 @@
                 from: '{{ city }}',
                 apiKey: '{{ apikey }}',
                 canChoose: true,
-                servicePath: '/index.php?route=extension/shipping/cdek_official&cdekRequest=map',
+                servicePath: '/index.php?route=extension/shipping/cdek_official&cdekRequest=adminMap',
                 sender: true,
                 lang: '{{ map_lang }}',
                 hideDeliveryOptions: {
@@ -15,16 +15,9 @@
                     door: false,
                 },
                 onChoose: function (type, tariff, address) {
-                    console.log(type)
-                    console.log(tariff)
-                    console.log(address)
                     if (type === 'office') {
-                        // $('#cdek_official_shipping__pvz_code').val(address.code);
                         $('#cdek_official_shipping__pvz').val(address.city + ', ' + address.code);
                     } else {
-                        console.log(address.country_code)
-                        console.log(address.postal_code)
-                        console.log(address.city)
                         $('#cdek_official_sender_locality').val(address.country_code + ':' + address.postal_code + ':' + address.city)
                         $('#cdek_official_shipping__city_address').val(address.formatted)
                     }

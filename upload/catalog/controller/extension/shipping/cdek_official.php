@@ -18,8 +18,13 @@ class ControllerExtensionShippingCdekOfficial extends Controller
         $settings = new Settings();
         $settings->init($param);
         $cdekApi = new CdekApi($this->registry, $settings);
-        $city = $cdekApi->getCity($this->session->data['shipping_address']['city']);
-        $this->response->setOutput($cdekApi->getOffices($city[0]->code));
+
+        if (isset($this->request->get['cdekRequest']) && $this->request->get['cdekRequest'] === 'adminMap') {
+            $this->response->setOutput($cdekApi->getOffices(null));
+        } else {
+            $city = $cdekApi->getCity($this->session->data['shipping_address']['city']);
+            $this->response->setOutput($cdekApi->getOffices($city[0]->code));
+        }
     }
 
     public function cdek_official_checkout_checkout_after(&$route, &$data, &$output)
