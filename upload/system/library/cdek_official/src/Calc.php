@@ -142,11 +142,11 @@ class Calc
 
                 $tariffModel = new Tariffs();
                 if ($tariffModel->getDirectionByCode($tariff->tariff_code) === 'store' || $tariffModel->getDirectionByCode($tariff->tariff_code) === 'postamat') {
-                    $quoteData['cdek_official_' . $tariff->tariff_code]['title'] .= $this->registry->get('load')->view('extension/shipping/cdek_official_map',
+                    $quoteData['cdek_official_' . $tariff->tariff_code]['extra'] = $this->registry->get('load')->view('extension/shipping/cdek_official_map',
                         [
                             'tariff' => $tariff->tariff_code,
                             'apikey' => $this->settings->authSettings->apiKey,
-                            'city' => $recipientLocation[0]->city
+                            'city' => $recipientLocation[0]->city,
                         ]);
                 }
             }
