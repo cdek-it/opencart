@@ -144,10 +144,6 @@ class Order
         if ($this->tariffs->getFromByCode($tariffCode) === "door") {
             $locality = CdekHelper::getLocality($this->settings->shippingSettings->shippingCityAddress);
             if (CdekHelper::checkLocalityAddress($locality)) {
-                $locality->address = '';
-                $locality->country = '';
-                $locality->postal = '';
-                $locality->city = '';
                 $result = [
                     "from_location" => [
                         "address" => $locality->address ?? '',
