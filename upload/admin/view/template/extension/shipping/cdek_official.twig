@@ -1,4 +1,4 @@
-<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/cdek-it/widget@latest/dist/cdek-widget.umd.js"
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/cdek-it/widget@3.6.1/dist/cdek-widget.umd.js"
         charset="utf-8"></script>
 {% if status_auth %}
     <script>
@@ -72,7 +72,6 @@
 
             new window.CDEKWidget({
                                       defaultLocation: '{{ city }}',
-                                      from: '{{ city }}',
                                       apiKey: '{{ apikey }}',
                                       canChoose: true,
                                       servicePath: '/index.php?route=extension/shipping/cdek_official&cdekRequest=adminMap',
