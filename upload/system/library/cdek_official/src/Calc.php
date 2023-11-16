@@ -55,17 +55,6 @@ class Calc
         if (empty($recipientLocation)) {
             return [];
         }
-//        if (empty($recipientLocation)) {
-//            $tariffPlugName = $this->getTariffPlugName();
-//            $quoteData['cdek_official_tariff_plug'] = [
-//                'code' => 'cdek_official.cdek_official_tariff_plug',
-//                'title' => $tariffPlugName,
-//                'cost' => 0,
-//                'tax_class_id' => 0,
-//                'text' => ('address incorrect')
-//            ];
-//            return $quoteData;
-//        }
 
         //От двери
         $tariffCalculatedToDoor = [];
@@ -147,6 +136,10 @@ class Calc
                             'tariff' => $tariff->tariff_code,
                             'apikey' => $this->settings->authSettings->apiKey,
                             'city' => $recipientLocation[0]->city,
+                            'length' => $package[0]['length'],
+                            'width' => $package[0]['width'],
+                            'height' => $package[0]['height'],
+                            'weight' => $package[0]['weight'],
                         ]);
                 }
             }
