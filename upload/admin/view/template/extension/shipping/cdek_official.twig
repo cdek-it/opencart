@@ -21,7 +21,11 @@
                             ${parsedOffice.code ? parsedOffice.code : ''}
                         `);
                         $('.cdek_official_map_info_block_office').addClass('cdek_official_map_info_block_selected');
-                    } catch (e) {}
+                    } catch (e) {
+                        $('#cdek_official_map_address_error').show()
+                        $('.cdek_official_map_info_block_office').removeClass('cdek_official_map_info_block_selected');
+                        officeInputView.html(messageNotSelected);
+                    }
                 } else {
                     $('.cdek_official_map_info_block_office').removeClass('cdek_official_map_info_block_selected');
                     officeInputView.html(messageNotSelected);
@@ -40,7 +44,11 @@
                             ${parsedAddress.address ? parsedAddress.address : ''}
                         `);
                         $('.cdek_official_map_info_block_address').addClass('cdek_official_map_info_block_selected');
-                    } catch (e) {}
+                    } catch (e) {
+                        $('#cdek_official_map_address_error').show()
+                        $('.cdek_official_map_info_block_address').removeClass('cdek_official_map_info_block_selected');
+                        doorInputView.html(messageNotSelected);
+                    }
                 } else {
                     $('.cdek_official_map_info_block_address').removeClass('cdek_official_map_info_block_selected');
                     doorInputView.html(messageNotSelected);
@@ -117,6 +125,9 @@
         </div>
     </div>
     <div class="container-fluid">
+        <div id="cdek_official_map_address_error" class="alert alert-danger alert-dismissible" style="display: none">
+            <i class="fa fa-exclamation-circle"></i> {{ cdek_official_map_address_error }}
+        </div>
         {% if error_warning %}
             <div class="alert alert-danger alert-dismissible">
                 <i class="fa fa-exclamation-circle"></i> {{ error_warning }}

@@ -161,3 +161,4 @@ $_['cdek_dimensions__desc'] = 'Поля предназначены для вво
 $_['cdek_official_shipping__pvz_view_text'] = 'Выбранный пвз';
 $_['cdek_official_shipping__city_address_view'] = 'Выбранный адрес';
 $_['cdek_official_shipping__not_selected'] = 'Не выбрано';
+$_['cdek_official_map_address_error'] = 'Адрес не найден. Пожалуйста, пересохраните адрес  и офис отправки на карте.';

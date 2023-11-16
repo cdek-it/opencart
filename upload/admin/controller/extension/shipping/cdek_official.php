@@ -49,7 +49,7 @@ class ControllerExtensionShippingCdekOfficial extends Controller
             $officeLocality->code : null;
         $addressLocality = CdekHelper::getLocality($app->settings->shippingSettings->shippingCityAddress);
         $app->data['address_code_selected'] = is_object($addressLocality) && property_exists($addressLocality, 'formatted') ?
-            null : $addressLocality->formatted;
+            $addressLocality->formatted : null;
         $app->data['apikey'] = $app->settings->authSettings->apiKey;
         $app->data['map_lang'] = $app->settings->authSettings->mapLangCode ?? 'rus';
 

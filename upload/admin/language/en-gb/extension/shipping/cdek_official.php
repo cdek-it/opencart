@@ -163,5 +163,6 @@ $_['cdek_official_v2_entity_invalid'] = 'An error occurred while creating an ord
 $_['cdek_official_shipping__pvz_view_text'] = 'Selected office';
 $_['cdek_official_shipping__city_address_view'] = 'Selected address';
 $_['cdek_official_shipping__not_selected'] = 'Not selected';
+$_['cdek_official_map_address_error'] = 'No address found. Please re-save address and shipping office on the map.';
 
 
