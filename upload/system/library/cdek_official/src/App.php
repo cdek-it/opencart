@@ -98,10 +98,14 @@ class App
         $this->data['map_city'] = 'Москва';
         if (!empty($this->settings->shippingSettings->shippingPvz)) {
             $locality = CdekHelper::getLocality($this->settings->shippingSettings->shippingPvz);
-            $this->data['map_city'] = $locality->city;
+            if (CdekHelper::hasLocalityCity($locality)) {
+                $this->data['map_city'] = $locality->city;
+            }
         } elseif (!empty($this->settings->shippingSettings->shippingCityAddress)) {
             $locality = CdekHelper::getLocality($this->settings->shippingSettings->shippingCityAddress);
-            $this->data['map_city'] = $locality->city;
+            if (CdekHelper::hasLocalityCity($locality)) {
+                $this->data['map_city'] = $locality->city;
+            }
         }
 
         $this->data['tariffs'] = $this->settings->shippingSettings->shippingTariffs;

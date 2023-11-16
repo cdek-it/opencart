@@ -4,6 +4,7 @@ require_once(DIR_SYSTEM . 'library/cdek_official/vendor/autoload.php');
 
 use CDEK\App;
 use CDEK\CdekApi;
+use CDEK\CdekHelper;
 use CDEK\CdekOrderMetaRepository;
 use CDEK\Settings;
 
@@ -43,6 +44,12 @@ class ControllerExtensionShippingCdekOfficial extends Controller
         } else {
             $app->data['city'] = 'Москва';
         }
+        $officeLocality = CdekHelper::getLocality($app->settings->shippingSettings->shippingPvz);
+        $app->data['office_code_selected'] = is_object($officeLocality) && property_exists($officeLocality, 'code') ?
+            $officeLocality->code : null;
+        $addressLocality = CdekHelper::getLocality($app->settings->shippingSettings->shippingCityAddress);
+        $app->data['address_code_selected'] = is_object($addressLocality) && property_exists($addressLocality, 'formatted') ?
+            null : $addressLocality->formatted;
         $app->data['apikey'] = $app->settings->authSettings->apiKey;
         $app->data['map_lang'] = $app->settings->authSettings->mapLangCode ?? 'rus';
 

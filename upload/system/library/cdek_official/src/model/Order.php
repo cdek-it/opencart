@@ -138,23 +138,32 @@ class Order
         return $data;
     }
 
-    private function getFromByTariffCode(int $tariffCode)
+    private function getFromByTariffCode(int $tariffCode): array
     {
+        $result = [];
         if ($this->tariffs->getFromByCode($tariffCode) === "door") {
             $locality = CdekHelper::getLocality($this->settings->shippingSettings->shippingCityAddress);
-            $result = [
-                "from_location" => [
-                    "address" => $locality->address,
-                    'country_code' => $locality->country,
-                    'postal_code' => $locality->postal,
-                    'city' => $locality->city,
-                ]
-            ];
+            if (CdekHelper::checkLocalityAddress($locality)) {
+                $locality->address = '';
+                $locality->country = '';
+                $locality->postal = '';
+                $locality->city = '';
+                $result = [
+                    "from_location" => [
+                        "address" => $locality->address ?? '',
+                        'country_code' => $locality->country ?? '',
+                        'postal_code' => $locality->postal ?? '',
+                        'city' => $locality->city ?? '',
+                    ]
+                ];
+            }
         } else {
             $locality = CdekHelper::getLocality($this->settings->shippingSettings->shippingPvz);
-            $result = [
-                "shipment_point" => $locality->code
-            ];
+            if (CdekHelper::hasLocalityCode($locality)) {
+                $result = [
+                    "shipment_point" => $locality->code ?? ''
+                ];
+            }
         }
         return $result;
     }

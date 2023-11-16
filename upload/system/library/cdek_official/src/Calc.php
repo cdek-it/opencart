@@ -79,23 +79,25 @@ class Calc
         $toLocationCode = $recipientLocation[0]->code;
         if (!empty($this->settings->shippingSettings->shippingCityAddress)) {
             $locality = CdekHelper::getLocality($this->settings->shippingSettings->shippingCityAddress);
-            $data = [
-                "currency" => $currencySelected,
-                "from_location" => [
-                    "address" => $locality->address,
-                    'country_code' => $locality->country,
-                    'postal_code' => $locality->postal,
-                    'city' => $locality->city,
-                ],
-                "to_location" => [
-                    "code" => $toLocationCode
-                ],
-                "packages" => $package
-            ];
-            $result = $this->cdekApi->calculate($data);
-            foreach ($result->tariff_codes as $tariff) {
-                if (in_array($tariff->delivery_mode, [1, 2, 6])) {
-                    $tariffCalculatedToDoor[] = $tariff;
+            if (CdekHelper::checkLocalityAddress($locality)) {
+                $data = [
+                    "currency" => $currencySelected,
+                    "from_location" => [
+                        "address" => $locality->address ?? '',
+                        'country_code' => $locality->country ?? '',
+                        'postal_code' => $locality->postal ?? '',
+                        'city' => $locality->city ?? '',
+                    ],
+                    "to_location" => [
+                        "code" => $toLocationCode
+                    ],
+                    "packages" => $package
+                ];
+                $result = $this->cdekApi->calculate($data);
+                foreach ($result->tariff_codes as $tariff) {
+                    if (in_array($tariff->delivery_mode, [1, 2, 6])) {
+                        $tariffCalculatedToDoor[] = $tariff;
+                    }
                 }
             }
         }
@@ -104,22 +106,24 @@ class Calc
         $tariffCalculatedToPvz = [];
         if (!empty($this->settings->shippingSettings->shippingPvz)) {
             $locality = CdekHelper::getLocality($this->settings->shippingSettings->shippingPvz);
-            $data = [
-                "currency" => $currencySelected,
-                "from_location" => [
-                    "country_code" => $locality->country,
-                    "postal_code" => $locality->postal,
-                    "city" => $locality->city
-                ],
-                "to_location" => [
-                    "code" => $toLocationCode
-                ],
-                "packages" => $package
-            ];
-            $result = $this->cdekApi->calculate($data);
-            foreach ($result->tariff_codes as $tariff) {
-                if (!in_array($tariff->delivery_mode, [1, 2, 6])) {
-                    $tariffCalculatedToPvz[] = $tariff;
+            if (CdekHelper::checkLocalityOffice($locality)) {
+                $data = [
+                    "currency" => $currencySelected,
+                    "from_location" => [
+                        "country_code" => $locality->country ?? '',
+                        "postal_code" => $locality->postal ?? '',
+                        "city" => $locality->city ?? ''
+                    ],
+                    "to_location" => [
+                        "code" => $toLocationCode
+                    ],
+                    "packages" => $package
+                ];
+                $result = $this->cdekApi->calculate($data);
+                foreach ($result->tariff_codes as $tariff) {
+                    if (!in_array($tariff->delivery_mode, [1, 2, 6])) {
+                        $tariffCalculatedToPvz[] = $tariff;
+                    }
                 }
             }
         }

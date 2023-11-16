@@ -7,19 +7,24 @@
             const doorInput = $('#cdek_official_shipping__city_address');
             const officeInputView = $('#cdek_official_shipping__pvz_view');
             const doorInputView = $('#cdek_official_shipping__city_address_view');
-            const messageNotSelected = '{{ cdek_official_shipping__not_selected }}'
+            const messageNotSelected = '{{ cdek_official_shipping__not_selected }}';
 
             const updateOfficeCode = () => {
                 const officeCode = officeInput.val();
                 if (officeCode) {
                     try {
                         const parsedOffice = JSON.parse(officeCode);
-                        officeInputView.html(`${parsedOffice.country}; ${parsedOffice.postal}; ${parsedOffice.city}; ${parsedOffice.code}`);
-                        $('.cdek_official_map_info_block_office').addClass('cdek_official_map_info_block_selected')
+                        officeInputView.html(`
+                            ${parsedOffice.country ? parsedOffice.country + '; ' : ''}
+                            ${parsedOffice.postal ? parsedOffice.postal + '; ' : ''}
+                            ${parsedOffice.city ? parsedOffice.city + '; ' : ''}
+                            ${parsedOffice.code ? parsedOffice.code : ''}
+                        `);
+                        $('.cdek_official_map_info_block_office').addClass('cdek_official_map_info_block_selected');
                     } catch (e) {}
                 } else {
-                    $('.cdek_official_map_info_block_office').removeClass('cdek_official_map_info_block_selected')
-                    officeInputView.html(messageNotSelected)
+                    $('.cdek_official_map_info_block_office').removeClass('cdek_official_map_info_block_selected');
+                    officeInputView.html(messageNotSelected);
                 }
             };
 
@@ -28,12 +33,17 @@
                 if (address) {
                     try {
                         const parsedAddress = JSON.parse(address);
-                        doorInputView.html(`${parsedAddress.country}; ${parsedAddress.postal}; ${parsedAddress.city}; ${parsedAddress.address}`);
-                        $('.cdek_official_map_info_block_address').addClass('cdek_official_map_info_block_selected')
+                        doorInputView.html(`
+                            ${parsedAddress.country ? parsedAddress.country + '; ' : ''}
+                            ${parsedAddress.postal ? parsedAddress.postal + '; ' : ''}
+                            ${parsedAddress.city ? parsedAddress.city + '; ' : ''}
+                            ${parsedAddress.address ? parsedAddress.address : ''}
+                        `);
+                        $('.cdek_official_map_info_block_address').addClass('cdek_official_map_info_block_selected');
                     } catch (e) {}
                 } else {
-                    $('.cdek_official_map_info_block_address').removeClass('cdek_official_map_info_block_selected')
-                    doorInputView.html(messageNotSelected)
+                    $('.cdek_official_map_info_block_address').removeClass('cdek_official_map_info_block_selected');
+                    doorInputView.html(messageNotSelected);
                 }
             };
 
@@ -41,16 +51,16 @@
             updateDoor();
 
             $('.cdek_official_map_info_button_office').click(function () {
-                $('#cdek_official_shipping__pvz').val('')
-                $('.cdek_official_map_info_block_office').removeClass('cdek_official_map_info_block_selected')
-                officeInputView.html(messageNotSelected)
-            })
+                $('#cdek_official_shipping__pvz').val('');
+                $('.cdek_official_map_info_block_office').removeClass('cdek_official_map_info_block_selected');
+                officeInputView.html(messageNotSelected);
+            });
 
             $('.cdek_official_map_info_button_address').click(function () {
-                $('#cdek_official_shipping__city_address').val('')
-                $('.cdek_official_map_info_block_address').removeClass('cdek_official_map_info_block_selected')
-                doorInputView.html(messageNotSelected)
-            })
+                $('#cdek_official_shipping__city_address').val('');
+                $('.cdek_official_map_info_block_address').removeClass('cdek_official_map_info_block_selected');
+                doorInputView.html(messageNotSelected);
+            });
 
             new window.CDEKWidget({
                                       defaultLocation: '{{ city }}',
@@ -63,6 +73,10 @@
                                       hideDeliveryOptions: {
                                           office: false,
                                           door: false,
+                                      },
+                                      selected: {
+                                          door: '{{ address_code_selected }}',
+                                          office: '{{ office_code_selected }}',
                                       },
                                       onChoose: function (type, tariff, address) {
                                           console.log(address);
@@ -79,7 +93,8 @@
                                                                                                                 country: address.country_code,
                                                                                                                 postal: address.postal_code,
                                                                                                                 city: address.city,
-                                                                                                                address: address.formatted,
+                                                                                                                address: address.name,
+                                                                                                                formatted: address.formatted,
                                                                                                             }));
                                               updateDoor();
                                           }
@@ -285,7 +300,7 @@
                                         <div class="col-sm-4 cdek_official_map_info_block_office cdek_official_map_info_block">
                                             <div>
                                                 <div class="cdek_official_map_info_button cdek_official_map_info_button_office"></div>
-                                                <div>{{cdek_official_shipping__pvz_view_text}}:</div>
+                                                <div>{{ cdek_official_shipping__pvz_view_text }}:</div>
                                             </div>
                                             <div id="cdek_official_shipping__pvz_view"></div>
                                         </div>
@@ -297,7 +312,7 @@
                                         <div class="col-sm-4 cdek_official_map_info_block_address cdek_official_map_info_block cdek_official_map_info_block_selected">
                                             <div>
                                                 <div class="cdek_official_map_info_button cdek_official_map_info_button_address"></div>
-                                                <div>{{cdek_official_shipping__city_address_view}}:</div>
+                                                <div>{{ cdek_official_shipping__city_address_view }}:</div>
                                             </div>
                                             <div id="cdek_official_shipping__city_address_view"></div>
                                         </div>
