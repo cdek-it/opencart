@@ -51,9 +51,6 @@ class App
 
     public function connectScripts(): void
     {
-        $scriptPath = $this->dirApplication . 'view/javascript/cdek_official/settings_page.js';
-        $this->data['settings_page'] = file_exists($scriptPath) ? file_get_contents($scriptPath) : '';
-
         $stylePath = $this->dirApplication . 'view/stylesheet/cdek_official/settings_page.css';
         $this->data['settings_page_style'] = file_exists($stylePath) ? file_get_contents($stylePath) : '';
     }
@@ -97,17 +94,20 @@ class App
         $isAuth = $this->cdekApi->checkAuth();
         $this->data['status_auth'] = $isAuth;
         $this->settings->updateData($this->data);
-        if ($isAuth) {
-            if (!empty($this->settings->shippingSettings->shippingPvz)) {
-                $this->data['map_city'] = explode(',', $this->settings->shippingSettings->shippingPvz)[0];
-            } elseif (!empty($this->settings->shippingSettings->shippingCityAddress)) {
-                $this->data['map_city'] = trim(explode(',', $this->settings->shippingSettings->shippingCityAddress)[1]);
-            } else {
-                $this->data['map_city'] = 'Москва';
+
+        $this->data['map_city'] = 'Москва';
+        if (!empty($this->settings->shippingSettings->shippingPvz)) {
+            $locality = CdekHelper::getLocality($this->settings->shippingSettings->shippingPvz);
+            if (CdekHelper::hasLocalityCity($locality)) {
+                $this->data['map_city'] = $locality->city;
             }
-        } else {
-            $this->data['map_city'] = 'Москва';
+        } elseif (!empty($this->settings->shippingSettings->shippingCityAddress)) {
+            $locality = CdekHelper::getLocality($this->settings->shippingSettings->shippingCityAddress);
+            if (CdekHelper::hasLocalityCity($locality)) {
+                $this->data['map_city'] = $locality->city;
+            }
         }
+
         $this->data['tariffs'] = $this->settings->shippingSettings->shippingTariffs;
         $this->data['currencies'] = $this->settings->shippingSettings->shippingCurrencies;
     }
@@ -138,30 +138,6 @@ class App
             $requestAction = $this->request->post['cdekRequest'] ?? $this->request->get['cdekRequest'];
 
             $this->settings->init($this->modelSetting->getSetting('cdek_official'));
-
-            if ($requestAction === 'map') {
-                $authData = $this->cdekApi->getData();
-                $service = new Service($authData['client_id'], $authData['client_secret']);
-                $service->process($this->request->get, file_get_contents('php://input'));
-            }
-
-            if ($requestAction === 'getCity') {
-                if ($this->request->post['key'] === '') {
-                    exit;
-                }
-                $result = $this->cdekApi->getCity($this->request->post['key']);
-                echo json_encode($result);
-                exit;
-            }
-
-            if ($requestAction === 'getPvz') {
-                if ($this->request->post['key'] === '') {
-                    exit;
-                }
-                $result = $this->cdekApi->getPvz($this->request->post['key']);
-                echo json_encode($result);
-                exit;
-            }
 
             if ($requestAction === 'createOrder') {
                 $createOrder = new CreateOrder($this->registry, $this->settings, $this->cdekApi);

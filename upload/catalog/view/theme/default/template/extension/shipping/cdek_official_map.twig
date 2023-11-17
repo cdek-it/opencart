@@ -15,7 +15,7 @@
                                                                   office: false,
                                                                   door: true,
                                                               },
-                                                              servicePath: '/index.php?route=extension/shipping/cdek_official&cdekRequest=1',
+                                                              servicePath: '/index.php?route=extension/shipping/cdek_official',
                                                               onChoose: function (type, tariff, address) {
                                                                   $('input[name=cdek_official_pvz_code]').val(address.code);
                                                                   $('input[name=cdek_official_pvz_code_address]').val(`[${address.code}] ${address.address}`);
@@ -27,6 +27,6 @@
             }
             window.cdekWidget.open()
         });
-        document.querySelector("label[for='cdek_official.cdek_official_{{ tariff }}'] input").after(btn);
+        document.querySelector("label input[value='cdek_official.cdek_official_{{ tariff }}']").after(btn);
     }
 </script>

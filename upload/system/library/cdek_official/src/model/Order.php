@@ -2,6 +2,7 @@
 
 namespace CDEK\model;
 
+use CDEK\CdekHelper;
 use CDEK\Settings;
 
 class Order
@@ -137,18 +138,28 @@ class Order
         return $data;
     }
 
-    private function getFromByTariffCode(int $tariffCode)
+    private function getFromByTariffCode(int $tariffCode): array
     {
+        $result = [];
         if ($this->tariffs->getFromByCode($tariffCode) === "door") {
-            $result = [
-                "from_location" => [
-                    "address" => $this->settings->shippingSettings->shippingCityAddress
-                ]
-            ];
+            $locality = CdekHelper::getLocality($this->settings->shippingSettings->shippingCityAddress);
+            if (CdekHelper::checkLocalityAddress($locality)) {
+                $result = [
+                    "from_location" => [
+                        "address" => $locality->address ?? '',
+                        'country_code' => $locality->country ?? '',
+                        'postal_code' => $locality->postal ?? '',
+                        'city' => $locality->city ?? '',
+                    ]
+                ];
+            }
         } else {
-            $result = [
-                "shipment_point" => trim(explode(',', $this->settings->shippingSettings->shippingPvz)[1])
-            ];
+            $locality = CdekHelper::getLocality($this->settings->shippingSettings->shippingPvz);
+            if (CdekHelper::hasLocalityCode($locality)) {
+                $result = [
+                    "shipment_point" => $locality->code ?? ''
+                ];
+            }
         }
         return $result;
     }

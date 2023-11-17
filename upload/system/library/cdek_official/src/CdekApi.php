@@ -10,7 +10,6 @@ class CdekApi
     protected const REGION_PATH = "location/cities";
     protected const ORDERS_PATH = "orders/";
     protected const PVZ_PATH = "deliverypoints";
-//    protected const CALC_PATH = "calculator/tariff";
     protected const CALC_PATH = "calculator/tarifflist";
     protected const WAYBILL_PATH = "print/orders";
     protected const CALL_COURIER = "intakes";
@@ -27,9 +26,9 @@ class CdekApi
         $this->registry = $registry;
     }
 
-    private function sendRequest(string $url, string $method, $data = null)
+    private function sendRequest(string $url, string $method, $data = null, $raw = false)
     {
-        return $this->httpClient->sendRequest($url, $method, $this->getToken(), $data);
+        return $this->httpClient->sendRequest($url, $method, $this->getToken(), $data, $raw);
     }
 
     protected function getToken()
@@ -60,91 +59,15 @@ class CdekApi
         return $this->sendRequest($url, 'GET');
     }
 
-    public function getOrderByNumber($number)
-    {
-        $url = $this->getAuthUrl() . self::ORDERS_PATH;
-        return $this->sendRequest($url, 'GET', ['cdek_number' => $number]);
-    }
-
     public function getCity($city)
     {
         $url = $this->getAuthUrl() . self::REGION_PATH;
         return $this->sendRequest($url, 'GET', ['city' => $city, 'size' => 5]);
     }
 
-    public function getCityByCode($cityCode)
+    public function getOffices($param)
     {
-        if (empty($cityCode)) {
-            $cityCode = 44;
-        }
-
-        $url = $this->getAuthUrl() . self::REGION_PATH;
-        return $this->sendRequest($url, 'GET', ['code' => $cityCode]);
-    }
-
-    public function getPvz($cityCode, $weight = 0)
-    {
-        $url = $this->getAuthUrl() . self::PVZ_PATH;
-
-        $params['city_code'] = $cityCode;
-        $params['weight_min'] = (int)ceil($weight);
-
-        $result = $this->sendRequest($url, 'GET', $params);
-        $pvz = [];
-        foreach ($result as $elem) {
-            if (isset($elem->code, $elem->type, $elem->location->longitude, $elem->location->latitude, $elem->location->address)) {
-                $pvz[] = [
-                    'code' => $elem->code,
-                    'type' => $elem->type,
-                    'longitude' => $elem->location->longitude,
-                    'latitude' => $elem->location->latitude,
-                    'address' => $elem->location->address
-                ];
-            }
-        }
-
-        return $pvz;
-    }
-
-    public function getCityCodeByPvz($pvzCode)
-    {
-        $url = $this->getAuthUrl() . self::PVZ_PATH;
-        $params['code'] = $pvzCode;
-        $result = $this->sendRequest($url, 'GET', $params);
-        return $result[0]->location->city_code;
-    }
-
-    public function getPvzByCityCode($cityCode): array
-    {
-        $url = $this->getAuthUrl() . self::PVZ_PATH;
-
-        $params['city_code'] = $cityCode;
-
-        $pvz = $this->sendRequest($url, 'GET', $params);
-
-        $result = [];
-        foreach ($pvz as $elem) {
-            if (isset($elem->type, $elem->location->country_code, $elem->have_cashless, $elem->have_cash,
-                $elem->allowed_cod, $elem->is_dressing_room, $elem->code, $elem->name,
-                $elem->location->address, $elem->work_time, $elem->location->longitude, $elem->location->latitude)) {
-                $result[] = [
-                    'city_code' => $cityCode,
-                    'type' => $elem->type,
-                    'country_code' => $elem->location->country_code,
-                    'have_cashless' => $elem->have_cashless ? 1 : 0,
-                    'have_cash' => $elem->have_cash ? 1 : 0,
-                    'allowed_cod' => $elem->allowed_cod ? 1 : 0,
-                    'is_dressing_room' => $elem->is_dressing_room ? 1 : 0,
-                    'code' => $elem->code,
-                    'name' => $elem->name,
-                    'address' => $elem->location->address,
-                    'work_time' => $elem->work_time,
-                    'location' => [$elem->location->longitude, $elem->location->latitude]
-                ];
-            }
-        }
-
-        return $result;
+        return $this->sendRequest($this->getAuthUrl() . self::PVZ_PATH, 'GET', $param, true);
     }
 
     public function calculate($data)
