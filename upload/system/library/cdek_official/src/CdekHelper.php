@@ -77,9 +77,11 @@ class CdekHelper
             $widthList[] = $packageProduct[2];
         }
 
-        $lengthList[] = $defaultPackages['length'];
-        $widthList[] = $defaultPackages['width'];
-        $heightList[] = $defaultPackages['height'];
+        unset($defaultPackages['weight']);
+        sort($defaultPackages);
+        $lengthList[] = $defaultPackages[0];
+        $widthList[] = $defaultPackages[1];
+        $heightList[] = $defaultPackages[2];
 
         rsort($lengthList);
         rsort($widthList);
