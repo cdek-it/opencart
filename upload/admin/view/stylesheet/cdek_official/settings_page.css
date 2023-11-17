@@ -77,3 +77,61 @@
     background-color: #aaa;
     color: #fff;
 }
+
+#cdek_official_shipping__pvz {
+    padding-right: 40px;
+}
+
+#cdek_official_shipping__city_address {
+    padding-right: 40px;
+}
+
+.cdek_official_map_info_container {
+    display: flex;
+    align-items: stretch;
+}
+
+.cdek_official_map_info_block {
+    background: #E58787;
+    border-radius: 5px;
+    padding: 5px;
+    color: #fff;
+    overflow: hidden;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+.cdek_official_map_info_block_selected {
+    background: #93BB8C;
+}
+
+.cdek_official_map_info_button {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    right: 10px;
+    background: #ffffff52;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.cdek_official_map_info_button::before,
+.cdek_official_map_info_button::after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 12px;
+    top: 50%;
+    left: 50%;
+    background: white;
+    transform-origin: center;
+}
+
+.cdek_official_map_info_button::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.cdek_official_map_info_button::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+}

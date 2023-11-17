@@ -46,18 +46,6 @@ class SettingsShipping extends AbstractSettings
         if ($this->isTariffsEmpty()) {
             throw new Exception('cdek_error_shipping_tariffs_empty');
         }
-
-//        if (empty($this->shippingCity)) {
-//            throw new Exception('cdek_error_shipping_city_empty');
-//        }
-//
-//        if (empty($this->shippingCityAddress)) {
-//            throw new Exception('cdek_error_shipping_city_address_empty');
-//        }
-//
-//        if (empty($this->shippingPvz)) {
-//            throw new Exception('cdek_error_shipping_pvz_empty');
-//        }
     }
 
     public function setTariffs($post)
