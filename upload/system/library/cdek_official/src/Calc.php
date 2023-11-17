@@ -141,16 +141,17 @@ class Calc
                 ];
 
                 $tariffModel = new Tariffs();
+                $recommendedDimensions = $this->getRecommendedPackage($this->getPackageQuantity());
                 if ($tariffModel->getDirectionByCode($tariff->tariff_code) === 'store' || $tariffModel->getDirectionByCode($tariff->tariff_code) === 'postamat') {
                     $quoteData['cdek_official_' . $tariff->tariff_code]['extra'] = $this->registry->get('load')->view('extension/shipping/cdek_official_map',
                         [
                             'tariff' => $tariff->tariff_code,
                             'apikey' => $this->settings->authSettings->apiKey,
                             'city' => $recipientLocation[0]->city,
-                            'length' => $package[0]['length'],
-                            'width' => $package[0]['width'],
-                            'height' => $package[0]['height'],
-                            'weight' => $package[0]['weight'],
+                            'length' => $recommendedDimensions['length'],
+                            'width' => $recommendedDimensions['width'],
+                            'height' => $recommendedDimensions['height'],
+                            'weight' => $recommendedDimensions['weight'],
                         ]);
                 }
             }
@@ -173,6 +174,19 @@ class Calc
         return $packages;
     }
 
+    private function getPackageQuantity()
+    {
+        $packages = [];
+        foreach ($this->cartProducts as $product) {
+            if ((int)$product['tax_class_id'] !== 10) {
+                $dimensions = $this->getDimensions($product);
+                $packages[] = $dimensions;
+            }
+        }
+
+        return $packages;
+    }
+
     private function getDimensions($product)
     {
         $dimensions = [
@@ -180,7 +194,8 @@ class Calc
             "length" => (int)$product['length'],
             "weight" => (int)($this->weight->convert((int)$product['weight'], $product['weight_class_id'],
                     '2')) / (int)$product['quantity'],
-            "width" => (int)$product['width']
+            "width" => (int)$product['width'],
+            "quantity" => (int)$product['quantity']
         ];
 
         if ($dimensions["height"] === 0) {
@@ -250,4 +265,15 @@ class Calc
         }
         return $tariffPlugName;
     }
+
+    private function getRecommendedPackage($productsPackages) {
+        $defaultPackages = [
+            'length' => (int)$this->settings->dimensionsSettings->dimensionsLength,
+            'width' => (int)$this->settings->dimensionsSettings->dimensionsWidth,
+            'height' => (int)$this->settings->dimensionsSettings->dimensionsHeight,
+            'weight' => (int)$this->settings->dimensionsSettings->dimensionsWeight,
+        ];
+        return CdekHelper::calculateRecomendedPackage($productsPackages, $defaultPackages);
+    }
+
 }
