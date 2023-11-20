@@ -121,7 +121,8 @@ class ControllerExtensionShippingCdekOfficial extends Controller
                 $dataOrderForm['cdek_order_error_create_message'] = array_values($errorsCode)[0];
             }
 
-            $getRecommendedDimensions = $this->getRecommendedPackage($orderId);
+            $recommendedDimensions = $this->getRecommendedPackage($orderId);
+            $dataOrderForm = array_merge($dataOrderForm, $recommendedDimensions);
 
             $this->displayCreateOrderForm($output, $dataOrderForm);
         }
@@ -184,26 +185,25 @@ class ControllerExtensionShippingCdekOfficial extends Controller
 
     protected function getRecommendedPackage(int $orderId)
     {
-        $setting = $this->registry->get('model_setting_setting')->getSetting('cdek_official');
-        $lengthDefault = (int)$setting['cdek_official_dimensions__length'];
-        $widthDefault = (int)$setting['cdek_official_dimensions__width'];
-        $heightDefault = (int)$setting['cdek_official_dimensions__height'];
         $this->load->model('catalog/product');
+        $setting = $this->registry->get('model_setting_setting')->getSetting('cdek_official');
+        $defaultPackages = [
+            'length' => (int)$setting['cdek_official_dimensions__length'],
+            'width' => (int)$setting['cdek_official_dimensions__width'],
+            'height' => (int)$setting['cdek_official_dimensions__height'],
+            'weight' => (int)$setting['cdek_official_dimensions__weight'],
+        ];
         $products = $this->model_sale_order->getOrderProducts($orderId);
-        $dimensions = [];
-        foreach ($products as $product) {
+        foreach ($products as $key => $product) {
             $productOC = $this->model_catalog_product->getProduct($product['product_id']);
-            $lengthOC = (int)$productOC['length'];
-            $widthOC = (int)$productOC['width'];
-            $heightOC = (int)$productOC['height'];
-            $dimensions[] = [
-                (int)$product['quantity'] => [
-                    'length' => $lengthOC === 0 ? $lengthDefault : $lengthOC,
-                    'width' => $widthOC === 0 ? $widthDefault : $widthOC,
-                    'height' => $heightOC === 0 ? $heightDefault : $heightOC
-                ]
+            $productsPackages[] = [
+                'length' => (int)$productOC['length'],
+                'width' => (int)$productOC['width'],
+                'height' => (int)$productOC['height'],
+                'weight' => (int)$productOC['weight'],
+                'quantity' => (int)$products[$key]['quantity']
             ];
         }
-        return $dimensions;
+        return CdekHelper::calculateRecomendedPackage($productsPackages, $defaultPackages);
     }
 }
