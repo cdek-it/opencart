@@ -26,7 +26,7 @@ class Settings
         $this->priceSettings = new SettingsPrice();
     }
 
-    public function init($post)
+    public function init($post): void
     {
         $this->authSettings->init($post);
         $this->sellerSettings->init($post);
@@ -40,7 +40,7 @@ class Settings
     /**
      * @throws Exception
      */
-    public function validate()
+    public function validate(): void
     {
         $this->authSettings->validate();
         $this->sellerSettings->validate();
@@ -49,7 +49,7 @@ class Settings
         $this->priceSettings->validate();
     }
 
-    public function updateData(array &$data)
+    public function updateData(array &$data): void
     {
         $data = array_merge(
             $data,

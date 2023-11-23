@@ -47,10 +47,7 @@ class CdekApi
 
     public function testModeActive(): bool
     {
-        if ($this->settings->authSettings->authTestMode === 'on') {
-            return true;
-        }
-        return false;
+        return $this->settings->authSettings->authTestMode === 'on';
     }
 
     public function getOrderByUuid($uuid)
