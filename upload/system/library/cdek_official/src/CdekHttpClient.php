@@ -8,7 +8,7 @@ class CdekHttpClient
     {
         if (strtoupper($method) === 'GET' && is_array($data)) {
             $data = http_build_query($data);
-            $url = $url . '?' . $data;
+            $url .= '?' . $data;
         }
 
         $ch = curl_init();

@@ -13,9 +13,9 @@ class ControllerExtensionShippingCdekOfficial extends Controller
     public function uninstall(): void
     {
         $this->load->model('setting/setting');
+        $this->load->model('extension/shipping/cdek_official');
         $data['shipping_cdek_official_status'] = 0;
         $this->model_setting_setting->editSetting('shipping_cdek_official', $data);
-        $this->load->model('extension/shipping/cdek_official');
         $this->model_extension_shipping_cdek_official->deleteEvents();
     }
 
@@ -175,18 +175,19 @@ class ControllerExtensionShippingCdekOfficial extends Controller
 
     protected function isCdekShipping(int $orderId)
     {
+        $this->load->model('sale/order');
         $orderOC = $this->model_sale_order->getOrder($orderId);
         $shippingCode = explode('.', $orderOC['shipping_code'])[0];
-        if ($shippingCode === 'cdek_official') {
-            return true;
-        }
-        return false;
+
+        return $shippingCode === 'cdek_official';
     }
 
     protected function getRecommendedPackage(int $orderId)
     {
+        $this->load->model('sale/order');
         $this->load->model('catalog/product');
-        $setting = $this->registry->get('model_setting_setting')->getSetting('cdek_official');
+        $this->load->model('setting/setting');
+        $setting = $this->model_setting_setting->getSetting('cdek_official');
         $defaultPackages = [
             'length' => (int)$setting['cdek_official_dimensions__length'],
             'width' => (int)$setting['cdek_official_dimensions__width'],

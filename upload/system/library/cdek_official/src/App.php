@@ -35,7 +35,7 @@ class App
         $this->requestMethod = $this->request->server['REQUEST_METHOD'] ?? '';
         $this->userToken = $this->session->data['user_token'] ?? '';
         $this->db = $this->registry->get('db');
-//        $this->registry->get('model_setting_setting')->getSetting('cdek_official');
+        $this->load->model('setting/setting');
         $this->modelSetting = $this->registry->get('model_setting_setting');
         $this->settings = new Settings();
         $this->cdekApi = new CdekApi($registry, $this->settings);

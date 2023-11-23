@@ -3,6 +3,7 @@
 namespace CDEK;
 
 use CDEK\model\Order;
+use Registry;
 
 class CreateOrder
 {
@@ -10,7 +11,7 @@ class CreateOrder
     private $settings;
     private $cdekApi;
 
-    public function __construct(\Registry $registry, $settings, CdekApi $cdekApi)
+    public function __construct(Registry $registry, $settings, CdekApi $cdekApi)
     {
         $this->registry = $registry;
         $this->settings = $settings;
@@ -30,16 +31,24 @@ class CreateOrder
             sleep(5); //Ожидание формирования заказа
             $order = $this->cdekApi->getOrderByUuid($response->entity->uuid);
             if ($order->requests[0]->state === 'INVALID') {
-                echo json_encode(['state' => false, 'message' => $this->registry->get('language')->get('cdek_order_create_error_template') . $order->requests[0]->errors[0]->message]);
+                echo json_encode([
+                    'state' => false,
+                    'message' => $this->registry->get('language')->get('cdek_order_create_error_template')
+                                 . $order->requests[0]->errors[0]->message,
+                ]);
             } else {
                 $data = [
-                    'cdek_number' => $order->entity->cdek_number ?? $this->registry->get('language')->get('cdek_error_cdek_number_empty'),
+                    'cdek_number' => $order->entity->cdek_number
+                                     ??
+                                     $this->registry->get('language')->get('cdek_error_cdek_number_empty'),
                     'cdek_uuid' => $order->entity->uuid,
                     'name' => $order->entity->recipient->name,
                     'type' => isset($order->entity->delivery_mode) ? $this->getDeliveryModeName((int)$order->entity->delivery_mode) : null,
                     'payment_type' => $this->getPaymentTypeName($orderData['orderOC']['payment_code']),
-                    'to_location' => $order->entity->to_location->city ?? '' . ', ' . $order->entity->to_location->address,
-                    'pvz_code' => $order->entity->delivery_point ?? ''
+                    'to_location' => $order->entity->to_location->city
+                                     ??
+                                     '' . ', ' . $order->entity->to_location->address,
+                    'pvz_code' => $order->entity->delivery_point ?? '',
                 ];
                 CdekOrderMetaRepository::insertOrderMeta($this->registry->get('db'), $data, $orderId);
                 CdekLog::sendLog("Order validated");
@@ -59,7 +68,6 @@ class CreateOrder
                 $message = $this->registry->get('language')->get('cdek_error_dimensions_height_package_invalid');
             }
 
-
             echo json_encode(['state' => false, 'message' => $message]);
         }
         exit;
@@ -74,24 +82,31 @@ class CreateOrder
         $height = intval($dimensions['height']);
 
         if ($length < 0 || !is_numeric($dimensions['length']) || $dimensions['length'] === '0') {
-            $validate = ['state' => false, 'message' => $this->registry->get('language')->get('cdek_error_dimensions_length_invalid')];
+            $validate = [
+                'state' => false,
+                'message' => $this->registry->get('language')->get('cdek_error_dimensions_length_invalid'),
+            ];
         } elseif ($width < 0 || !is_numeric($dimensions['width']) || $dimensions['width'] === '0') {
-            $validate = ['state' => false, 'message' => $this->registry->get('language')->get('cdek_error_dimensions_width_invalid')];
+            $validate = [
+                'state' => false,
+                'message' => $this->registry->get('language')->get('cdek_error_dimensions_width_invalid'),
+            ];
         } elseif ($height < 0 || !is_numeric($dimensions['height']) || $dimensions['height'] === '0') {
-            $validate = ['state' => false, 'message' => $this->registry->get('language')->get('cdek_error_dimensions_height_invalid')];
+            $validate = [
+                'state' => false,
+                'message' => $this->registry->get('language')->get('cdek_error_dimensions_height_invalid'),
+            ];
         } elseif (empty($orderId)) {
-            $validate = ['state' => false, 'message' => $this->registry->get('language')->get('cdek_error_dimensions_order_id_empty')];
+            $validate = [
+                'state' => false,
+                'message' => $this->registry->get('language')->get('cdek_error_dimensions_order_id_empty'),
+            ];
         }
 
         if (!$validate['state']) {
             echo json_encode($validate);
             exit;
         }
-    }
-
-    protected function getPvz($query)
-    {
-        return !empty($query->row['pvz_code']) ? $query->row['pvz_code'] : '';
     }
 
     protected function getData($orderId): array
@@ -107,15 +122,21 @@ class CreateOrder
         $weight = $this->registry->get('weight');
         $orderOC = $modelSaleOrder->getOrder($orderId);
         $products = $modelSaleOrder->getOrderProducts($orderId);
+
         return [
             'pvz' => $pvz,
             'modelCatalogProduct' => $modelCatalogProduct,
-            "weight" => $weight,
-            "orderId" => $orderId,
-            "orderOC" => $orderOC,
-            "products" => $products,
-            "cost" => $cost
+            'weight' => $weight,
+            'orderId' => $orderId,
+            'orderOC' => $orderOC,
+            'products' => $products,
+            'cost' => $cost,
         ];
+    }
+
+    protected function getPvz($query)
+    {
+        return !empty($query->row['pvz_code']) ? $query->row['pvz_code'] : '';
     }
 
     private function getDeliveryModeName(int $deliveryMode)
@@ -123,6 +144,7 @@ class CreateOrder
         if (in_array($deliveryMode, [1, 3, 8])) {
             return $this->registry->get('language')->get('cdek_shipping__tariff_type_to_door');
         }
+
         return $this->registry->get('language')->get('cdek_shipping__tariff_type_to_warehouse');
     }
 
@@ -131,6 +153,7 @@ class CreateOrder
         if ($paymentCode === 'cod') {
             return $this->registry->get('language')->get('cdek_shipping__payment_type_cod');
         }
+
         return $this->registry->get('language')->get('cdek_shipping__payment_type_online');
     }
 }
