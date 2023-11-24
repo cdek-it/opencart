@@ -133,8 +133,15 @@ class Calc
                          . $this->getPeriod($tariff);
                 $total = $this->getTotalSum($tariff);
 
+                $tariffModel = new Tariffs();
+
+                $additionalName = $tariff->tariff_code;
+                if ($tariffModel->getDirectionByCode($tariff->tariff_code) === 'store') {
+                    $additionalName = 'office_' . $additionalName;
+                }
+
                 $quoteData['cdek_official_' . $tariff->tariff_code] = [
-                    'code' => 'cdek_official.cdek_official_' . $tariff->tariff_code,
+                    'code' => 'cdek_official.cdek_official_' . $additionalName,
                     'title' => 'CDEK: ' . $title,
                     'cost' => $total,
                     'tax_class_id' => $tariff->tariff_code,
@@ -142,7 +149,6 @@ class Calc
                                              ->format($total, $this->registry->get('session')->data['currency']),
                 ];
 
-                $tariffModel = new Tariffs();
                 $recommendedDimensions = $this->getRecommendedPackage($this->getPackageQuantity());
                 if ($tariffModel->getDirectionByCode($tariff->tariff_code) === 'store'
                     || $tariffModel->getDirectionByCode($tariff->tariff_code) === 'postamat') {
