@@ -31,20 +31,20 @@ class ControllerExtensionShippingCdekOfficial extends Controller
         }
     }
 
+    public function cdek_official_checkout_checkout_before(&$route, &$data, &$output)
+    {
+        $data['scripts'][] = 'catalog/view/javascript/cdek_official/cdek_official_checkout.js';
+//        $this->document->addScript('catalog/view/javascript/cdek_official/cdek_official_checkout.js');
+    }
+
     public function cdek_official_checkout_checkout_after(&$route, &$data, &$output)
     {
-        $btnShippingMethod = "<footer>";
-        $btnShippingMethodWithHide = "
-                                        <footer>" .
-                                     "<script>
-                                        $('body').on('click', '[name=shipping_method]', function (event) {
-                                            if ($(event.target).val() == 'cdek_official.cdek_official_office_138') {
-                                                $(event.target).after('<button class=\"cdek_pvz_map_btn\" id=\"cdek_official_office_button_138\">Выбрать ПВЗ</button>')   
-                                            }
-                                        })
-                                        </script>";
-
-        $output = str_replace($btnShippingMethod, $btnShippingMethodWithHide, $output);
+        //for cdek_official_pvz_code
+        $postParamForTransfer =
+            "data: $('#collapse-shipping-method input[type=\'radio\']:checked, #collapse-shipping-method textarea')";
+        $postParamForTransferEdited =
+            "data: $('#collapse-shipping-method input[type=\'radio\']:checked, #collapse-shipping-method textarea, #collapse-shipping-method input[type=\'hidden\']')";
+        $output = str_replace($postParamForTransfer, $postParamForTransferEdited, $output);
     }
 
     public function cdek_official_checkout_shipping_controller_before(&$route, &$data, &$output)

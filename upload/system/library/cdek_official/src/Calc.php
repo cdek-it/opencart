@@ -140,7 +140,7 @@ class Calc
                     $additionalName = 'office_' . $additionalName;
                 }
 
-                $quoteData['cdek_official_' . $tariff->tariff_code] = [
+                $quoteData['cdek_official_' . $additionalName] = [
                     'code' => 'cdek_official.cdek_official_' . $additionalName,
                     'title' => 'CDEK: ' . $title,
                     'cost' => $total,
@@ -152,7 +152,7 @@ class Calc
                 $recommendedDimensions = $this->getRecommendedPackage($this->getPackageQuantity());
                 if ($tariffModel->getDirectionByCode($tariff->tariff_code) === 'store'
                     || $tariffModel->getDirectionByCode($tariff->tariff_code) === 'postamat') {
-                    $quoteData['cdek_official_' . $tariff->tariff_code]['extra'] = $this->registry->get('load')
+                    $quoteData['cdek_official_' . $additionalName]['extra'] = $this->registry->get('load')
                                                                                                   ->view('extension/shipping/cdek_official_map', [
                                                                                                           'tariff' => $tariff->tariff_code,
                                                                                                           'apikey' => $this->settings->authSettings->apiKey,
