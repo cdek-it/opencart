@@ -34,12 +34,12 @@ class Calc
 
         if (!empty($quoteData)) {
             $methodData = [
-                'code' => 'cdek_official',
-                'title' => $this->registry->get('language')->get('text_title') . $this->registry->get('load')
-                                                                                                ->view('extension/shipping/cdek_official_checkout_inputs'),
-                'quote' => $quoteData,
+                'code'       => 'cdek_official',
+                'title'      => $this->registry->get('language')->get('text_title') . $this->registry->get('load')
+                                                                                                     ->view('extension/shipping/cdek_official_checkout_inputs'),
+                'quote'      => $quoteData,
                 'sort_order' => $this->registry->get('config')->get('shipping_cdek_official_sort_order'),
-                'error' => false,
+                'error'      => false,
             ];
         }
 
@@ -71,22 +71,24 @@ class Calc
             $locality = CdekHelper::getLocality($this->settings->shippingSettings->shippingCityAddress);
             if (CdekHelper::checkLocalityAddress($locality)) {
                 $data = [
-                    "currency" => $currencySelected,
+                    "currency"      => $currencySelected,
                     "from_location" => [
-                        "address" => $locality->address ?? '',
+                        "address"      => $locality->address ?? '',
                         'country_code' => $locality->country ?? '',
-                        'postal_code' => $locality->postal ?? '',
-                        'city' => $locality->city ?? '',
+                        'postal_code'  => $locality->postal ?? '',
+                        'city'         => $locality->city ?? '',
                     ],
-                    "to_location" => [
+                    "to_location"   => [
                         "code" => $toLocationCode,
                     ],
-                    "packages" => $package,
+                    "packages"      => $package,
                 ];
                 $result = $this->cdekApi->calculate($data);
-                foreach ($result->tariff_codes as $tariff) {
-                    if (in_array($tariff->delivery_mode, [1, 2, 6])) {
-                        $tariffCalculatedToDoor[] = $tariff;
+                if (!empty($result) && isset($result->tariff_codes)) {
+                    foreach ($result->tariff_codes as $tariff) {
+                        if (in_array($tariff->delivery_mode, [1, 2, 6])) {
+                            $tariffCalculatedToDoor[] = $tariff;
+                        }
                     }
                 }
             }
@@ -98,16 +100,16 @@ class Calc
             $locality = CdekHelper::getLocality($this->settings->shippingSettings->shippingPvz);
             if (CdekHelper::checkLocalityOffice($locality)) {
                 $data = [
-                    "currency" => $currencySelected,
+                    "currency"      => $currencySelected,
                     "from_location" => [
                         "country_code" => $locality->country ?? '',
-                        "postal_code" => $locality->postal ?? '',
-                        "city" => $locality->city ?? '',
+                        "postal_code"  => $locality->postal ?? '',
+                        "city"         => $locality->city ?? '',
                     ],
-                    "to_location" => [
+                    "to_location"   => [
                         "code" => $toLocationCode,
                     ],
-                    "packages" => $package,
+                    "packages"      => $package,
                 ];
                 $result = $this->cdekApi->calculate($data);
                 foreach ($result->tariff_codes as $tariff) {
@@ -133,35 +135,35 @@ class Calc
                          . $this->getPeriod($tariff);
                 $total = $this->getTotalSum($tariff);
 
-                $tariffModel = new Tariffs();
-
-                $additionalName = $tariff->tariff_code;
-                if ($tariffModel->getDirectionByCode($tariff->tariff_code) === 'store') {
-                    $additionalName = 'office_' . $additionalName;
-                }
-
-                $quoteData['cdek_official_' . $additionalName] = [
-                    'code' => 'cdek_official.cdek_official_' . $additionalName,
-                    'title' => 'CDEK: ' . $title,
-                    'cost' => $total,
+                $quoteData['cdek_official_' . $tariff->tariff_code] = [
+                    'code'         => 'cdek_official.cdek_official_' . $tariff->tariff_code,
+                    'title'        => 'CDEK: ' . $title,
+                    'cost'         => $total,
                     'tax_class_id' => $tariff->tariff_code,
-                    'text' => $this->registry->get('currency')
-                                             ->format($total, $this->registry->get('session')->data['currency']),
+                    'text'         => $this->registry->get('currency')
+                                                     ->format($total,
+                                                              $this->registry->get('session')->data['currency']),
+                    'extra'        => 'CDEK: ' . $title,
                 ];
 
                 $recommendedDimensions = $this->getRecommendedPackage($this->getPackageQuantity());
+                $tariffModel = new Tariffs();
                 if ($tariffModel->getDirectionByCode($tariff->tariff_code) === 'store'
                     || $tariffModel->getDirectionByCode($tariff->tariff_code) === 'postamat') {
-                    $quoteData['cdek_official_' . $additionalName]['extra'] = $this->registry->get('load')
-                                                                                                  ->view('extension/shipping/cdek_official_map', [
-                                                                                                          'tariff' => $tariff->tariff_code,
-                                                                                                          'apikey' => $this->settings->authSettings->apiKey,
-                                                                                                          'city' => $recipientLocation[0]->city,
-                                                                                                          'length' => $recommendedDimensions['length'],
-                                                                                                          'width' => $recommendedDimensions['width'],
-                                                                                                          'height' => $recommendedDimensions['height'],
-                                                                                                          'weight' => $recommendedDimensions['weight'],
-                                                                                                      ]);
+                    $quoteData['cdek_official_' . $tariff->tariff_code]['title'] = $this->registry->get('load')
+                                                                                                  ->view('extension/shipping/cdek_official_map',
+                                                                                                         [
+                                                                                                             'tariff' => $tariff->tariff_code,
+                                                                                                             'apikey' => $this->settings->authSettings->apiKey,
+                                                                                                             'city'   => $recipientLocation[0]->city,
+                                                                                                             'length' => $recommendedDimensions['length'],
+                                                                                                             'width'  => $recommendedDimensions['width'],
+                                                                                                             'height' => $recommendedDimensions['height'],
+                                                                                                             'weight' => $recommendedDimensions['weight'],
+                                                                                                         ]) .
+                                                                                   ' ' .
+                                                                                   'CDEK: ' .
+                                                                                   $title;
                 }
             }
         }
@@ -187,11 +189,11 @@ class Calc
     private function getDimensions($product)
     {
         $dimensions = [
-            'height' => (int)$product['height'],
-            'length' => (int)$product['length'],
-            'weight' => (int)($this->weight->convert((int)$product['weight'], $product['weight_class_id'], '2'))
-                        / (int)$product['quantity'],
-            'width' => (int)$product['width'],
+            'height'   => (int)$product['height'],
+            'length'   => (int)$product['length'],
+            'weight'   => (int)($this->weight->convert((int)$product['weight'], $product['weight_class_id'], '2'))
+                          / (int)$product['quantity'],
+            'width'    => (int)$product['width'],
             'quantity' => (int)$product['quantity'],
         ];
 
@@ -257,7 +259,7 @@ class Calc
     {
         $defaultPackages = [
             'length' => (int)$this->settings->dimensionsSettings->dimensionsLength,
-            'width' => (int)$this->settings->dimensionsSettings->dimensionsWidth,
+            'width'  => (int)$this->settings->dimensionsSettings->dimensionsWidth,
             'height' => (int)$this->settings->dimensionsSettings->dimensionsHeight,
             'weight' => (int)$this->settings->dimensionsSettings->dimensionsWeight,
         ];
@@ -276,20 +278,6 @@ class Calc
         }
 
         return $packages;
-    }
-
-    /**
-     * @return mixed
-     */
-    protected function getTariffPlugName()
-    {
-        if (empty($this->settings->shippingSettings->shippingTariffPlug)) {
-            $tariffPlugName = $this->registry->get('language')->get('cdek_shipping__tariff_name_plug');
-        } else {
-            $tariffPlugName = $this->settings->shippingSettings->shippingTariffPlug;
-        }
-
-        return $tariffPlugName;
     }
 
 }

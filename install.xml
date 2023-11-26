@@ -5,30 +5,4 @@
     <version>dev</version>
     <author>CDEK IT</author>
     <link>https://www.cdek.ru/ru/integration</link>
-    <file path="catalog/view/theme/default/template/checkout/shipping_method.twig">
-        <operation>
-            <search>
-                <![CDATA[{{ quote.title }} - {{ quote.text }}]]>
-            </search>
-            <add position="replace">
-                <![CDATA[
-                    {% if quote.extra %}
-                        {{ quote.extra }}
-                    {% endif %}
-                    {{ quote.title }} - {{ quote.text }}
-                ]]>
-            </add>
-        </operation>
-    </file>
-    <file path="catalog/controller/checkout/shipping_method.php">
-        <operation>
-            <search>
-                <![CDATA['quote'      => $quote['quote']]]>
-            </search>
-            <add position="after">
-                <![CDATA['extra'      => $quote['extra'] ?? '',]]>
-            </add>
-        </operation>
-    </file>
-
 </modification>

@@ -31,15 +31,9 @@ class ControllerExtensionShippingCdekOfficial extends Controller
         }
     }
 
-    public function cdek_official_checkout_checkout_before(&$route, &$data, &$output)
-    {
-        $data['scripts'][] = 'catalog/view/javascript/cdek_official/cdek_official_checkout.js';
-//        $this->document->addScript('catalog/view/javascript/cdek_official/cdek_official_checkout.js');
-    }
-
     public function cdek_official_checkout_checkout_after(&$route, &$data, &$output)
     {
-        //for cdek_official_pvz_code
+        //for cdek_official_pvz_code add session
         $postParamForTransfer =
             "data: $('#collapse-shipping-method input[type=\'radio\']:checked, #collapse-shipping-method textarea')";
         $postParamForTransferEdited =
@@ -47,8 +41,9 @@ class ControllerExtensionShippingCdekOfficial extends Controller
         $output = str_replace($postParamForTransfer, $postParamForTransferEdited, $output);
     }
 
-    public function cdek_official_checkout_shipping_controller_before(&$route, &$data, &$output)
+    public function cdek_official_checkout_shipping_controller_after(&$route, &$data, &$output)
     {
+        $this->session->data['shipping_method']['title'] = $this->session->data['shipping_method']['extra'];
         $shippingMethod = $this->request->post['shipping_method'];
         $shippingMethodExplode = explode('.', $shippingMethod);
         $shippingMethodName = $shippingMethodExplode[0];
@@ -96,6 +91,5 @@ class ControllerExtensionShippingCdekOfficial extends Controller
             $insertPos = $pos + strlen($search);
             $output = substr_replace($output, $replace, $insertPos, 0);
         }
-
     }
 }

@@ -1,10 +1,7 @@
-<button class="cdek_pvz_map_btn" id="cdek_official_office_button_138">Выбрать ПВЗ</button>
+<button class="cdek_pvz_map_btn" id="cdek_official_office_button_{{ tariff }}">Выбрать ПВЗ</button>
 <script type="text/javascript">
     $('body').on('click', 'button', function (event) {
-        console.log(event)
         if (event.target.id === 'cdek_official_office_button_{{ tariff }}') {
-            console.log(event.target.id)
-            {##cdek_official_office_button_{{ tariff }}#}
             if (window.cdekWidget === undefined) {
                 window.cdekWidget = new window.CDEKWidget({
                                                               apiKey: '{{ apikey }}',
