@@ -122,6 +122,8 @@ class ControllerExtensionShippingCdekOfficial extends Controller
             }
 
             $recommendedDimensions = $this->getRecommendedPackage($orderId);
+            $orderMeta = CdekOrderMetaRepository::getOrder($this->db, $orderId);
+            $dataOrderForm['pvz_code_info'] = $orderMeta->rows[0]['pvz_code'] ?? '';
             $dataOrderForm = array_merge($dataOrderForm, $recommendedDimensions);
 
             $this->displayCreateOrderForm($output, $dataOrderForm);
