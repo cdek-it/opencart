@@ -35,16 +35,17 @@ class Order
     public function getRequestData()
     {
         $order = $this->getOrderData();
+        $packageOrder = $this->getPackageOrder($order);
         $data = [
             "developer_key" => "O#UVFQ4JZa?)EV4lBC+h@dAMe^~4nKLi",
             "packages" => [
                 [
                     "number" => "package_order_" . $this->orderOC['order_id'],
-                    "height" => $this->dimensions['height'],
-                    "length" => $this->dimensions['length'],
-                    "width" => $this->dimensions['width'],
+                    "height" => $packageOrder['height'],
+                    "length" => $packageOrder['length'],
+                    "width" => $packageOrder['width'],
                     "items" => $this->getItems(),
-                    "weight" => $this->weightPackage,
+                    "weight" => $packageOrder['weight'],
 
                 ]
             ],
@@ -179,5 +180,27 @@ class Order
             ];
         }
         return $result;
+    }
+
+    /**
+     * @param array $order
+     *
+     * @return array
+     */
+    protected function getPackageOrder(array $order): array
+    {
+        $productsPackages = [];
+        foreach ($this->products as $key => $product) {
+            $productOC = $this->model_catalog_product->getProduct($product['product_id']);
+            $productsPackages[] = [
+                'length' => (int)$productOC['length'],
+                'width' => (int)$productOC['width'],
+                'height' => (int)$productOC['height'],
+                'weight' => (int)($this->weight->convert($productOC['weight'], $productOC['weight_class_id'], '2')),
+                'quantity' => (int)$this->products[$key]['quantity']
+            ];
+        }
+        $packageOrder = CDEKHelper::calculateRecomendedPackage($productsPackages, $this->settings->dimensionsSettings->getParams());
+        return $packageOrder;
     }
 }

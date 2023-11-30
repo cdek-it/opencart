@@ -59,9 +59,9 @@ class Calc
 
         //От двери
         $tariffCalculatedToDoor = [];
-        $package = $this->getPackage();
+        $recommendedDimensions = $this->getRecommendedPackage($this->getPackageQuantity());
 
-        if (empty($package)) {
+        if (empty($recommendedDimensions)) {
             return [];
         }
 
@@ -81,7 +81,7 @@ class Calc
                     "to_location" => [
                         "code" => $toLocationCode,
                     ],
-                    "packages" => $package,
+                    "packages" => $recommendedDimensions,
                 ];
                 $result = $this->cdekApi->calculate($data);
                 foreach ($result->tariff_codes as $tariff) {
@@ -107,7 +107,7 @@ class Calc
                     "to_location" => [
                         "code" => $toLocationCode,
                     ],
-                    "packages" => $package,
+                    "packages" => $recommendedDimensions,
                 ];
                 $result = $this->cdekApi->calculate($data);
                 foreach ($result->tariff_codes as $tariff) {
@@ -143,7 +143,6 @@ class Calc
                 ];
 
                 $tariffModel = new Tariffs();
-                $recommendedDimensions = $this->getRecommendedPackage($this->getPackageQuantity());
                 if ($tariffModel->getDirectionByCode($tariff->tariff_code) === 'store'
                     || $tariffModel->getDirectionByCode($tariff->tariff_code) === 'postamat') {
                     $quoteData['cdek_official_' . $tariff->tariff_code]['extra'] = $this->registry->get('load')
