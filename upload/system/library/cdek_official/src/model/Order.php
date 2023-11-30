@@ -110,7 +110,7 @@ class Order
                 continue;
             }
 
-            $weight = (int)$this->weight->convert((int)$productOC['weight'], $productOC['weight_class_id'], '2');
+            $weight = (int)$this->weight->convert($productOC['weight'], $productOC['weight_class_id'], '2');
             if ($weight === 0) {
                 $weight = $this->settings->dimensionsSettings->dimensionsWeight;
             }

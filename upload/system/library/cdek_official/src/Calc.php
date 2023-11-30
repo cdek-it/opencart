@@ -183,7 +183,7 @@ class Calc
         $dimensions = [
             'height' => (int)$product['height'],
             'length' => (int)$product['length'],
-            'weight' => (int)($this->weight->convert((int)$product['weight'], $product['weight_class_id'], '2'))
+            'weight' => (int)($this->weight->convert($product['weight'], $product['weight_class_id'], '2'))
                         / (int)$product['quantity'],
             'width' => (int)$product['width'],
             'quantity' => (int)$product['quantity'],
