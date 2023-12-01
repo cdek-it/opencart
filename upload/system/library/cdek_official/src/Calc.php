@@ -48,6 +48,7 @@ class Calc
 
     private function getQuote()
     {
+        //test
         $tariffs = $this->settings->shippingSettings->tariffs;
         $currency = $this->settings->shippingSettings->currency;
         $quoteData = [];
