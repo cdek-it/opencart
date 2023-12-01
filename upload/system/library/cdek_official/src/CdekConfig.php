@@ -4,5 +4,5 @@ namespace CDEK;
 
 class CdekConfig
 {
-    const MAP_VERSION = '3.7';
+    public const MAP_VERSION = '3.7';
 }
