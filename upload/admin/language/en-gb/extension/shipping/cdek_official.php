@@ -3,8 +3,8 @@ $_['heading_title']     = 'CDEK Shipping Method';
 $_['text_extension']     = 'Extensions';
 $_['cdek_success']      = 'Success: You have modified CDEK Shipping settings!';
 $_['cdek_auth']         = 'Authorize';
-$_['cdek_auth_id']      = 'Id';
-$_['cdek_api_key']      = 'Api key';
+$_['cdek_auth_id']      = 'Account';
+$_['cdek_api_key']      = 'Yandex Api Key';
 $_['cdek_auth_secret']  = 'Secret';
 $_['cdek_auth__status']  = 'Status';
 $_['cdek_auth__btn_submit']  = 'Submit';
@@ -164,5 +164,6 @@ $_['cdek_official_shipping__pvz_view_text'] = 'Selected office';
 $_['cdek_official_shipping__city_address_view'] = 'Selected address';
 $_['cdek_official_shipping__not_selected'] = 'Not selected';
 $_['cdek_official_map_address_error'] = 'No address found. Please re-save address and shipping office on the map.';
+$_['cdek_official_office_receiver_label'] = 'Recipient office code';
 
 
