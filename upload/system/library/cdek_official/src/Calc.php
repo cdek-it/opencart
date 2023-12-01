@@ -59,7 +59,7 @@ class Calc
 
         //От двери
         $tariffCalculatedToDoor = [];
-        $recommendedDimensions = $this->getRecommendedPackage($this->getPackageQuantity());
+        $recommendedDimensions = $this->getRecommendedPackage($this->getPackage());
 
         if (empty($recommendedDimensions)) {
             return [];
@@ -162,21 +162,6 @@ class Calc
         return $quoteData;
     }
 
-    private function getPackage()
-    {
-        $packages = [];
-        foreach ($this->cartProducts as $product) {
-            if ((int)$product['tax_class_id'] !== 10) {
-                $dimensions = $this->getDimensions($product);
-                for ($i = 0; $i < (int)$product['quantity']; $i++) {
-                    $packages[] = $dimensions;
-                }
-            }
-        }
-
-        return $packages;
-    }
-
     private function getDimensions($product)
     {
         $dimensions = [
@@ -258,7 +243,7 @@ class Calc
         return CdekHelper::calculateRecomendedPackage($productsPackages, $defaultPackages);
     }
 
-    private function getPackageQuantity()
+    private function getPackage()
     {
         $packages = [];
         foreach ($this->cartProducts as $product) {
@@ -270,19 +255,4 @@ class Calc
 
         return $packages;
     }
-
-    /**
-     * @return mixed
-     */
-    protected function getTariffPlugName()
-    {
-        if (empty($this->settings->shippingSettings->shippingTariffPlug)) {
-            $tariffPlugName = $this->registry->get('language')->get('cdek_shipping__tariff_name_plug');
-        } else {
-            $tariffPlugName = $this->settings->shippingSettings->shippingTariffPlug;
-        }
-
-        return $tariffPlugName;
-    }
-
 }
