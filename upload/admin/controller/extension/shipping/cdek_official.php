@@ -4,6 +4,7 @@ require_once(DIR_SYSTEM . 'library/cdek_official/vendor/autoload.php');
 
 use CDEK\App;
 use CDEK\CdekApi;
+use CDEK\CdekConfig;
 use CDEK\CdekHelper;
 use CDEK\CdekOrderMetaRepository;
 use CDEK\Settings;
@@ -52,6 +53,8 @@ class ControllerExtensionShippingCdekOfficial extends Controller
             $addressLocality->formatted : null;
         $app->data['apikey'] = $app->settings->authSettings->apiKey;
         $app->data['map_lang'] = $app->settings->authSettings->mapLangCode ?? 'rus';
+        $app->data['map_src'] = $this->load->view('extension/shipping/cdek_official_src_map',
+                                                  ['map_version' => CdekConfig::MAP_VERSION]);
 
         $this->response->setOutput($this->load->view('extension/shipping/cdek_official', $app->data));
     }
@@ -123,7 +126,7 @@ class ControllerExtensionShippingCdekOfficial extends Controller
 
             $recommendedDimensions = $this->getRecommendedPackage($orderId);
             $orderMeta = CdekOrderMetaRepository::getOrder($this->db, $orderId);
-            $dataOrderForm['pvz_code_info'] = $orderMeta->rows[0]['pvz_code'] ?? '';
+            $dataOrderForm['pvz_code_info'] = $orderMeta->rows[0]['pvz_code'] ?? null;
             $dataOrderForm = array_merge($dataOrderForm, $recommendedDimensions);
 
             $this->displayCreateOrderForm($output, $dataOrderForm);

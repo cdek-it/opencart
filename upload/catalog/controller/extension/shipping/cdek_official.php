@@ -54,8 +54,7 @@ class ControllerExtensionShippingCdekOfficial extends Controller
             $tariffModel = new Tariffs();
             if ($tariffModel->getDirectionByCode((int)$tariffCode) === 'store' ||
                 $tariffModel->getDirectionByCode((int)$tariffCode) === 'postamat') {
-                if (isset($this->request->post['cdek_official_pvz_code']) &&
-                    !empty($this->request->post['cdek_official_pvz_code'])) {
+                if (!empty($this->request->post['cdek_official_pvz_code'])) {
                     $this->load->model('setting/setting');
                     $param = $this->model_setting_setting->getSetting('cdek_official');
                     $settings = new Settings();
@@ -74,11 +73,13 @@ class ControllerExtensionShippingCdekOfficial extends Controller
     public function cdek_official_checkout_confirm_after()
     {
         if (isset($this->session->data['order_id']) && isset($this->session->data['cdek_official_pvz_code'])) {
-            $cdekPvzCode = $this->session->data['cdek_official_pvz_code'];
-            CdekOrderMetaRepository::insertPvzCode($this->db,
-                                                   DB_PREFIX,
-                                                   $this->session->data['order_id'],
-                                                   $cdekPvzCode);
+            try {
+                CdekOrderMetaRepository::insertPvzCode($this->db,
+                                                       DB_PREFIX,
+                                                       $this->session->data['order_id'],
+                                                       $this->session->data['cdek_official_pvz_code']);
+
+            } catch (Exception $e) {}
             unset($this->session->data['cdek_official_pvz_code']);
         }
     }

@@ -32,11 +32,13 @@ class Calc
         $quoteData = $this->getQuote();
         $methodData = [];
 
+        $param['map_src'] = $this->registry->get('load')->view('extension/shipping/cdek_official_src_map', ['map_version' => CdekConfig::MAP_VERSION]);
+
         if (!empty($quoteData)) {
             $methodData = [
                 'code'       => 'cdek_official',
                 'title'      => $this->registry->get('language')->get('text_title') . $this->registry->get('load')
-                                                                                                     ->view('extension/shipping/cdek_official_checkout_inputs'),
+                                                                                                     ->view('extension/shipping/cdek_official_checkout_inputs', $param),
                 'quote'      => $quoteData,
                 'sort_order' => $this->registry->get('config')->get('shipping_cdek_official_sort_order'),
                 'error'      => false,
@@ -48,7 +50,6 @@ class Calc
 
     private function getQuote()
     {
-        //test
         $tariffs = $this->settings->shippingSettings->tariffs;
         $currency = $this->settings->shippingSettings->currency;
         $quoteData = [];
