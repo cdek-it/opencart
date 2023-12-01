@@ -200,7 +200,6 @@ class Order
                 'quantity' => (int)$this->products[$key]['quantity']
             ];
         }
-        $packageOrder = CDEKHelper::calculateRecomendedPackage($productsPackages, $this->settings->dimensionsSettings->getParams());
-        return $packageOrder;
+        return CDEKHelper::calculateRecomendedPackage($productsPackages, $this->settings->dimensionsSettings->getParams());
     }
 }
