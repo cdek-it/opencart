@@ -165,7 +165,7 @@ $_['cdek_official_shipping__city_address_view'] = 'Selected address';
 $_['cdek_official_shipping__not_selected'] = 'Not selected';
 $_['cdek_official_map_address_error'] = 'No address found. Please re-save address and shipping office on the map.';
 $_['cdek_official_office_receiver_label'] = 'Recipient office code';
-$_['cdek_official_office_receiver_error'] = 'Error: An error occurred while creating an order. This order cannot be created through the plugin, because the code of the order delivery point was not found';
+$_['cdek_official_office_receiver_error'] = 'Error: The order was created incorrectly. Office code is not found in the CDEK database. Contact plugin support';
 
 
 
