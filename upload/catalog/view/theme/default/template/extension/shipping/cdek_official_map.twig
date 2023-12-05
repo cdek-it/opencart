@@ -1,11 +1,8 @@
+<button class="cdek_pvz_map_btn" id="cdek_official_office_button_{{ tariff }}">Выбрать ПВЗ</button>
 <script type="text/javascript">
-    if(document.getElementById('cdek_official_office_button_{{ tariff }}') === null){
-        var btn = document.createElement('button');
-        btn.classList.add('cdek_pvz_map_btn');
-        btn.innerText='Выбрать ПВЗ';
-        btn.id='cdek_official_office_button_{{ tariff }}';
-        btn.addEventListener('click', () => {
-            if(window.cdekWidget === undefined){
+    $('body').on('click', 'button', function (event) {
+        if (event.target.id === 'cdek_official_office_button_{{ tariff }}') {
+            if (window.cdekWidget === undefined) {
                 window.cdekWidget = new window.CDEKWidget({
                                                               apiKey: '{{ apikey }}',
                                                               defaultLocation: '{{ city }}',
@@ -28,11 +25,11 @@
                                                                   $('.cdek_official_pvz_code_address').html(`[${address.code}] ${address.address}`).show();
                                                               }
                                                           });
-            }else{
+            } else {
                 window.cdekWidget.updateLocation('{{ city }}');
             }
             window.cdekWidget.open()
-        });
-        document.querySelector("label input[value='cdek_official.cdek_official_{{ tariff }}']").after(btn);
-    }
+        }
+
+    });
 </script>

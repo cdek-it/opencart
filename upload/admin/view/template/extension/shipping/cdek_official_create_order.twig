@@ -11,6 +11,17 @@
             <div class="cdek_info_alert">
                 {{ cdek_package_info }} {{ length }}х{{ width }}х{{ height }}
             </div>
+            {% if order_direction == 'store' %}
+                {% if pvz_code_info %}
+                    <div>
+                        {{ cdek_official_office_receiver_label }}: {{ pvz_code_info }}
+                    </div>
+                {% else %}
+                    <div>
+                        {{ cdek_official_office_receiver_error }}
+                    </div>
+                {% endif %}
+            {% endif %}
             <div class="form-group">
                 <label for="cdek_order_length">{{ cdek_dimensions__length }}:</label>
                 <input type="number" class="form-control" id="cdek_order_length" name="cdek_order_length" required>

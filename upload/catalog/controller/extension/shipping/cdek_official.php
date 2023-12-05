@@ -33,13 +33,17 @@ class ControllerExtensionShippingCdekOfficial extends Controller
 
     public function cdek_official_checkout_checkout_after(&$route, &$data, &$output)
     {
-        $btnShippingMethod = "data: $('#collapse-shipping-method input[type=\'radio\']:checked, #collapse-shipping-method textarea')";
-        $btnShippingMethodWithHide = "data: $('#collapse-shipping-method input[type=\'radio\']:checked, #collapse-shipping-method textarea, #collapse-shipping-method input[type=\'hidden\']')";
-        $output = str_replace($btnShippingMethod, $btnShippingMethodWithHide, $output);
+        //for cdek_official_pvz_code add session
+        $postParamForTransfer =
+            "data: $('#collapse-shipping-method input[type=\'radio\']:checked, #collapse-shipping-method textarea')";
+        $postParamForTransferEdited =
+            "data: $('#collapse-shipping-method input[type=\'radio\']:checked, #collapse-shipping-method textarea, #collapse-shipping-method input[type=\'hidden\']')";
+        $output = str_replace($postParamForTransfer, $postParamForTransferEdited, $output);
     }
 
-    public function cdek_official_checkout_shipping_controller_before(&$route, &$data, &$output)
+    public function cdek_official_checkout_shipping_controller_after(&$route, &$data, &$output)
     {
+        $this->session->data['shipping_method']['title'] = $this->session->data['shipping_method']['extra'];
         $shippingMethod = $this->request->post['shipping_method'];
         $shippingMethodExplode = explode('.', $shippingMethod);
         $shippingMethodName = $shippingMethodExplode[0];
@@ -48,8 +52,9 @@ class ControllerExtensionShippingCdekOfficial extends Controller
             $shippingMethodTariffExplode = explode('_', $shippingMethodTariff);
             $tariffCode = end($shippingMethodTariffExplode);
             $tariffModel = new Tariffs();
-            if ($tariffModel->getDirectionByCode((int)$tariffCode) === 'store' || $tariffModel->getDirectionByCode((int)$tariffCode) === 'postamat') {
-                if (isset($this->request->post['cdek_official_pvz_code']) && !empty($this->request->post['cdek_official_pvz_code'])) {
+            if ($tariffModel->getDirectionByCode((int)$tariffCode) === 'store' ||
+                $tariffModel->getDirectionByCode((int)$tariffCode) === 'postamat') {
+                if (!empty($this->request->post['cdek_official_pvz_code'])) {
                     $this->load->model('setting/setting');
                     $param = $this->model_setting_setting->getSetting('cdek_official');
                     $settings = new Settings();
@@ -68,9 +73,13 @@ class ControllerExtensionShippingCdekOfficial extends Controller
     public function cdek_official_checkout_confirm_after()
     {
         if (isset($this->session->data['order_id']) && isset($this->session->data['cdek_official_pvz_code'])) {
-            $cdekPvzCode = $this->session->data['cdek_official_pvz_code'];
-            CdekOrderMetaRepository::insertPvzCode($this->db, DB_PREFIX, $this->session->data['order_id'],
-                $cdekPvzCode);
+            try {
+                CdekOrderMetaRepository::insertPvzCode($this->db,
+                                                       DB_PREFIX,
+                                                       $this->session->data['order_id'],
+                                                       $this->session->data['cdek_official_pvz_code']);
+
+            } catch (Exception $e) {}
             unset($this->session->data['cdek_official_pvz_code']);
         }
     }
@@ -83,6 +92,5 @@ class ControllerExtensionShippingCdekOfficial extends Controller
             $insertPos = $pos + strlen($search);
             $output = substr_replace($output, $replace, $insertPos, 0);
         }
-
     }
 }
