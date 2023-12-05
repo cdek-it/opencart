@@ -163,4 +163,4 @@ $_['cdek_official_shipping__city_address_view'] = 'Выбранный адрес
 $_['cdek_official_shipping__not_selected'] = 'Не выбрано';
 $_['cdek_official_map_address_error'] = 'Адрес не найден. Пожалуйста, пересохраните адрес  и офис отправки на карте.';
 $_['cdek_official_office_receiver_label'] = 'Код офиса получателя';
-$_['cdek_official_office_receiver_error'] = 'Ошибка: При создании заказа произошла ошибка. Этот заказ нельзя создать через плагин, так как не найден код пункта выдачи заказа';
+$_['cdek_official_office_receiver_error'] = 'Ошибка: Заказ создан некорректно. Код пвз не найден в базе СДЭК. Обратитесь в поддержку плагина';
