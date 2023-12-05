@@ -69,9 +69,9 @@ class CdekHelper
 
         unset($defaultPackages['weight']);
         sort($defaultPackages);
-        $lengthList[] = $defaultPackages[0];
-        $widthList[] = $defaultPackages[1];
-        $heightList[] = $defaultPackages[2];
+        $lengthList[] = (int)$defaultPackages[0];
+        $widthList[] = (int)$defaultPackages[1];
+        $heightList[] = (int)$defaultPackages[2];
 
         rsort($lengthList);
         rsort($widthList);

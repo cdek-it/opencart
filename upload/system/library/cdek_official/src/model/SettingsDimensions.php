@@ -6,12 +6,6 @@ use Exception;
 
 class SettingsDimensions extends AbstractSettings
 {
-    public $dimensionsLength;
-    public $dimensionsWidth;
-    public $dimensionsHeight;
-    public $dimensionsWeight;
-    public $dimensionsUseDefault;
-
     const PARAM_ID = [
         'cdek_official_dimensions__length' => 'dimensionsLength',
         'cdek_official_dimensions__width' => 'dimensionsWidth',
@@ -19,6 +13,11 @@ class SettingsDimensions extends AbstractSettings
         'cdek_official_dimensions__weight' => 'dimensionsWeight',
         'cdek_official_dimensions__use_default' => 'dimensionsUseDefault',
     ];
+    public $dimensionsLength;
+    public $dimensionsWidth;
+    public $dimensionsHeight;
+    public $dimensionsWeight;
+    public $dimensionsUseDefault;
 
     /**
      * @throws Exception
@@ -56,5 +55,15 @@ class SettingsDimensions extends AbstractSettings
         if (!is_numeric($this->dimensionsWeight)) {
             throw new Exception('cdek_error_dimensions_weight_invalid');
         }
+    }
+
+    public function getParams()
+    {
+        return [
+            'length' => $this->dimensionsLength,
+            'width'  => $this->dimensionsWidth,
+            'height' => $this->dimensionsHeight,
+            'weight' => $this->dimensionsWeight,
+            ];
     }
 }

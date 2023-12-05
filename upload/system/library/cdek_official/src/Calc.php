@@ -61,9 +61,9 @@ class Calc
 
         //От двери
         $tariffCalculatedToDoor = [];
-        $package = $this->getPackage();
+        $recommendedDimensions = $this->getRecommendedPackage($this->getPackage());
 
-        if (empty($package)) {
+        if (empty($recommendedDimensions)) {
             return [];
         }
 
@@ -83,7 +83,7 @@ class Calc
                     "to_location"   => [
                         "code" => $toLocationCode,
                     ],
-                    "packages"      => $package,
+                    "packages" => $recommendedDimensions,
                 ];
                 $result = $this->cdekApi->calculate($data);
                 if (!empty($result) && isset($result->tariff_codes)) {
@@ -111,7 +111,7 @@ class Calc
                     "to_location"   => [
                         "code" => $toLocationCode,
                     ],
-                    "packages"      => $package,
+                    "packages" => $recommendedDimensions,
                 ];
                 $result = $this->cdekApi->calculate($data);
                 foreach ($result->tariff_codes as $tariff) {
@@ -147,8 +147,6 @@ class Calc
                                                               $this->registry->get('session')->data['currency']),
                     'extra'        => 'CDEK: ' . $title,
                 ];
-
-                $recommendedDimensions = $this->getRecommendedPackage($this->getPackageQuantity());
                 $tariffModel = new Tariffs();
                 if ($tariffModel->getDirectionByCode($tariff->tariff_code) === 'store'
                     || $tariffModel->getDirectionByCode($tariff->tariff_code) === 'postamat') {
@@ -173,29 +171,14 @@ class Calc
         return $quoteData;
     }
 
-    private function getPackage()
-    {
-        $packages = [];
-        foreach ($this->cartProducts as $product) {
-            if ((int)$product['tax_class_id'] !== 10) {
-                $dimensions = $this->getDimensions($product);
-                for ($i = 0; $i < (int)$product['quantity']; $i++) {
-                    $packages[] = $dimensions;
-                }
-            }
-        }
-
-        return $packages;
-    }
-
     private function getDimensions($product)
     {
         $dimensions = [
-            'height'   => (int)$product['height'],
-            'length'   => (int)$product['length'],
-            'weight'   => (int)($this->weight->convert((int)$product['weight'], $product['weight_class_id'], '2'))
-                          / (int)$product['quantity'],
-            'width'    => (int)$product['width'],
+            'height' => (int)$product['height'],
+            'length' => (int)$product['length'],
+            'weight' => (int)($this->weight->convert($product['weight'], $product['weight_class_id'], '2'))
+                        / (int)$product['quantity'],
+            'width' => (int)$product['width'],
             'quantity' => (int)$product['quantity'],
         ];
 
@@ -269,7 +252,7 @@ class Calc
         return CdekHelper::calculateRecomendedPackage($productsPackages, $defaultPackages);
     }
 
-    private function getPackageQuantity()
+    private function getPackage()
     {
         $packages = [];
         foreach ($this->cartProducts as $product) {
@@ -281,5 +264,4 @@ class Calc
 
         return $packages;
     }
-
 }
