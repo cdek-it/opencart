@@ -2,6 +2,8 @@
 
 namespace CDEK;
 
+use CDEK\model\Tariffs;
+
 class CdekHelper
 {
     public static function getLocality($locality)
@@ -77,5 +79,14 @@ class CdekHelper
 
         return ['length' => $lengthList[0], 'width' => $widthList[0], 'height' => $heightList[0], 'weight' =>
             $weightTotal];
+    }
+
+    public static function getTariffDirectionByOrderId($modelSaleOrder, $orderId)
+    {
+        $orderOC = $modelSaleOrder->getOrder($orderId);
+        $tariffNameParts = explode('_', $orderOC['shipping_code']);
+        $tariffCode = end($tariffNameParts);
+        $tariffMode = new Tariffs();
+        return $tariffMode->getDirectionByCode((int)$tariffCode);
     }
 }

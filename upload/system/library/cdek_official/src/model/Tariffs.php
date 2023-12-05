@@ -227,7 +227,7 @@ class Tariffs
         }
     }
 
-    public function getDirectionByCode($code)
+    public function getDirectionByCode(int $code)
     {
         foreach ($this->data as $key => $tariffElement) {
             if ($tariffElement['code'] === $code) {

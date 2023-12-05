@@ -1,5 +1,4 @@
-<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/cdek-it/widget@3.6.1/dist/cdek-widget.umd.js"
-        charset="utf-8"></script>
+{{ map_src }}
 {% if status_auth %}
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -263,7 +262,7 @@
                                                            id="cdek_official_shipping_tariff_{{ tariff.code }}"
                                                            name="cdek_official_shipping_tariff_{{ tariff.code }}"
                                                            value="{{ tariff.code }}" {% if tariff.enable %} checked {% endif %}>
-                                                    {{ attribute(_context, tariff.key) }}
+                                                    {{ attribute(_context, tariff.key) }} ({{ tariff.code }})
                                                 </label>
                                             </div>
                                         {% endfor %}

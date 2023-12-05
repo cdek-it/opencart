@@ -11,7 +11,7 @@ class ModelExtensionShippingCdekOfficial extends Model
             'cdek_official_checkout' => 'extension/shipping/cdek_official/cdek_official_checkout_checkout_after',
         ],
         'catalog/controller/checkout/shipping_method/save/after' => [
-            'cdek_official_controller' => 'extension/shipping/cdek_official/cdek_official_checkout_shipping_controller_before',
+            'cdek_official_controller' => 'extension/shipping/cdek_official/cdek_official_checkout_shipping_controller_after',
         ],
         'catalog/controller/checkout/confirm/after' => [
             'cdek_official_checkout_confirm' => 'extension/shipping/cdek_official/cdek_official_checkout_confirm_after',

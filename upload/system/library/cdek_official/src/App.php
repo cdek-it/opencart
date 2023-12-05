@@ -25,6 +25,7 @@ class App
     public function __construct(Registry $registry, array $data, string $dirApplication)
     {
         $this->registry = $registry;
+        
         $this->data = $data;
         $this->dirApplication = $dirApplication;
         $this->session = $this->registry->get('session');
