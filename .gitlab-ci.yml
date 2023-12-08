@@ -75,7 +75,7 @@ upload:
   script:
     - zip -r cdek.zip upload install.xml
   #  - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file cdek.zip "${PACKAGE_URL}${RELEASE_VERSION}/opencart_${ARCHIVE_VERSION}.ocmod.zip"'
-    - curl -u "${ARTIFACTORY_LOGIN}":"${ARTIFACTORY_PASS}" -X PUT "$ARTIFACTORY_REPO/${RELEASE_VERSION}/opencart_${ARCHIVE_VERSION}.ocmod.zip" -T opencart_${ARCHIVE_VERSION}.ocmod.zip
+    - curl -u "${ARTIFACTORY_LOGIN}":"${ARTIFACTORY_PASS}" --upload-file cdek.zip "${ARTIFACTORY_REPO}/opencart_${ARCHIVE_VERSION}.ocmod.zip"
 
 #release:
 #  stage: deploy
