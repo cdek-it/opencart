@@ -55,7 +55,7 @@ build_custom:
     - mv composer.phar /usr/local/bin/composer
     - export RELEASE_VERSION="${CI_COMMIT_REF_NAME}#${CI_COMMIT_SHORT_SHA}"
   script:
-    - sed -i "s/\(<version>\)\( *\).*/\1\2${RELEASE_VERSION}<\/version>/" install.xml
+  #  - sed -i "s/\(<version>\)\( *\).*/\1\2${RELEASE_VERSION}<\/version>/" install.xml
     - cd upload/system/library/cdek_official
     - composer i -a
 
