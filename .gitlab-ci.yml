@@ -28,7 +28,7 @@ build_tag:
     - mv composer.phar /usr/local/bin/composer
     - export RELEASE_VERSION=$(echo "${CI_COMMIT_TAG}" | sed 's/v//')
   script:
-    - sed -i "s/\(<version>\)\( *\).*/\1\2${RELEASE_VERSION}<\/version>/" install.xml
+    #- sed -i "s/\(<version>\)\( *\).*/\1\2${RELEASE_VERSION}<\/version>/" install.xml
     - cd upload/system/library/cdek_official
     - composer i -a
   artifacts:
