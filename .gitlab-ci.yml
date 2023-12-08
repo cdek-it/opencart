@@ -64,7 +64,7 @@ upload:
   tags:
     - docker
   needs:
-    - job: build_tag
+    - job: build_custom
       artifacts: true
   only:
     - tags
