@@ -66,8 +66,8 @@ upload:
   needs:
     - job: build_tag
       artifacts: true
-  only:
-    - tags
+  #only:
+  #  - tags
   before_script:
     - apk add curl zip
     - export RELEASE_VERSION=$(echo "${CI_COMMIT_TAG}" | sed 's/v//')
@@ -75,7 +75,7 @@ upload:
   script:
     - zip -r cdek.zip upload install.xml
   #  - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file cdek.zip "${PACKAGE_URL}${RELEASE_VERSION}/opencart_${ARCHIVE_VERSION}.ocmod.zip"'
-    - curl -u "${ARTIFACTORY_LOGIN}":"${ARTIFACTORY_PASS}" --upload-file cdek.zip "${ARTIFACTORY_REPO}/opencart_${ARCHIVE_VERSION}.ocmod.zip"
+    - curl -u "${ARTIFACTORY_LOGIN}":"${ARTIFACTORY_PASS}" --upload-file cdek.zip "${ARTIFACTORY_REPO}/$CI_PROJECT_NAME/opencart_${ARCHIVE_VERSION}.ocmod.zip"
 
 release:
   stage: deploy
@@ -92,7 +92,7 @@ release:
   script:
     - |
       release-cli create --name $CI_COMMIT_TAG --tag-name $CI_COMMIT_TAG \
-        --assets-link "{\"name\":\"Архив\",\"filepath\":\"/archive\",\"url\":\"${ARTIFACTORY_REPO}/opencart_${ARCHIVE_VERSION}.ocmod.zip\", \"link_type\":\"package\"}" \
+        --assets-link "{\"name\":\"Архив\",\"filepath\":\"/archive\",\"url\":\"${ARTIFACTORY_REPO}/$CI_PROJECT_NAME/opencart_${ARCHIVE_VERSION}.ocmod.zip\", \"link_type\":\"package\"}" \
 
 #notify:
 #  stage: notify
