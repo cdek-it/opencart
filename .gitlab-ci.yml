@@ -63,9 +63,9 @@ upload:
   stage: upload
   tags:
     - docker
-  #needs:
-  #  - job: build_tag
-  #    artifacts: true
+  needs:
+    - job: build_custom
+      artifacts: true
   #only:
   #  - tags
   before_script:
