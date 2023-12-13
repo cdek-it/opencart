@@ -64,10 +64,10 @@ upload:
   tags:
     - docker
   needs:
-    - job: build_custom
+    - job: build_tag
       artifacts: true
- # only:
- #   - tags
+  only:
+    - tags
   before_script:
     - apk add curl zip
     - export RELEASE_VERSION=$(echo "${CI_COMMIT_TAG}" | sed 's/v//')
