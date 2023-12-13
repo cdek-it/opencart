@@ -27,6 +27,13 @@
                                                           });
             } else {
                 window.cdekWidget.updateLocation('{{ city }}');
+                $.ajax({
+                           url: '/index.php?route=extension/shipping/cdek_official',
+                           method: 'get',
+                           success: function (data) {
+                               window.cdekWidget.updateOfficesRaw(data);
+                           },
+                       });
             }
             window.cdekWidget.open()
         }
