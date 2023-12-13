@@ -1,6 +1,6 @@
-<button class="cdek_pvz_map_btn" id="cdek_official_office_button_{{ tariff }}">Выбрать ПВЗ</button>
+<div class="cdek_pvz_map_btn" id="cdek_official_office_button_{{ tariff }}">Выбрать ПВЗ</div>
 <script type="text/javascript">
-    $('body').on('click', 'button', function (event) {
+    $('body').on('click', 'div.cdek_pvz_map_btn', function (event) {
         if (event.target.id === 'cdek_official_office_button_{{ tariff }}') {
             if (window.cdekWidget === undefined) {
                 window.cdekWidget = new window.CDEKWidget({
@@ -33,3 +33,25 @@
 
     });
 </script>
+<style>
+    input[type=radio]:checked ~ div.cdek_pvz_map_btn {
+        display: block
+    }
+
+    div.cdek_pvz_map_btn {
+        display: none
+    }
+
+    .cdek_pvz_map_btn {
+        background-color: #cfe2ff;
+        color: black;
+        border: 1px solid #009fff;
+        padding: 5px 20px;
+        border-radius: 10px;
+        width: 120px;
+    }
+
+    .cdek_pvz_map_btn:hover {
+        background-color: #96c1ff;
+    }
+</style>
