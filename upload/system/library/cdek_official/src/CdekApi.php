@@ -129,10 +129,8 @@ class CdekApi
             "copy_count" => 2
         ];
         $requestBill = $this->sendRequest($url, 'POST', $data);
-        CdekLog::sendLog('RequestBill: ' . json_encode($requestBill));
         sleep(5);
         $result = $this->sendRequest($url . '/' . $requestBill->entity->uuid, 'GET');
-        CdekLog::sendLog('Result: ' . json_encode($result));
         header('Content-type', 'application/pdf');
         echo $this->httpClient->sendRequestBill($result->entity->url, $this->getToken());
         exit();
