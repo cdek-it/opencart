@@ -11,7 +11,7 @@ variables:
   PACKAGE_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/archive/"
   ARTIFACTORY_LOGIN: "$ARTIFACTORY_LOGIN"
   ARTIFACTORY_PASS: "$ARTIFACTORY_PASS"
-  ARTIFACTORY_REPO: "https://repo.cdek.ru/artifactory/erp-generic"
+  ARTIFACTORY_REPO: "https://repo.cdek.ru/artifactory/erp-cms"
 
 
 build_tag:
@@ -64,10 +64,10 @@ upload:
   tags:
     - docker
   needs:
-    - job: build_tag
+    - job: build_custom
       artifacts: true
-  only:
-    - tags
+ # only:
+ #   - tags
   before_script:
     - apk add curl zip
     - export RELEASE_VERSION=$(echo "${CI_COMMIT_TAG}" | sed 's/v//')
@@ -75,24 +75,24 @@ upload:
   script:
     - zip -r cdek.zip upload install.xml
   #  - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file cdek.zip "${PACKAGE_URL}${RELEASE_VERSION}/opencart_${ARCHIVE_VERSION}.ocmod.zip"'
-    - curl -u "${ARTIFACTORY_LOGIN}":"${ARTIFACTORY_PASS}" --upload-file cdek.zip "${ARTIFACTORY_REPO}/$CI_PROJECT_NAME/opencart_${ARCHIVE_VERSION}.ocmod.zip"
+    - curl -u "${ARTIFACTORY_LOGIN}":"${ARTIFACTORY_PASS}" --upload-file cdek.zip "${ARTIFACTORY_REPO}/$CI_PROJECT_NAME/$CI_COMMIT_BRANCH/opencart_${ARCHIVE_VERSION}.ocmod.zip"
 
-release:
-  stage: deploy
-  tags:
-    - docker
-  needs:
-    - job: upload
-  only:
-    - tags
-  image: registry.gitlab.com/gitlab-org/release-cli:latest
-  before_script:
-    - export RELEASE_VERSION=$(echo "${CI_COMMIT_TAG}" | sed 's/v//')
-    - export ARCHIVE_VERSION=$(echo "${RELEASE_VERSION}" | sed 's/\./_/g')
-  script:
-    - |
-      release-cli create --name $CI_COMMIT_TAG --tag-name $CI_COMMIT_TAG \
-        --assets-link "{\"name\":\"Архив\",\"filepath\":\"/archive\",\"url\":\"${ARTIFACTORY_REPO}/$CI_PROJECT_NAME/opencart_${ARCHIVE_VERSION}.ocmod.zip\", \"link_type\":\"package\"}" \
+#release:
+#  stage: deploy
+#  tags:
+#    - docker
+#  needs:
+#    - job: upload
+#  only:
+#    - tags
+#  image: registry.gitlab.com/gitlab-org/release-cli:latest
+#  before_script:
+#    - export RELEASE_VERSION=$(echo "${CI_COMMIT_TAG}" | sed 's/v//')
+#    - export ARCHIVE_VERSION=$(echo "${RELEASE_VERSION}" | sed 's/\./_/g')
+#  script:
+#    - |
+#      release-cli create --name $CI_COMMIT_TAG --tag-name $CI_COMMIT_TAG \
+#        --assets-link "{\"name\":\"Архив\",\"filepath\":\"/archive\",\"url\":\"${ARTIFACTORY_REPO}/$CI_PROJECT_NAME/opencart_${ARCHIVE_VERSION}.ocmod.zip\", \"link_type\":\"package\"}" \
 
 #notify:
 #  stage: notify
