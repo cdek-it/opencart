@@ -90,7 +90,7 @@ release:
   script:
     - |
       release-cli create --name $CI_COMMIT_TAG --tag-name $CI_COMMIT_TAG \
-        --assets-link "{\"name\":\"Архив\",\"filepath\":\"/archive\",\"url\":\"${ARTIFACTORY_REPO}/$CI_COMMIT_BRANCH/$CI_PROJECT_NAME/opencart_${ARCHIVE_VERSION}.ocmod.zip\", \"link_type\":\"package\"}" \
+        --assets-link "{\"name\":\"Архив\",\"filepath\":\"/archive\",\"url\":\"${ARTIFACTORY_REPO}$CI_COMMIT_BRANCH/$CI_PROJECT_NAME/opencart_${ARCHIVE_VERSION}.ocmod.zip\", \"link_type\":\"package\"}" \
 
 #notify:
 #  stage: notify
