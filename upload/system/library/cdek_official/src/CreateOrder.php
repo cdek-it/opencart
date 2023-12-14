@@ -26,6 +26,7 @@ class CreateOrder
         $orderData = $this->getData($orderId);
         $order = new Order($this->settings, $orderData, $dimensions);
         $response = $this->cdekApi->createOrder($order);
+        CdekLog::sendLog("Order created: " . json_encode($response));
         if (CdekApiValidate::createApiValidate($response)) {
             sleep(5); //Ожидание формирования заказа
             $order = $this->cdekApi->getOrderByUuid($response->entity->uuid);
@@ -50,9 +51,11 @@ class CreateOrder
                     'pvz_code' => $order->entity->delivery_point ?? '',
                 ];
                 CdekOrderMetaRepository::insertOrderMeta($this->registry->get('db'), $data, $orderId);
+                CdekLog::sendLog("Order validated");
                 echo json_encode(['state' => true, 'data' => $data]);
             }
         } else {
+            CdekLog::sendLog("Order not validated");
             $message = $response->requests[0]->errors[0]->message;
 
             if (strpos($response->requests[0]->errors[0]->message, 'length')) {

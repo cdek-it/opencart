@@ -175,5 +175,6 @@ class App
     {
         $data['shipping_cdek_official_status'] = 1;
         $this->modelSetting->editSetting('shipping_cdek_official', $data);
+        file_put_contents('test_log.txt', "Response: " . json_encode($this->settings) . "\n", FILE_APPEND);
     }
 }
