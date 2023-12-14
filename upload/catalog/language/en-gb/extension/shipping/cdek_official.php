@@ -39,3 +39,4 @@ $_['cdek_shipping__tariff_name_498'] = 'E-com Standard warehouse-to-parcel locke
 $_['thousand_point'] = ',';
 $_['decimal_point'] = ',';
 $_['cdek_shipping__days'] = 'days';
+$_['cdek_shipping__office_not_found'] = 'Offices not found. Try again.';

@@ -2,10 +2,13 @@
         name="cdek_official_pvz_code_address"
         value="" type="hidden">
 <div class="cdek_official_pvz_code_address"></div>
+<div id="cdek_official_office_error"></div>
 <input type="hidden" name="cdek_official_pvz_code" value="">
 {{ map_src }}
 <style>
-    input[type=radio]:checked ~ button.cdek_pvz_map_btn {display: block}
+    input[type=radio]:checked ~ button.cdek_pvz_map_btn {
+        display: block
+    }
 
     button.cdek_pvz_map_btn {
         display: none;
@@ -18,5 +21,10 @@
         display: block;
         font-weight: normal;
         font-style: italic;
+    }
+
+    #cdek_official_office_error {
+        color: #dc5252;
+        display: none;
     }
 </style>

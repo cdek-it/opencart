@@ -39,3 +39,4 @@ $_['cdek_shipping__tariff_name_498'] = 'E-com Standard склад-постама
 $_['thousand_point'] = ',';
 $_['decimal_point'] = ',';
 $_['cdek_shipping__days'] = 'дней';
+$_['cdek_shipping__office_not_found'] = 'Офисы не найдены. Попробуйте снова.';
