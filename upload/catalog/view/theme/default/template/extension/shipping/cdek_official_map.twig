@@ -27,6 +27,20 @@
                                                           });
             } else {
                 window.cdekWidget.updateLocation('{{ city }}');
+                $.ajax({
+                           url: '/index.php?route=extension/shipping/cdek_official',
+                           method: 'get',
+                           success: function (data) {
+                               $('#cdek_official_office_error').hide();
+                               window.cdekWidget.updateOfficesRaw(data);
+                           },
+                           error: function (xhr, textStatus, errorThrown) {
+                               let error = JSON.parse(xhr.responseText);
+                               console.debug('[CDEKDelivery] ' + error.message);
+                               $('#cdek_official_office_error').text(error.message).show();
+                               window.cdekWidget.close();
+                           },
+                       });
             }
             window.cdekWidget.open()
         }

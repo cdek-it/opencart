@@ -14,6 +14,7 @@ class ControllerExtensionShippingCdekOfficial extends Controller
     public function index(): void
     {
         $this->load->model('setting/setting');
+        $this->load->language('extension/shipping/cdek_official');
         $param = $this->model_setting_setting->getSetting('cdek_official');
         $settings = new Settings();
         $settings->init($param);
@@ -25,9 +26,18 @@ class ControllerExtensionShippingCdekOfficial extends Controller
             $param['is_reception'] = true;
             $this->response->setOutput($cdekApi->getOffices($param));
         } else {
-            $city = $cdekApi->getCity($this->session->data['shipping_address']['city']);
-            $param['city_code'] = $city[0]->code;
-            $this->response->setOutput($cdekApi->getOffices($param));
+            try {
+                $city = $cdekApi->getCity($this->session->data['shipping_address']['city']);
+                $param['city_code'] = $city[0]->code;
+                $offices = $cdekApi->getOffices($param);
+                if (empty($offices)) {
+                    throw new Exception($this->language->get('cdek_shipping__office_not_found'));
+                }
+                $this->response->setOutput($cdekApi->getOffices($param));
+            } catch (Exception $e) {
+                $this->response->addHeader('HTTP/1.1 500 Internal Server Error');
+                $this->response->setOutput(json_encode(array('message' => $e->getMessage())));
+            }
         }
     }
 
