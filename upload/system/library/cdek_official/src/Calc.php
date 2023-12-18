@@ -159,7 +159,7 @@ class Calc
                                                                                                              'length' => $recommendedDimensions['length'],
                                                                                                              'width'  => $recommendedDimensions['width'],
                                                                                                              'height' => $recommendedDimensions['height'],
-                                                                                                             'weight' => $recommendedDimensions['weight'],
+                                                                                                             'weight' => $recommendedDimensions['weight']
                                                                                                          ]) .
                                                                                    ' ' .
                                                                                    'CDEK: ' .
