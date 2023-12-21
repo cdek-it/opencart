@@ -1,6 +1,6 @@
 <?php
-$_['text_title']       = 'CDEK Official Shipping';
-$_['text_description'] = 'CDEK Official Shipping Method Description';
+$_['text_title']       = 'CDEK';
+$_['text_description'] = 'CDEK shipping';
 $_['cdek_pvz_not_found'] = 'CDEK office not found, please select it from map';
 $_['cdek_pvz_not_from_selected_city'] = 'The selected office is not from the destination city. Change the city in the office settings and specify the correct office to place the order. Or select a office from the selected city';
 $_['cdek_shipping__tariff_name_plug'] = 'CDEK plug';

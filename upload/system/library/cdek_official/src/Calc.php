@@ -139,13 +139,13 @@ class Calc
 
                 $quoteData['cdek_official_' . $tariff->tariff_code] = [
                     'code'         => 'cdek_official.cdek_official_' . $tariff->tariff_code,
-                    'title'        => 'CDEK: ' . $title,
+                    'title'        => $this->registry->get('language')->get('text_title') . ': ' . $title,
                     'cost'         => $total,
                     'tax_class_id' => $tariff->tariff_code,
                     'text'         => $this->registry->get('currency')
                                                      ->format($total,
                                                               $this->registry->get('session')->data['currency']),
-                    'extra'        => 'CDEK: ' . $title,
+                    'extra'        => $this->registry->get('language')->get('text_title') . ': ' . $title,
                 ];
                 $tariffModel = new Tariffs();
                 if ($tariffModel->getDirectionByCode($tariff->tariff_code) === 'store'
@@ -162,7 +162,7 @@ class Calc
                                                                                                              'weight' => $recommendedDimensions['weight']
                                                                                                          ]) .
                                                                                    ' ' .
-                                                                                   'CDEK: ' .
+                                                                                   $this->registry->get('language')->get('text_title') . ': ' .
                                                                                    $title;
                 }
             }
