@@ -54,7 +54,7 @@ class Calc
         $currency = $this->settings->shippingSettings->currency;
         $quoteData = [];
         $this->registry->get('currency');
-        $recipientLocation = $this->cdekApi->getCityByParam($this->address['city'], $this->address['postcode']);
+        $recipientLocation = $this->cdekApi->getCityByParam(trim($this->address['city']), trim($this->address['postcode']));
         if (empty($recipientLocation)) {
             return [];
         }
