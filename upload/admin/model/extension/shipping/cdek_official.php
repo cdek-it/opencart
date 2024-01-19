@@ -2,26 +2,30 @@
 
 class ModelExtensionShippingCdekOfficial extends Model
 {
+    private const EVENTS
+        = [
+            'admin/view/sale/order_info/after'                       => [
+                'cdek_official_order' => 'extension/shipping/cdek_official/cdek_official_order_info',
+            ],
+            'catalog/view/checkout/checkout/after'                   => [
+                'cdek_official_checkout' => 'extension/shipping/cdek_official/cdek_official_checkout_checkout_after',
+            ],
+            'catalog/controller/checkout/shipping_method/save/after' => [
+                'cdek_official_controller' => 'extension/shipping/cdek_official/cdek_official_checkout_shipping_controller_after',
+            ],
+            'catalog/controller/checkout/confirm/after'              => [
+                'cdek_official_checkout_confirm' => 'extension/shipping/cdek_official/cdek_official_checkout_confirm_after',
+            ],
+            'catalog/view/common/header/before'                      => [
+                'cdek_official_header_before' => 'extension/shipping/cdek_official/addCheckoutHeaderScript',
+            ],
+        ];
 
-    private const EVENTS = [
-        'admin/view/sale/order_info/after' => [
-            'cdek_official_order' => 'extension/shipping/cdek_official/cdek_official_order_info',
-        ],
-        'catalog/view/checkout/checkout/after' => [
-            'cdek_official_checkout' => 'extension/shipping/cdek_official/cdek_official_checkout_checkout_after',
-        ],
-        'catalog/controller/checkout/shipping_method/save/after' => [
-            'cdek_official_controller' => 'extension/shipping/cdek_official/cdek_official_checkout_shipping_controller_after',
-        ],
-        'catalog/controller/checkout/confirm/after' => [
-            'cdek_official_checkout_confirm' => 'extension/shipping/cdek_official/cdek_official_checkout_confirm_after',
-        ],
-    ];
-
-    private const OBSOLETE_EVENTS = [
-        'cdek_official_shipping',
-        'cdek_official_checkout_map',
-    ];
+    private const OBSOLETE_EVENTS
+        = [
+            'cdek_official_shipping',
+            'cdek_official_checkout_map',
+        ];
 
     public function createEvents()
     {

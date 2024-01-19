@@ -6,13 +6,14 @@ use Exception;
 
 class SettingsDimensions extends AbstractSettings
 {
-    const PARAM_ID = [
-        'cdek_official_dimensions__length' => 'dimensionsLength',
-        'cdek_official_dimensions__width' => 'dimensionsWidth',
-        'cdek_official_dimensions__height' => 'dimensionsHeight',
-        'cdek_official_dimensions__weight' => 'dimensionsWeight',
-        'cdek_official_dimensions__use_default' => 'dimensionsUseDefault',
-    ];
+    const PARAM_ID
+        = [
+            'cdek_official_dimensions__length'      => 'dimensionsLength',
+            'cdek_official_dimensions__width'       => 'dimensionsWidth',
+            'cdek_official_dimensions__height'      => 'dimensionsHeight',
+            'cdek_official_dimensions__weight'      => 'dimensionsWeight',
+            'cdek_official_dimensions__use_default' => 'dimensionsUseDefault',
+        ];
     public $dimensionsLength;
     public $dimensionsWidth;
     public $dimensionsHeight;
@@ -64,6 +65,6 @@ class SettingsDimensions extends AbstractSettings
             'width'  => $this->dimensionsWidth,
             'height' => $this->dimensionsHeight,
             'weight' => $this->dimensionsWeight,
-            ];
+        ];
     }
 }

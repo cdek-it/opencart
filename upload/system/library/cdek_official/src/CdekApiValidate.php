@@ -1,4 +1,5 @@
 <?php
+
 namespace CDEK;
 
 class CdekApiValidate

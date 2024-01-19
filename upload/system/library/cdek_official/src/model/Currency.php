@@ -4,23 +4,24 @@ namespace CDEK\model;
 
 class Currency
 {
-    private array $data = [
-        [
-            'code' => 1,
-            'key' => 'cdek_shipping__currency_rub',
-            'select' => true
-        ],
-        [
-            'code' => 3,
-            'key' => 'cdek_shipping__currency_usd',
-            'select' => false
-        ],
-        [
-            'code' => 4,
-            'key' => 'cdek_shipping__currency_eur',
-            'select' => false
-        ],
-    ];
+    private array $data
+        = [
+            [
+                'code'   => 1,
+                'key'    => 'cdek_shipping__currency_rub',
+                'select' => true
+            ],
+            [
+                'code'   => 3,
+                'key'    => 'cdek_shipping__currency_usd',
+                'select' => false
+            ],
+            [
+                'code'   => 4,
+                'key'    => 'cdek_shipping__currency_eur',
+                'select' => false
+            ],
+        ];
 
     public function getCurrency(): array
     {
@@ -41,7 +42,7 @@ class Currency
     {
         foreach ($this->data as $currency) {
             if ($currency['select']) {
-                return (string) $currency['code'];
+                return (string)$currency['code'];
             }
         }
         return '1';

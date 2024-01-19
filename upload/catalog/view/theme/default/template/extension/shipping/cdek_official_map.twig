@@ -1,6 +1,6 @@
 <button class="cdek_pvz_map_btn" type="button" id="cdek_official_office_button_{{ tariff }}">Выбрать ПВЗ</button>
 <script type="text/javascript">
-    $('body').on('click', 'button.cdek_pvz_map_btn', function (event) {
+    $('body').on('click', 'button.cdek_pvz_map_btn', function(event) {
         if (event.target.id === 'cdek_official_office_button_{{ tariff }}') {
             if (window.cdekWidget === undefined) {
                 window.cdekWidget = new window.CDEKWidget({
@@ -19,22 +19,26 @@
                                                                   weight: {{ weight }},
                                                               },
                                                               servicePath: '/index.php?route=extension/shipping/cdek_official',
-                                                              onChoose: function (type, tariff, address) {
-                                                                  $('input[name=cdek_official_pvz_code]').val(address.code);
-                                                                  $('input[name=cdek_official_pvz_code_address]').val(`[${address.code}] ${address.address}`);
-                                                                  $('.cdek_official_pvz_code_address').html(`[${address.code}] ${address.address}`).show();
-                                                              }
+                                                              onChoose: function(type, tariff, address) {
+                                                                  $('input[name=cdek_official_pvz_code]')
+                                                                    .val(address.code);
+                                                                  $('input[name=cdek_official_pvz_code_address]')
+                                                                    .val(`[${address.code}] ${address.address}`);
+                                                                  $('.cdek_official_pvz_code_address')
+                                                                    .html(`[${address.code}] ${address.address}`)
+                                                                    .show();
+                                                              },
                                                           });
             } else {
                 window.cdekWidget.updateLocation('{{ city }}');
                 $.ajax({
                            url: '/index.php?route=extension/shipping/cdek_official',
                            method: 'get',
-                           success: function (data) {
+                           success: function(data) {
                                $('#cdek_official_office_error').hide();
                                window.cdekWidget.updateOfficesRaw(data);
                            },
-                           error: function (xhr, textStatus, errorThrown) {
+                           error: function(xhr, textStatus, errorThrown) {
                                let error = JSON.parse(xhr.responseText);
                                console.debug('[CDEKDelivery] ' + error.message);
                                $('#cdek_official_office_error').text(error.message).show();
@@ -42,7 +46,7 @@
                            },
                        });
             }
-            window.cdekWidget.open()
+            window.cdekWidget.open();
         }
 
     });

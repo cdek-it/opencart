@@ -21,7 +21,7 @@
                         `);
                         $('.cdek_official_map_info_block_office').addClass('cdek_official_map_info_block_selected');
                     } catch (e) {
-                        $('#cdek_official_map_address_error').show()
+                        $('#cdek_official_map_address_error').show();
                         $('.cdek_official_map_info_block_office').removeClass('cdek_official_map_info_block_selected');
                         officeInputView.html(messageNotSelected);
                     }
@@ -44,7 +44,7 @@
                         `);
                         $('.cdek_official_map_info_block_address').addClass('cdek_official_map_info_block_selected');
                     } catch (e) {
-                        $('#cdek_official_map_address_error').show()
+                        $('#cdek_official_map_address_error').show();
                         $('.cdek_official_map_info_block_address').removeClass('cdek_official_map_info_block_selected');
                         doorInputView.html(messageNotSelected);
                     }
@@ -57,13 +57,13 @@
             updateOfficeCode();
             updateDoor();
 
-            $('.cdek_official_map_info_button_office').click(function () {
+            $('.cdek_official_map_info_button_office').click(function() {
                 $('#cdek_official_shipping__pvz').val('');
                 $('.cdek_official_map_info_block_office').removeClass('cdek_official_map_info_block_selected');
                 officeInputView.html(messageNotSelected);
             });
 
-            $('.cdek_official_map_info_button_address').click(function () {
+            $('.cdek_official_map_info_button_address').click(function() {
                 $('#cdek_official_shipping__city_address').val('');
                 $('.cdek_official_map_info_block_address').removeClass('cdek_official_map_info_block_selected');
                 doorInputView.html(messageNotSelected);
@@ -73,7 +73,7 @@
                                       defaultLocation: '{{ city }}',
                                       apiKey: '{{ apikey }}',
                                       canChoose: true,
-                                      servicePath: '/index.php?route=extension/shipping/cdek_official&cdekRequest=adminMap',
+                                      servicePath: '/upload/index.php?route=extension/shipping/cdek_official&cdekRequest=adminMap',
                                       sender: true,
                                       lang: '{{ map_lang }}',
                                       hideDeliveryOptions: {
@@ -84,7 +84,7 @@
                                           door: '{{ address_code_selected }}',
                                           office: '{{ office_code_selected }}',
                                       },
-                                      onChoose: function (type, tariff, address) {
+                                      onChoose: function(type, tariff, address) {
                                           console.log(address);
                                           if (type === 'office') {
                                               $('#cdek_official_shipping__pvz').val(JSON.stringify({
@@ -141,42 +141,51 @@
                 <h3 class="panel-title"><i class="fa fa-pencil"></i> <span>Статус</span> {{ cdek_edit }}</h3>
             </div>
             <div class="panel-body">
-                <form action="{{ action }}" method="post" id="form-shipping"
-                      class="form-horizontal">
+                <form
+                        action="{{ action }}" method="post" id="form-shipping"
+                        class="form-horizontal">
 
                     <fieldset>
                         <legend>{{ cdek_auth }}</legend>
                         <div class="form-group required">
                             <div class="col-sm-10">
                                 <div class="row">
-                                    <label class="col-sm-2 control-label"
-                                           for="cdek_official_auth_id">{{ cdek_auth_id }}</label>
+                                    <label
+                                            class="col-sm-2 control-label"
+                                            for="cdek_official_auth_id">{{ cdek_auth_id }}</label>
                                     <div class="col-sm-4">
-                                        <input type="text" name="cdek_official_auth_id"
-                                               value="{{ cdek_official_auth_id }}" placeholder="{{ cdek_auth_id }}"
-                                               id="input-length" class="form-control">
+                                        <input
+                                                type="text" name="cdek_official_auth_id"
+                                                value="{{ cdek_official_auth_id }}" placeholder="{{ cdek_auth_id }}"
+                                                id="input-length" class="form-control">
                                     </div>
-                                    <label class="col-sm-2 control-label"
-                                           for="cdek_official_auth_secret">{{ cdek_auth_secret }}</label>
+                                    <label
+                                            class="col-sm-2 control-label"
+                                            for="cdek_official_auth_secret">{{ cdek_auth_secret }}</label>
                                     <div class="col-sm-4">
-                                        <input type="text" name="cdek_official_auth_secret"
-                                               value="{{ cdek_official_auth_secret }}"
-                                               placeholder="{{ cdek_auth_secret }}"
-                                               id="input-width" class="form-control">
+                                        <input
+                                                type="text" name="cdek_official_auth_secret"
+                                                value="{{ cdek_official_auth_secret }}"
+                                                placeholder="{{ cdek_auth_secret }}"
+                                                id="input-width" class="form-control">
                                     </div>
                                 </div>
                                 <div class="row" style="margin-top: 5px">
-                                    <label class="col-sm-2 control-label"
-                                           for="cdek_official_api_key">{{ cdek_api_key }}</label>
+                                    <label
+                                            class="col-sm-2 control-label"
+                                            for="cdek_official_api_key">{{ cdek_api_key }}</label>
                                     <div class="col-sm-4">
-                                        <input type="text" name="cdek_official_api_key"
-                                               value="{{ cdek_official_api_key }}" placeholder="{{ cdek_api_key }}"
-                                               id="input-length" class="form-control">
+                                        <input
+                                                type="text" name="cdek_official_api_key"
+                                                value="{{ cdek_official_api_key }}" placeholder="{{ cdek_api_key }}"
+                                                id="input-length" class="form-control">
                                     </div>
-                                    <label class="col-sm-2 control-label"
-                                           for="cdek_official_map_lang_code">{{ cdek_map_lang }}</label>
+                                    <label
+                                            class="col-sm-2 control-label"
+                                            for="cdek_official_map_lang_code">{{ cdek_map_lang }}</label>
                                     <div class="col-sm-4">
-                                        <select class="form-control" id="cdek_official_map_lang_code"
+                                        <select
+                                                class="form-control" id="cdek_official_map_lang_code"
                                                 name="cdek_official_map_lang_code">
                                             <option value="rus" {% if map_lang is same as('rus') %} selected="selected" {% endif %}>
                                                 Русский
@@ -199,18 +208,20 @@
                                     </div>
                                     <div class="col-sm-6">
                                         <div class="row" style="display: flex; align-items: center;">
-                                            <input type="checkbox"
-                                                   name="cdek_official_auth__test_mode"
-                                                   id="cdek_official_auth__test_mode"
-                                                   value="on"
+                                            <input
+                                                    type="checkbox"
+                                                    name="cdek_official_auth__test_mode"
+                                                    id="cdek_official_auth__test_mode"
+                                                    value="on"
                                                     {% if cdek_official_auth__test_mode %} checked {% endif %}
-                                                   class="form-control"/>
+                                                    class="form-control" />
                                             <p style="margin: 10px;">{{ cdek_auth__test_mode }}</p>
                                         </div>
                                     </div>
                                     <div class="col-sm-2">
                                         <div class="pull-right">
-                                            <button type="submit" form="form-shipping" data-toggle="tooltip"
+                                            <button
+                                                    type="submit" form="form-shipping" data-toggle="tooltip"
                                                     title="{{ cdek_auth__btn_connect }}"
                                                     class="btn btn-primary">{{ cdek_auth__btn_connect }}</button>
                                         </div>
@@ -227,22 +238,27 @@
                             <div class="form-group required">
                                 <div class="col-sm-10">
                                     <div class="row">
-                                        <label class="col-sm-2 control-label"
-                                               for="cdek_official_shipping_seller_name">{{ cdek_seller_name }}</label>
+                                        <label
+                                                class="col-sm-2 control-label"
+                                                for="cdek_official_shipping_seller_name">{{ cdek_seller_name }}</label>
                                         <div class="col-sm-4">
-                                            <input type="text" name="cdek_official_shipping_seller_name"
-                                                   id="cdek_official_shipping_seller_name"
-                                                   class="form-control" value="{{ cdek_official_shipping_seller_name }}"
-                                                   placeholder="{{ cdek_seller_name }}"/>
+                                            <input
+                                                    type="text" name="cdek_official_shipping_seller_name"
+                                                    id="cdek_official_shipping_seller_name"
+                                                    class="form-control"
+                                                    value="{{ cdek_official_shipping_seller_name }}"
+                                                    placeholder="{{ cdek_seller_name }}" />
                                         </div>
-                                        <label class="col-sm-2 control-label"
-                                               for="cdek_official_shipping_seller_phone">{{ cdek_seller_phone }}</label>
+                                        <label
+                                                class="col-sm-2 control-label"
+                                                for="cdek_official_shipping_seller_phone">{{ cdek_seller_phone }}</label>
                                         <div class="col-sm-4">
-                                            <input type="text" name="cdek_official_shipping_seller_phone"
-                                                   id="cdek_official_shipping_seller_phone"
-                                                   class="form-control"
-                                                   value="{{ cdek_official_shipping_seller_phone }}"
-                                                   placeholder="{{ cdek_seller_phone }}"/>
+                                            <input
+                                                    type="text" name="cdek_official_shipping_seller_phone"
+                                                    id="cdek_official_shipping_seller_phone"
+                                                    class="form-control"
+                                                    value="{{ cdek_official_shipping_seller_phone }}"
+                                                    placeholder="{{ cdek_seller_phone }}" />
                                         </div>
                                     </div>
                                 </div>
@@ -258,21 +274,24 @@
                                         {% for tariff in tariffs %}
                                             <div class="checkbox">
                                                 <label>
-                                                    <input type="checkbox"
-                                                           id="cdek_official_shipping_tariff_{{ tariff.code }}"
-                                                           name="cdek_official_shipping_tariff_{{ tariff.code }}"
-                                                           value="{{ tariff.code }}" {% if tariff.enable %} checked {% endif %}>
+                                                    <input
+                                                            type="checkbox"
+                                                            id="cdek_official_shipping_tariff_{{ tariff.code }}"
+                                                            name="cdek_official_shipping_tariff_{{ tariff.code }}"
+                                                            value="{{ tariff.code }}" {% if tariff.enable %} checked {% endif %}>
                                                     {{ attribute(_context, tariff.key) }} ({{ tariff.code }})
                                                 </label>
                                             </div>
                                         {% endfor %}
                                     </div>
-                                    <button type="button"
+                                    <button
+                                            type="button"
                                             onclick="$(this).parent().find(':checkbox').prop('checked', true);"
                                             class="btn btn-link">{{ cdek_shipping__tariffs_select_all }}
                                     </button>
                                     /
-                                    <button type="button"
+                                    <button
+                                            type="button"
                                             onclick="$(this).parent().find(':checkbox').prop('checked', false);"
                                             class="btn btn-link">{{ cdek_shipping__tariffs_unselect_all }}
                                     </button>
@@ -281,18 +300,23 @@
                             <div class="form-group">
                                 <div class="col-sm-10">
                                     <div class="row vertical-center" style="padding-bottom: 10px;">
-                                        <label class="col-sm-2 control-label"
-                                               for="cdek_official_shipping__extra_days">{{ cdek_shipping__extra_days }}</label>
+                                        <label
+                                                class="col-sm-2 control-label"
+                                                for="cdek_official_shipping__extra_days">{{ cdek_shipping__extra_days }}</label>
                                         <div class="col-sm-4">
-                                            <input type="text" name="cdek_official_shipping__extra_days"
-                                                   id="cdek_official_shipping__extra_days"
-                                                   value="{{ cdek_official_shipping__extra_days }}"
-                                                   class="form-control" placeholder="{{ cdek_shipping__extra_days }}"/>
+                                            <input
+                                                    type="text" name="cdek_official_shipping__extra_days"
+                                                    id="cdek_official_shipping__extra_days"
+                                                    value="{{ cdek_official_shipping__extra_days }}"
+                                                    class="form-control"
+                                                    placeholder="{{ cdek_shipping__extra_days }}" />
                                         </div>
-                                        <label class="col-sm-2 control-label"
-                                               for="cdek_official_shipping__currency">{{ cdek_shipping__currency }}</label>
+                                        <label
+                                                class="col-sm-2 control-label"
+                                                for="cdek_official_shipping__currency">{{ cdek_shipping__currency }}</label>
                                         <div class="col-sm-4">
-                                            <select class="form-control" id="cdek_official_shipping__currency"
+                                            <select
+                                                    class="form-control" id="cdek_official_shipping__currency"
                                                     name="cdek_official_shipping__currency">
                                                 {% for currency in currencies %}
                                                     <option value="{{ currency.code }}" {% if currency.select %} selected="selected" {% endif %}>{{ attribute(_context, currency.key) }}</option>
@@ -313,10 +337,11 @@
                                             </div>
                                             <div id="cdek_official_shipping__pvz_view"></div>
                                         </div>
-                                        <input type="hidden" name="cdek_official_shipping__pvz"
-                                               id="cdek_official_shipping__pvz"
-                                               value="{{ cdek_official_shipping__pvz }}"
-                                               readonly/>
+                                        <input
+                                                type="hidden" name="cdek_official_shipping__pvz"
+                                                id="cdek_official_shipping__pvz"
+                                                value="{{ cdek_official_shipping__pvz }}"
+                                                readonly />
                                         <div class="col-sm-2"></div>
                                         <div class="col-sm-4 cdek_official_map_info_block_address cdek_official_map_info_block cdek_official_map_info_block_selected">
                                             <div>
@@ -325,10 +350,11 @@
                                             </div>
                                             <div id="cdek_official_shipping__city_address_view"></div>
                                         </div>
-                                        <input type="hidden" name="cdek_official_shipping__city_address"
-                                               id="cdek_official_shipping__city_address"
-                                               value="{{ cdek_official_shipping__city_address }}"
-                                               readonly/>
+                                        <input
+                                                type="hidden" name="cdek_official_shipping__city_address"
+                                                id="cdek_official_shipping__city_address"
+                                                value="{{ cdek_official_shipping__city_address }}"
+                                                readonly />
                                     </div>
                                 </div>
                             </div>
@@ -344,39 +370,47 @@
                             <div class="form-group required">
                                 <div class="col-sm-10">
                                     <div class="row" style="padding-bottom: 10px">
-                                        <label class="col-sm-2 control-label"
-                                               for="cdek_official_dimensions__length">{{ cdek_dimensions__length }}</label>
+                                        <label
+                                                class="col-sm-2 control-label"
+                                                for="cdek_official_dimensions__length">{{ cdek_dimensions__length }}</label>
                                         <div class="col-sm-2">
-                                            <input type="text" name="cdek_official_dimensions__length"
-                                                   id="cdek_official_dimensions__length"
-                                                   value="{{ cdek_official_dimensions__length }}"
-                                                   class="form-control" placeholder="{{ cdek_dimensions__length }}"/>
+                                            <input
+                                                    type="text" name="cdek_official_dimensions__length"
+                                                    id="cdek_official_dimensions__length"
+                                                    value="{{ cdek_official_dimensions__length }}"
+                                                    class="form-control" placeholder="{{ cdek_dimensions__length }}" />
                                         </div>
-                                        <label class="col-sm-2 control-label"
-                                               for="cdek_official_dimensions__width">{{ cdek_dimensions__width }}</label>
+                                        <label
+                                                class="col-sm-2 control-label"
+                                                for="cdek_official_dimensions__width">{{ cdek_dimensions__width }}</label>
                                         <div class="col-sm-2">
-                                            <input type="text" name="cdek_official_dimensions__width"
-                                                   id="cdek_official_dimensions__width"
-                                                   value="{{ cdek_official_dimensions__width }}"
-                                                   class="form-control" placeholder="{{ cdek_dimensions__width }}"/>
+                                            <input
+                                                    type="text" name="cdek_official_dimensions__width"
+                                                    id="cdek_official_dimensions__width"
+                                                    value="{{ cdek_official_dimensions__width }}"
+                                                    class="form-control" placeholder="{{ cdek_dimensions__width }}" />
                                         </div>
-                                        <label class="col-sm-2 control-label"
-                                               for="cdek_official_dimensions__height">{{ cdek_dimensions__height }}</label>
+                                        <label
+                                                class="col-sm-2 control-label"
+                                                for="cdek_official_dimensions__height">{{ cdek_dimensions__height }}</label>
                                         <div class="col-sm-2">
-                                            <input type="text" name="cdek_official_dimensions__height"
-                                                   id="cdek_official_dimensions__height"
-                                                   value="{{ cdek_official_dimensions__height }}"
-                                                   class="form-control" placeholder="{{ cdek_dimensions__height }}"/>
+                                            <input
+                                                    type="text" name="cdek_official_dimensions__height"
+                                                    id="cdek_official_dimensions__height"
+                                                    value="{{ cdek_official_dimensions__height }}"
+                                                    class="form-control" placeholder="{{ cdek_dimensions__height }}" />
                                         </div>
                                     </div>
                                     <div class="row" style="padding-bottom: 10px">
-                                        <label class="col-sm-2 control-label"
-                                               for="cdek_official_dimensions__weight">{{ cdek_dimensions__weight }}</label>
+                                        <label
+                                                class="col-sm-2 control-label"
+                                                for="cdek_official_dimensions__weight">{{ cdek_dimensions__weight }}</label>
                                         <div class="col-sm-2">
-                                            <input type="text" name="cdek_official_dimensions__weight"
-                                                   id="cdek_official_dimensions__weight"
-                                                   value="{{ cdek_official_dimensions__weight }}"
-                                                   class="form-control" placeholder="{{ cdek_dimensions__weight }}"/>
+                                            <input
+                                                    type="text" name="cdek_official_dimensions__weight"
+                                                    id="cdek_official_dimensions__weight"
+                                                    value="{{ cdek_official_dimensions__weight }}"
+                                                    class="form-control" placeholder="{{ cdek_dimensions__weight }}" />
                                         </div>
                                     </div>
                                 </div>
@@ -388,40 +422,48 @@
                             <div class="form-group">
                                 <div class="col-sm-10">
                                     <div class="row" style="padding-bottom: 10px">
-                                        <label class="col-sm-2 control-label"
-                                               for="cdek_official_price__extra_price">{{ cdek_price__extra_price }}</label>
+                                        <label
+                                                class="col-sm-2 control-label"
+                                                for="cdek_official_price__extra_price">{{ cdek_price__extra_price }}</label>
                                         <div class="col-sm-2">
-                                            <input type="number" name="cdek_official_price__extra_price"
-                                                   id="cdek_official_price__extra_price"
-                                                   value="{{ cdek_official_price__extra_price }}"
-                                                   class="form-control" placeholder="{{ cdek_price__extra_price }}"/>
+                                            <input
+                                                    type="number" name="cdek_official_price__extra_price"
+                                                    id="cdek_official_price__extra_price"
+                                                    value="{{ cdek_official_price__extra_price }}"
+                                                    class="form-control" placeholder="{{ cdek_price__extra_price }}" />
                                         </div>
-                                        <label class="col-sm-2 control-label"
-                                               for="cdek_official_price__percentage_increase">{{ cdek_price__percentage_increase }}</label>
+                                        <label
+                                                class="col-sm-2 control-label"
+                                                for="cdek_official_price__percentage_increase">{{ cdek_price__percentage_increase }}</label>
                                         <div class="col-sm-2">
-                                            <input type="number" name="cdek_official_price__percentage_increase"
-                                                   id="cdek_official_price__percentage_increase"
-                                                   class="form-control"
-                                                   value="{{ cdek_official_price__percentage_increase }}"
-                                                   placeholder="{{ cdek_price__percentage_increase }}"/>
+                                            <input
+                                                    type="number" name="cdek_official_price__percentage_increase"
+                                                    id="cdek_official_price__percentage_increase"
+                                                    class="form-control"
+                                                    value="{{ cdek_official_price__percentage_increase }}"
+                                                    placeholder="{{ cdek_price__percentage_increase }}" />
                                         </div>
-                                        <label class="col-sm-2 control-label"
-                                               for="cdek_official_price__fix">{{ cdek_price__fix }}</label>
+                                        <label
+                                                class="col-sm-2 control-label"
+                                                for="cdek_official_price__fix">{{ cdek_price__fix }}</label>
                                         <div class="col-sm-2">
-                                            <input type="number" name="cdek_official_price__fix"
-                                                   id="cdek_official_price__fix"
-                                                   value="{{ cdek_official_price__fix }}"
-                                                   class="form-control" placeholder="{{ cdek_price__fix }}"/>
+                                            <input
+                                                    type="number" name="cdek_official_price__fix"
+                                                    id="cdek_official_price__fix"
+                                                    value="{{ cdek_official_price__fix }}"
+                                                    class="form-control" placeholder="{{ cdek_price__fix }}" />
                                         </div>
                                     </div>
                                     <div class="row" style="padding-bottom: 10px">
-                                        <label class="col-sm-2 control-label"
-                                               for="cdek_official_price__free">{{ cdek_price__free }}</label>
+                                        <label
+                                                class="col-sm-2 control-label"
+                                                for="cdek_official_price__free">{{ cdek_price__free }}</label>
                                         <div class="col-sm-3">
-                                            <input type="number" name="cdek_official_price__free"
-                                                   id="cdek_official_price__free"
-                                                   value="{{ cdek_official_price__free }}"
-                                                   class="form-control" placeholder="{{ cdek_price__free }}"/>
+                                            <input
+                                                    type="number" name="cdek_official_price__free"
+                                                    id="cdek_official_price__free"
+                                                    value="{{ cdek_official_price__free }}"
+                                                    class="form-control" placeholder="{{ cdek_price__free }}" />
                                             <p>{{ cdek_official_price__free_desc }}</p>
                                         </div>
                                     </div>
@@ -432,10 +474,12 @@
 
 
                     <div class="pull-right">
-                        <button type="submit" form="form-shipping" data-toggle="tooltip" title="{{ button_save }}"
+                        <button
+                                type="submit" form="form-shipping" data-toggle="tooltip" title="{{ button_save }}"
                                 class="btn btn-primary"><i class="fa fa-save"></i></button>
-                        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}"
-                           class="btn btn-default"><i class="fa fa-reply"></i></a>
+                        <a
+                                href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}"
+                                class="btn btn-default"><i class="fa fa-reply"></i></a>
                     </div>
                 </form>
             </div>

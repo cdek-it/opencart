@@ -2,10 +2,14 @@
     <div class="panel-heading">
         <h3 class="panel-title"><i class="fa fa-truck"></i> CDEK</h3>
     </div>
-    <div id="cdek_order_create_error" class="cdek-error" {% if cdek_order_error_create %} style="display: block" {% else %} style="display: none" {% endif %}>{{ cdek_order_create_error_template }}{{ cdek_order_error_create_message }}</div>
+    <div
+            id="cdek_order_create_error"
+            class="cdek-error" {% if cdek_order_error_create %} style="display: block" {% else %} style="display: none" {% endif %}>{{ cdek_order_create_error_template }}{{ cdek_order_error_create_message }}</div>
     <div id="cdek_order_create_success" class="cdek-success"></div>
 
-    <div id="cdek_order_create_form" class="panel-body" {% if cdek_order_created or cdek_order_deleted %} style="display: none" {% else %} style="display: block" {% endif %}>
+    <div
+            id="cdek_order_create_form"
+            class="panel-body" {% if cdek_order_created or cdek_order_deleted %} style="display: none" {% else %} style="display: block" {% endif %}>
         <div id="cdek-loader" style="display: none"></div>
         <form id="dimensions-form" action="" method="post">
             <div class="cdek_info_alert">
@@ -38,7 +42,9 @@
         </form>
     </div>
 
-    <div id="cdek_order_created" class="panel-body" {% if cdek_order_created %} style="display: block" {% else %} style="display: none" {% endif %}>
+    <div
+            id="cdek_order_created"
+            class="panel-body" {% if cdek_order_created %} style="display: block" {% else %} style="display: none" {% endif %}>
         <table class="table table-bordered">
             <thead>
             <tr>
@@ -48,11 +54,15 @@
             <tbody>
             <tr>
                 <td style="width: 15%" class="text-left">{{ cdek_order_number_name }}</td>
-                <td id="cdek_order_number_name" class="text-left">{% if cdek_order_created %} {{ cdek_number }} {% endif %}</td>
+                <td
+                        id="cdek_order_number_name"
+                        class="text-left">{% if cdek_order_created %} {{ cdek_number }} {% endif %}</td>
             </tr>
             <tr>
-                <td class="text-left">{{cdek_order_customer_name}}</td>
-                <td id="cdek_order_customer_name" class="text-left">{% if cdek_order_created %} {{ name }} {% endif %}</td>
+                <td class="text-left">{{ cdek_order_customer_name }}</td>
+                <td
+                        id="cdek_order_customer_name"
+                        class="text-left">{% if cdek_order_created %} {{ name }} {% endif %}</td>
             </tr>
             <tr>
                 <td class="text-left">{{ cdek_order_type_name }}</td>
@@ -60,15 +70,21 @@
             </tr>
             <tr>
                 <td class="text-left">{{ cdek_order_payment_type_name }}</td>
-                <td id="cdek_order_payment_type_name" class="text-left">{% if cdek_order_created %} {{ payment_type }} {% endif %}</td>
+                <td
+                        id="cdek_order_payment_type_name"
+                        class="text-left">{% if cdek_order_created %} {{ payment_type }} {% endif %}</td>
             </tr>
             <tr>
                 <td class="text-left">{{ cdek_order_direction_name }}</td>
-                <td id="cdek_order_direction_name" class="text-left">{% if cdek_order_created %} {{ to_location }} {% endif %}</td>
+                <td
+                        id="cdek_order_direction_name"
+                        class="text-left">{% if cdek_order_created %} {{ to_location }} {% endif %}</td>
             </tr>
             <tr id="cdek_order_pvz_code_tr" {% if pvz_code is empty %} style="display: none" {% endif %}>
                 <td class="text-left">{{ cdek_order_pvz_code }}</td>
-                <td id="cdek_order_pvz_code" class="text-left">{% if cdek_order_created %} {{ pvz_code }} {% endif %}</td>
+                <td
+                        id="cdek_order_pvz_code"
+                        class="text-left">{% if cdek_order_created %} {{ pvz_code }} {% endif %}</td>
             </tr>
             </tbody>
         </table>
@@ -77,8 +93,12 @@
                 <div class="row">
                     <div class="col-sm-8"></div>
                     <div id="cdek_order_action" class="col-sm-4" style="text-align: right; display: grid">
-                        <a id="cdek_get_bill_btn" data-uuid="{% if cdek_order_created %}{{ cdek_uuid }}{% endif %}">{{ cdek_order_get_bill_name }}</a>
-                        <a id="cdek_delete_order_btn" data-uuid="{% if cdek_order_created %}{{ cdek_uuid }}{% endif %}">{{ cdek_order_delete_order_name }}</a>
+                        <a
+                                id="cdek_get_bill_btn"
+                                data-uuid="{% if cdek_order_created %}{{ cdek_uuid }}{% endif %}">{{ cdek_order_get_bill_name }}</a>
+                        <a
+                                id="cdek_delete_order_btn"
+                                data-uuid="{% if cdek_order_created %}{{ cdek_uuid }}{% endif %}">{{ cdek_order_delete_order_name }}</a>
                     </div>
                 </div>
             </div>
@@ -86,7 +106,9 @@
 
     </div>
 
-    <div id="cdek_order_deleted" class="panel-body" {% if cdek_order_deleted %} style="display: block" {% else %} style="display: none" {% endif %}>
+    <div
+            id="cdek_order_deleted"
+            class="panel-body" {% if cdek_order_deleted %} style="display: block" {% else %} style="display: none" {% endif %}>
         <table class="table table-bordered">
             <thead>
             <tr>
@@ -99,7 +121,7 @@
                 <td id="cdek_order_number_name" class="text-left">{{ cdek_number }}</td>
             </tr>
             <tr>
-                <td class="text-left">{{cdek_order_customer_name}}</td>
+                <td class="text-left">{{ cdek_order_customer_name }}</td>
                 <td id="cdek_order_customer_name" class="text-left">{{ name }}</td>
             </tr>
             <tr>

@@ -6,6 +6,18 @@ use Exception;
 
 class SettingsShipping extends AbstractSettings
 {
+    const PARAM_ID
+        = [
+            'cdek_official_shipping__tariff_name'   => 'shippingTariffName',
+            'cdek_official_shipping__tariff_plug'   => 'shippingTariffPlug',
+            'cdek_official_shipping__many_packages' => 'shippingManyPackages',
+            'cdek_official_shipping__extra_days'    => 'shippingExtraDays',
+            'cdek_official_shipping__city'          => 'shippingCity',
+            'cdek_official_shipping__city_code'     => 'shippingCityCode',
+            'cdek_official_shipping__city_address'  => 'shippingCityAddress',
+            'cdek_official_shipping__pvz'           => 'shippingPvz',
+            'cdek_official_shipping__pvz_code'      => 'shippingPvzCode',
+        ];
     public $shippingTariffs;
     public array $shippingCurrencies;
     public $shippingTariffName;
@@ -20,22 +32,10 @@ class SettingsShipping extends AbstractSettings
     public $tariffs;
     public Currency $currency;
 
-    const PARAM_ID = [
-        'cdek_official_shipping__tariff_name' => 'shippingTariffName',
-        'cdek_official_shipping__tariff_plug' => 'shippingTariffPlug',
-        'cdek_official_shipping__many_packages' => 'shippingManyPackages',
-        'cdek_official_shipping__extra_days' => 'shippingExtraDays',
-        'cdek_official_shipping__city' => 'shippingCity',
-        'cdek_official_shipping__city_code' => 'shippingCityCode',
-        'cdek_official_shipping__city_address' => 'shippingCityAddress',
-        'cdek_official_shipping__pvz' => 'shippingPvz',
-        'cdek_official_shipping__pvz_code' => 'shippingPvzCode',
-    ];
-
     public function __construct()
     {
-        $this->tariffs = new Tariffs();
-        $this->currency = new Currency();
+        $this->tariffs  = new Tariffs;
+        $this->currency = new Currency;
     }
 
     /**
@@ -46,6 +46,16 @@ class SettingsShipping extends AbstractSettings
         if ($this->isTariffsEmpty()) {
             throw new Exception('cdek_error_shipping_tariffs_empty');
         }
+    }
+
+    protected function isTariffsEmpty()
+    {
+        foreach ($this->tariffs->data as $elem) {
+            if ($elem['enable']) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public function setTariffs($post)
@@ -68,21 +78,11 @@ class SettingsShipping extends AbstractSettings
         $this->shippingTariffs = $this->tariffs->data;
     }
 
-    protected function isTariffsEmpty()
-    {
-        foreach ($this->tariffs->data as $elem) {
-            if ($elem['enable']) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public function setCurrency($post)
     {
         if (isset($post['cdek_official_shipping__currency'])) {
             $currency = $post['cdek_official_shipping__currency'];
-            $this->currency->selectCurrency((int) $currency);
+            $this->currency->selectCurrency((int)$currency);
         }
         $this->shippingCurrencies = $this->currency->getCurrency();
     }

@@ -21,51 +21,51 @@ class Order
 
     public function __construct($settings, $orderData, $dimensions)
     {
-        $this->settings = $settings;
-        $this->orderOC = $orderData['orderOC'];
-        $this->products = $orderData['products'];
-        $this->cost = $orderData['cost'];
-        $this->dimensions = $dimensions;
+        $this->settings              = $settings;
+        $this->orderOC               = $orderData['orderOC'];
+        $this->products              = $orderData['products'];
+        $this->cost                  = $orderData['cost'];
+        $this->dimensions            = $dimensions;
         $this->model_catalog_product = $orderData['modelCatalogProduct'];
-        $this->weight = $orderData['weight'];
-        $this->pvz = $orderData['pvz'];
-        $this->tariffs = new Tariffs();
+        $this->weight                = $orderData['weight'];
+        $this->pvz                   = $orderData['pvz'];
+        $this->tariffs               = new Tariffs;
     }
 
     public function getRequestData()
     {
-        $order = $this->getOrderData();
+        $order        = $this->getOrderData();
         $packageOrder = $this->getPackageOrder($order);
-        $data = [
+        $data         = [
             "developer_key" => "O#UVFQ4JZa?)EV4lBC+h@dAMe^~4nKLi",
-            "packages" => [
+            "packages"      => [
                 [
                     "number" => "package_order_" . $this->orderOC['order_id'],
                     "height" => $packageOrder['height'],
                     "length" => $packageOrder['length'],
-                    "width" => $packageOrder['width'],
-                    "items" => $this->getItems(),
+                    "width"  => $packageOrder['width'],
+                    "items"  => $this->getItems(),
                     "weight" => $packageOrder['weight'],
 
                 ]
             ],
-            "recipient" => [
-                "name" => $order['nameCustomer'],
+            "recipient"     => [
+                "name"   => $order['nameCustomer'],
                 "phones" => [
                     [
                         "number" => $this->orderOC['telephone']
                     ]
                 ]
             ],
-            "sender" => [
-                "name" => $this->settings->sellerSettings->shippingSellerName,
+            "sender"        => [
+                "name"   => $this->settings->sellerSettings->shippingSellerName,
                 "phones" => [
                     [
                         "number" => $this->settings->sellerSettings->shippingSellerPhone
                     ]
                 ]
             ],
-            "tariff_code" => $order['tariffCodeCustomer']
+            "tariff_code"   => $order['tariffCodeCustomer']
         ];
 
         $deliveryRecipientCost = [];
@@ -79,25 +79,45 @@ class Order
 
         $tariffCode = (int)$order['tariffCodeCustomer'];
 
-        return array_merge(
-            $data,
-            $this->getFromByTariffCode($tariffCode),
-            $this->getToByTariffCode($tariffCode, $order),
-            $deliveryRecipientCost
-        );
+        return array_merge($data,
+                           $this->getFromByTariffCode($tariffCode),
+                           $this->getToByTariffCode($tariffCode, $order),
+                           $deliveryRecipientCost);
     }
 
     private function getOrderData(): array
     {
-        $tariffNameParts = explode('_', $this->orderOC['shipping_code']);
+        $tariffNameParts    = explode('_', $this->orderOC['shipping_code']);
         $tariffCodeCustomer = end($tariffNameParts);
         return [
-            'nameCustomer' => $this->orderOC['firstname'] . ' ' . $this->orderOC['lastname'],
-            'addressCustomer' => $this->orderOC['shipping_address_1'] . ' ' . $this->orderOC['shipping_address_2'],
-            'postcodeCustomer' => $this->orderOC['shipping_postcode'],
-            'tariffCodeCustomer' => $tariffCodeCustomer,
+            'nameCustomer'        => $this->orderOC['firstname'] . ' ' . $this->orderOC['lastname'],
+            'addressCustomer'     => $this->orderOC['shipping_address_1'] . ' ' . $this->orderOC['shipping_address_2'],
+            'postcodeCustomer'    => $this->orderOC['shipping_postcode'],
+            'tariffCodeCustomer'  => $tariffCodeCustomer,
             'paymentCodeCustomer' => $this->orderOC['payment_code']
         ];
+    }
+
+    /**
+     * @param array $order
+     *
+     * @return array
+     */
+    protected function getPackageOrder(array $order): array
+    {
+        $productsPackages = [];
+        foreach ($this->products as $key => $product) {
+            $productOC          = $this->model_catalog_product->getProduct($product['product_id']);
+            $productsPackages[] = [
+                'length'   => (int)$productOC['length'],
+                'width'    => (int)$productOC['width'],
+                'height'   => (int)$productOC['height'],
+                'weight'   => (int)($this->weight->convert($productOC['weight'], $productOC['weight_class_id'], '2')),
+                'quantity' => (int)$this->products[$key]['quantity']
+            ];
+        }
+        return CDEKHelper::calculateRecomendedPackage($productsPackages,
+                                                      $this->settings->dimensionsSettings->getParams());
     }
 
     private function getItems()
@@ -117,10 +137,10 @@ class Order
             }
             $tmp = [
                 "ware_key" => "product_id_" . $product['product_id'],
-                "name" => $product['name'],
-                "cost" => $product['price'],
-                "amount" => $product['quantity'],
-                "weight" => $weight,
+                "name"     => $product['name'],
+                "cost"     => $product['price'],
+                "amount"   => $product['quantity'],
+                "weight"   => $weight,
             ];
 
             if ($this->orderOC['payment_code'] === 'cod') {
@@ -147,10 +167,10 @@ class Order
             if (CdekHelper::checkLocalityAddress($locality)) {
                 $result = [
                     "from_location" => [
-                        "address" => $locality->address ?? '',
+                        "address"      => $locality->address ?? '',
                         'country_code' => $locality->country ?? '',
-                        'postal_code' => $locality->postal ?? '',
-                        'city' => $locality->city ?? '',
+                        'postal_code'  => $locality->postal ?? '',
+                        'city'         => $locality->city ?? '',
                     ]
                 ];
             }
@@ -171,7 +191,7 @@ class Order
             $result = [
                 "to_location" => [
                     "postal_code" => $order['postcodeCustomer'],
-                    "address" => $order['addressCustomer']
+                    "address"     => $order['addressCustomer']
                 ],
             ];
         } else {
@@ -180,26 +200,5 @@ class Order
             ];
         }
         return $result;
-    }
-
-    /**
-     * @param array $order
-     *
-     * @return array
-     */
-    protected function getPackageOrder(array $order): array
-    {
-        $productsPackages = [];
-        foreach ($this->products as $key => $product) {
-            $productOC = $this->model_catalog_product->getProduct($product['product_id']);
-            $productsPackages[] = [
-                'length' => (int)$productOC['length'],
-                'width' => (int)$productOC['width'],
-                'height' => (int)$productOC['height'],
-                'weight' => (int)($this->weight->convert($productOC['weight'], $productOC['weight_class_id'], '2')),
-                'quantity' => (int)$this->products[$key]['quantity']
-            ];
-        }
-        return CDEKHelper::calculateRecomendedPackage($productsPackages, $this->settings->dimensionsSettings->getParams());
     }
 }

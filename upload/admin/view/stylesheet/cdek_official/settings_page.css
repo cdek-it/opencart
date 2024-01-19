@@ -2,9 +2,9 @@
     position: absolute;
     z-index: 999;
     width: 90%;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .city-choice {
@@ -20,9 +20,9 @@
     position: absolute;
     z-index: 999;
     width: 90%;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .pvz-choice {
@@ -44,7 +44,7 @@
     width: 23px;
     height: 23px;
     border-radius: 50%;
-    border-top-color: #333;
+    border-top-color: #333333;
     animation: spin 1s ease-in-out infinite;
 }
 
@@ -74,8 +74,8 @@
 }
 
 .clear-button:hover {
-    background-color: #aaa;
-    color: #fff;
+    background-color: #aaaaaa;
+    color: #ffffff;
 }
 
 #cdek_official_shipping__pvz {
@@ -92,10 +92,10 @@
 }
 
 .cdek_official_map_info_block {
-    background: #E58787;
+    background: #e58787;
     border-radius: 5px;
     padding: 5px;
-    color: #fff;
+    color: #ffffff;
     overflow: hidden;
     box-sizing: border-box;
     display: flex;
@@ -103,7 +103,7 @@
 }
 
 .cdek_official_map_info_block_selected {
-    background: #93BB8C;
+    background: #93bb8c;
 }
 
 .cdek_official_map_info_button {

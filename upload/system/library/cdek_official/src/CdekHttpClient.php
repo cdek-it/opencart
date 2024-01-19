@@ -8,7 +8,7 @@ class CdekHttpClient
     {
         if (strtoupper($method) === 'GET' && is_array($data)) {
             $data = http_build_query($data);
-            $url .= '?' . $data;
+            $url  .= '?' . $data;
         }
 
         $ch = curl_init();
@@ -53,7 +53,7 @@ class CdekHttpClient
 
     public function sendRequestBill($url, $token)
     {
-        $ch = curl_init($url);
+        $ch      = curl_init($url);
         $headers = [
             "Authorization: Bearer $token",
         ];

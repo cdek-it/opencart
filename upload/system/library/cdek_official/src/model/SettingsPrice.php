@@ -6,19 +6,19 @@ use Exception;
 
 class SettingsPrice extends AbstractSettings
 {
+    const PARAM_ID
+        = [
+            'cdek_official_price__extra_price'         => 'priceExtraPrice',
+            'cdek_official_price__percentage_increase' => 'pricePercentageIncrease',
+            'cdek_official_price__fix'                 => 'priceFix',
+            'cdek_official_price__free'                => 'priceFree',
+            'cdek_official_price__insurance'           => 'priceInsurance',
+        ];
     public $priceExtraPrice;
     public $pricePercentageIncrease;
     public $priceFix;
     public $priceFree;
     public $priceInsurance;
-
-    const PARAM_ID = [
-        'cdek_official_price__extra_price' => 'priceExtraPrice',
-        'cdek_official_price__percentage_increase' => 'pricePercentageIncrease',
-        'cdek_official_price__fix' => 'priceFix',
-        'cdek_official_price__free' => 'priceFree',
-        'cdek_official_price__insurance' => 'priceInsurance',
-    ];
 
     /**
      * @throws Exception

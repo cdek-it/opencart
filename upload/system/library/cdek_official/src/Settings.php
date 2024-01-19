@@ -19,11 +19,11 @@ class Settings
 
     public function __construct()
     {
-        $this->authSettings = new SettingsAuth();
-        $this->sellerSettings = new SettingsSeller();
-        $this->shippingSettings = new SettingsShipping();
-        $this->dimensionsSettings = new SettingsDimensions();
-        $this->priceSettings = new SettingsPrice();
+        $this->authSettings       = new SettingsAuth;
+        $this->sellerSettings     = new SettingsSeller;
+        $this->shippingSettings   = new SettingsShipping;
+        $this->dimensionsSettings = new SettingsDimensions;
+        $this->priceSettings      = new SettingsPrice;
     }
 
     public function init($post): void
@@ -51,13 +51,11 @@ class Settings
 
     public function updateData(array &$data): void
     {
-        $data = array_merge(
-            $data,
-            $this->authSettings->toArray(),
-            $this->sellerSettings->toArray(),
-            $this->shippingSettings->toArray(),
-            $this->dimensionsSettings->toArray(),
-            $this->priceSettings->toArray(),
-        );
+        $data = array_merge($data,
+                            $this->authSettings->toArray(),
+                            $this->sellerSettings->toArray(),
+                            $this->shippingSettings->toArray(),
+                            $this->dimensionsSettings->toArray(),
+                            $this->priceSettings->toArray(),);
     }
 }

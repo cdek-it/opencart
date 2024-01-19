@@ -30,14 +30,15 @@ class CdekOrderMetaRepository
             $db->query($createTableSQL);
         }
 
-        $existingColumns = array_map(fn($el) => $el['Field'], $db->query("SHOW COLUMNS FROM `" . $prefix . "cdek_order_meta`")->rows);
+        $existingColumns = array_map(fn($el) => $el['Field'],
+            $db->query("SHOW COLUMNS FROM `" . $prefix . "cdek_order_meta`")->rows);
 
         $columnsToAdd = [
             'deleted' => 'deleted INT(1) DEFAULT 0',
         ];
 
         $columnsToAddSQL = array_diff(array_keys($columnsToAdd), $existingColumns);
-        $columnsForAdd = array_map(fn($em) => $columnsToAdd[$em], $columnsToAddSQL);
+        $columnsForAdd   = array_map(fn($em) => $columnsToAdd[$em], $columnsToAddSQL);
 
         if (!empty($columnsToAddSQL)) {
             $alterTableSQL = "ALTER TABLE `{$prefix}cdek_order_meta` ADD " . implode(", ADD ", $columnsForAdd);
@@ -47,12 +48,13 @@ class CdekOrderMetaRepository
 
     public static function insertPvzCode($db, $prefix, $orderId, $pvzCode)
     {
-        $db->query(
-            "INSERT INTO {$prefix}cdek_order_meta SET order_id = " . $orderId
-            . ", pvz_code = '" . $db->escape($pvzCode) . "'"
-            . " ON DUPLICATE KEY UPDATE "
-            . "pvz_code = VALUES(pvz_code)"
-        );
+        $db->query("INSERT INTO {$prefix}cdek_order_meta SET order_id = " .
+                   $orderId .
+                   ", pvz_code = '" .
+                   $db->escape($pvzCode) .
+                   "'" .
+                   " ON DUPLICATE KEY UPDATE " .
+                   "pvz_code = VALUES(pvz_code)");
     }
 
     public static function getOrder($db, $orderId)
@@ -66,24 +68,37 @@ class CdekOrderMetaRepository
             $data['cdek_number'] = null;
         }
 
-        $db->query(
-            "INSERT INTO " . DB_PREFIX . "cdek_order_meta SET order_id = " . $orderId
-            . ", cdek_number = '" . $db->escape($data['cdek_number']) . "'"
-            . ", cdek_uuid = '" . $db->escape($data['cdek_uuid']) . "'"
-            . ", name = '" . $db->escape($data['name']) . "'"
-            . ", type = '" . $db->escape($data['type']) . "'"
-            . ", payment_type = '" . $db->escape($data['payment_type']) . "'"
-            . ", to_location = '" . $db->escape($data['to_location']) . "'"
-            . ", created = 1"
-            . " ON DUPLICATE KEY UPDATE "
-            . "cdek_number = VALUES(cdek_number), "
-            . "cdek_uuid = VALUES(cdek_uuid), "
-            . "name = VALUES(name), "
-            . "type = VALUES(type), "
-            . "payment_type = VALUES(payment_type), "
-            . "to_location = VALUES(to_location), "
-            . "created = VALUES(created)"
-        );
+        $db->query("INSERT INTO " .
+                   DB_PREFIX .
+                   "cdek_order_meta SET order_id = " .
+                   $orderId .
+                   ", cdek_number = '" .
+                   $db->escape($data['cdek_number']) .
+                   "'" .
+                   ", cdek_uuid = '" .
+                   $db->escape($data['cdek_uuid']) .
+                   "'" .
+                   ", name = '" .
+                   $db->escape($data['name']) .
+                   "'" .
+                   ", type = '" .
+                   $db->escape($data['type']) .
+                   "'" .
+                   ", payment_type = '" .
+                   $db->escape($data['payment_type']) .
+                   "'" .
+                   ", to_location = '" .
+                   $db->escape($data['to_location']) .
+                   "'" .
+                   ", created = 1" .
+                   " ON DUPLICATE KEY UPDATE " .
+                   "cdek_number = VALUES(cdek_number), " .
+                   "cdek_uuid = VALUES(cdek_uuid), " .
+                   "name = VALUES(name), " .
+                   "type = VALUES(type), " .
+                   "payment_type = VALUES(payment_type), " .
+                   "to_location = VALUES(to_location), " .
+                   "created = VALUES(created)");
 
         $db->query("UPDATE `" . DB_PREFIX . "cdek_order_meta` SET deleted=0 WHERE `order_id` = " . $orderId);
     }
