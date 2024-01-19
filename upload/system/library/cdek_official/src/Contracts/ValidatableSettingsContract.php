@@ -1,10 +1,12 @@
 <?php
 
-namespace CDEK\model;
+namespace CDEK\Contracts;
 
-abstract class AbstractSettings implements SettingsValidate
+abstract class ValidatableSettingsContract
 {
-    const PARAM_ID = [];
+    abstract public function validate(): void;
+
+    protected const PARAM_ID = [];
 
     public function init(array $post)
     {

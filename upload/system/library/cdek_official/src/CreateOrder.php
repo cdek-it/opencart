@@ -2,7 +2,8 @@
 
 namespace CDEK;
 
-use CDEK\model\Order;
+use CDEK\Helpers\LogHelper;
+use CDEK\Models\Order;
 use Registry;
 
 class CreateOrder
@@ -24,9 +25,9 @@ class CreateOrder
         $orderId    = (int)$this->registry->get('request')->post['order_id'];
         $this->validateCreateOrderRequest($dimensions, $orderId);
         $orderData = $this->getData($orderId);
-        $order     = new Order($this->settings, $orderData, $dimensions);
+        $order     = new Order($this->settings, $orderData);
         $response  = $this->cdekApi->createOrder($order);
-        CdekLog::sendLog("Order created: " . json_encode($response));
+        LogHelper::write("Order created: " . json_encode($response));
         if (CdekApiValidate::createApiValidate($response)) {
             sleep(5); //Ожидание формирования заказа
             $order = $this->cdekApi->getOrderByUuid($response->entity->uuid);
@@ -53,11 +54,11 @@ class CreateOrder
                     'pvz_code'     => $order->entity->delivery_point ?? '',
                 ];
                 CdekOrderMetaRepository::insertOrderMeta($this->registry->get('db'), $data, $orderId);
-                CdekLog::sendLog("Order validated");
+                LogHelper::write("Order validated");
                 echo json_encode(['state' => true, 'data' => $data]);
             }
         } else {
-            CdekLog::sendLog("Order not validated");
+            LogHelper::write("Order not validated");
             $message = $response->requests[0]->errors[0]->message;
 
             if (strpos($response->requests[0]->errors[0]->message, 'length')) {
@@ -79,9 +80,9 @@ class CreateOrder
     {
         $validate = ['state' => true];
 
-        $length = intval($dimensions['length']);
-        $width  = intval($dimensions['width']);
-        $height = intval($dimensions['height']);
+        $length = (int)$dimensions['length'];
+        $width  = (int)$dimensions['width'];
+        $height = (int)$dimensions['height'];
 
         if ($length < 0 || !is_numeric($dimensions['length']) || $dimensions['length'] === '0') {
             $validate = [

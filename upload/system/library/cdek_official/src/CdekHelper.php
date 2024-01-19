@@ -2,7 +2,7 @@
 
 namespace CDEK;
 
-use CDEK\model\Tariffs;
+use CDEK\Models\Tariffs;
 
 class CdekHelper
 {

@@ -2,7 +2,7 @@
 
 namespace CDEK;
 
-use CDEK\model\Tariffs;
+use CDEK\Models\Tariffs;
 
 class Calc
 {
@@ -21,26 +21,21 @@ class Calc
         $this->registry->get('load')->language('extension/shipping/cdek_official');
         $this->settings = new Settings;
         $this->settings->init($modelSettings);
-        $this->cdekApi = new CdekApi($registry, $this->settings);
+        $this->cdekApi = new CdekApi($this->settings);
         $this->address = $address;
         $this->weight  = $weight;
         $this->link    = $this->registry->get('link');
     }
 
-    public function getMethodData()
+    final public function getMethodData(): array
     {
         $quoteData  = $this->getQuote();
         $methodData = [];
 
-        $param['map_src'] = $this->registry->get('load')->view('extension/shipping/cdek_official_src_map',
-                                                               ['map_version' => CdekConfig::MAP_VERSION]);
-
         if (!empty($quoteData)) {
             $methodData = [
                 'code'       => 'cdek_official',
-                'title'      => $this->registry->get('language')->get('text_title') .
-                                $this->registry->get('load')
-                                               ->view('extension/shipping/cdek_official_checkout_inputs', $param),
+                'title'      => $this->registry->get('language')->get('text_title'),
                 'quote'      => $quoteData,
                 'sort_order' => $this->registry->get('config')->get('shipping_cdek_official_sort_order'),
                 'error'      => false,
@@ -52,7 +47,6 @@ class Calc
 
     private function getQuote()
     {
-        $tariffs   = $this->settings->shippingSettings->tariffs;
         $currency  = $this->settings->shippingSettings->currency;
         $quoteData = [];
         $this->registry->get('currency');
@@ -74,26 +68,24 @@ class Calc
         $toLocationCode   = $recipientLocation[0]->code;
         if (!empty($this->settings->shippingSettings->shippingCityAddress)) {
             $locality = CdekHelper::getLocality($this->settings->shippingSettings->shippingCityAddress);
-            if (CdekHelper::checkLocalityAddress($locality)) {
-                $data   = [
-                    "currency"      => $currencySelected,
-                    "from_location" => [
-                        "address"      => $locality->address ?? '',
-                        'country_code' => $locality->country ?? '',
-                        'postal_code'  => $locality->postal ?? '',
-                        'city'         => $locality->city ?? '',
-                    ],
-                    "to_location"   => [
-                        "code" => $toLocationCode,
-                    ],
-                    "packages"      => $recommendedDimensions,
-                ];
-                $result = $this->cdekApi->calculate($data);
-                if (!empty($result) && isset($result->tariff_codes)) {
-                    foreach ($result->tariff_codes as $tariff) {
-                        if (in_array($tariff->delivery_mode, [1, 2, 6])) {
-                            $tariffCalculatedToDoor[] = $tariff;
-                        }
+            $data     = [
+                'currency'      => $currencySelected,
+                'from_location' => [
+                    'address'      => $locality->address ?? '',
+                    'country_code' => $locality->country ?? '',
+                    'postal_code'  => $locality->postal ?? '',
+                    'city'         => $locality->city ?? '',
+                ],
+                'to_location'   => [
+                    "code" => $toLocationCode,
+                ],
+                'packages'      => $recommendedDimensions,
+            ];
+            $result   = $this->cdekApi->calculate($data);
+            if (!empty($result) && isset($result->tariff_codes)) {
+                foreach ($result->tariff_codes as $tariff) {
+                    if (in_array($tariff->delivery_mode, [1, 2, 6])) {
+                        $tariffCalculatedToDoor[] = $tariff;
                     }
                 }
             }
@@ -133,7 +125,7 @@ class Calc
                 $tariffCodeEnable[] = $tariff['code'];
             }
         }
-        $tariffModel = new Tariffs;
+
         foreach ($tariffCalculated as $tariff) {
             if (in_array($tariff->tariff_code, $tariffCodeEnable)) {
                 $title = $this->registry->get('language')->get('cdek_shipping__tariff_name_' . $tariff->tariff_code) .
@@ -142,8 +134,7 @@ class Calc
 
                 $quoteData['cdek_official_' . $tariff->tariff_code] = [
                     'code'         => 'cdek_official.' .
-                                      ($tariffModel->getDirectionByCode($tariff->tariff_code) === 'door' ? 'door_' :
-                                          'office_') .
+                                      (Tariffs::isTariffToDoor($tariff->tariff_code) ? 'door_' : 'office_') .
                                       $tariff->tariff_code,
                     'title'        => $this->registry->get('language')->get('text_title') . ': ' . $title,
                     'cost'         => $total,

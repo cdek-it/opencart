@@ -2,6 +2,7 @@
 
 namespace CDEK;
 
+use CDEK\Models\Tariffs;
 use Exception;
 use Registry;
 
@@ -39,7 +40,7 @@ class App
         $this->load->model('setting/setting');
         $this->modelSetting = $this->registry->get('model_setting_setting');
         $this->settings     = new Settings;
-        $this->cdekApi      = new CdekApi($registry, $this->settings);
+        $this->cdekApi      = new CdekApi($this->settings);
     }
 
     public function run(): void
@@ -97,8 +98,9 @@ class App
             }
         }
 
-        $this->data['tariffs']    = $this->settings->shippingSettings->shippingTariffs;
-        $this->data['currencies'] = $this->settings->shippingSettings->shippingCurrencies;
+        $this->data['tariffs']        = Tariffs::getTariffList();
+        $this->data['enabledTariffs'] = $this->settings->shippingSettings->enabledTariffs;
+        $this->data['currencies']     = $this->settings->shippingSettings->shippingCurrencies;
     }
 
     public function connectScripts(): void
@@ -121,16 +123,16 @@ class App
         $this->data['breadcrumbs'] = [
             [
                 'text' => $this->language->get('text_home'),
-                'href' => $this->url->link('common/dashboard', "user_token=$this->userToken", true)
+                'href' => $this->url->link('common/dashboard', "user_token=$this->userToken", true),
             ],
             [
                 'text' => $this->language->get('text_extension'),
-                'href' => $this->url->link('marketplace/extension', "user_token=$this->userToken&type=shipping", true)
+                'href' => $this->url->link('marketplace/extension', "user_token=$this->userToken&type=shipping", true),
             ],
             [
                 'text' => $this->language->get('heading_title'),
-                'href' => $this->url->link('extension/shipping/cdek_official', "user_token=$this->userToken", true)
-            ]
+                'href' => $this->url->link('extension/shipping/cdek_official', "user_token=$this->userToken", true),
+            ],
         ];
     }
 

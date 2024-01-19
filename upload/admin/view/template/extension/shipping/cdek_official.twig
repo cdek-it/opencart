@@ -271,15 +271,16 @@
                                 <div class="col-sm-10">
                                     <label class="col-sm-2 control-label">{{ cdek_shipping__tariffs }}</label>
                                     <div class="well well-sm" style="height: 150px; overflow: auto;">
-                                        {% for tariff in tariffs %}
+                                        {% for code, tariff in tariffs %}
                                             <div class="checkbox">
                                                 <label>
                                                     <input
                                                             type="checkbox"
-                                                            id="cdek_official_shipping_tariff_{{ tariff.code }}"
-                                                            name="cdek_official_shipping_tariff_{{ tariff.code }}"
-                                                            value="{{ tariff.code }}" {% if tariff.enable %} checked {% endif %}>
-                                                    {{ attribute(_context, tariff.key) }} ({{ tariff.code }})
+                                                            id="cdek_official_shipping_tariff_{{ code }}"
+                                                            name="cdek_official_shipping_tariff_{{ code }}"
+                                                            value="{{ code }}" {% if code in enabledTariffs %}
+                                                    checked {% endif %}>
+                                                    {{ tariff }}
                                                 </label>
                                             </div>
                                         {% endfor %}

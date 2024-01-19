@@ -1,6 +1,10 @@
 <?php
 
-class ModelExtensionShippingCdekOfficial extends Model
+namespace CDEK\Helpers;
+
+use CDEK\RegistrySingleton;
+
+class EventsHelper
 {
     private const EVENTS
         = [
@@ -27,32 +31,39 @@ class ModelExtensionShippingCdekOfficial extends Model
             'cdek_official_checkout_map',
         ];
 
-    public function createEvents()
+    public static function registerEvents(): void
     {
-        $this->log->write('create events');
-        $this->load->model('setting/event');
+        $registry = RegistrySingleton::getInstance();
+
+        LogHelper::write('create events');
+        $registry->get('load')->model('setting/event');
+        $eventModel = $registry->get('model_setting_event');
 
         foreach (self::EVENTS as $trigger => $actions) {
             foreach ($actions as $actionName => $action) {
-                if (empty($this->model_setting_event->getEventByCode($actionName))) {
-                    $this->model_setting_event->addEvent($actionName, $trigger, $action, 1, 0);
+                if (empty($eventModel->getEventByCode($actionName))) {
+                    $eventModel->addEvent($actionName, $trigger, $action, 1, 0);
                 }
             }
         }
     }
 
-    public function deleteEvents()
+    public static function deleteEvents(): void
     {
-        $this->load->model('setting/event');
+        $registry = RegistrySingleton::getInstance();
+
+        LogHelper::write('delete events');
+        $registry->get('load')->model('setting/event');
+        $eventModel = $registry->get('model_setting_event');
 
         foreach (self::EVENTS as $actions) {
             foreach (array_keys($actions) as $event) {
-                $this->model_setting_event->deleteEventByCode($event);
+                $eventModel->deleteEventByCode($event);
             }
         }
 
         foreach (self::OBSOLETE_EVENTS as $event) {
-            $this->model_setting_event->deleteEventByCode($event);
+            $eventModel->deleteEventByCode($event);
         }
     }
 }

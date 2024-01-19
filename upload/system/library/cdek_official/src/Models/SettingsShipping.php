@@ -1,12 +1,14 @@
 <?php
 
-namespace CDEK\model;
+namespace CDEK\Models;
 
+use CDEK\Contracts\ValidatableSettingsContract;
 use Exception;
+use RuntimeException;
 
-class SettingsShipping extends AbstractSettings
+class SettingsShipping extends ValidatableSettingsContract
 {
-    const PARAM_ID
+    protected const PARAM_ID
         = [
             'cdek_official_shipping__tariff_name'   => 'shippingTariffName',
             'cdek_official_shipping__tariff_plug'   => 'shippingTariffPlug',
@@ -18,7 +20,7 @@ class SettingsShipping extends AbstractSettings
             'cdek_official_shipping__pvz'           => 'shippingPvz',
             'cdek_official_shipping__pvz_code'      => 'shippingPvzCode',
         ];
-    public $shippingTariffs;
+    public array $enabledTariffs;
     public array $shippingCurrencies;
     public $shippingTariffName;
     public $shippingTariffPlug;
@@ -29,53 +31,37 @@ class SettingsShipping extends AbstractSettings
     public $shippingCityAddress;
     public $shippingPvz;
     public $shippingPvzCode;
-    public $tariffs;
     public Currency $currency;
 
     public function __construct()
     {
-        $this->tariffs  = new Tariffs;
         $this->currency = new Currency;
+        $this->enabledTariffs = [];
     }
 
     /**
      * @throws Exception
      */
-    public function validate()
+    final public function validate(): void
     {
-        if ($this->isTariffsEmpty()) {
-            throw new Exception('cdek_error_shipping_tariffs_empty');
+        if (empty($this->enabledTariffs)) {
+            throw new RuntimeException('cdek_error_shipping_tariffs_empty');
         }
     }
 
-    protected function isTariffsEmpty()
-    {
-        foreach ($this->tariffs->data as $elem) {
-            if ($elem['enable']) {
-                return false;
-            }
-        }
-        return true;
+    public function init(array $post){
+        $this->setTariffs($post);
+        parent::init($post);
     }
 
-    public function setTariffs($post)
+    final public function setTariffs(array $input): void
     {
-        $tariffsChecked = [];
-        foreach ($post as $key => $value) {
-            if (preg_match('/^cdek_official_shipping_tariff_\d+$/', $key)) {
-                $tariffsChecked[$key] = $value;
+        foreach ($input as $key => $value) {
+            if ($value && preg_match('/^cdek_official_shipping_tariff_\d+$/', $key)) {
+                var_dump($key);
+                $this->enabledTariffs[] = $key;
             }
         }
-
-        foreach ($this->tariffs->data as $tariffElem) {
-            if (in_array($tariffElem['code'], $tariffsChecked)) {
-                $this->tariffs->setStatusByCode($tariffElem['code'], true);
-                continue;
-            }
-            $this->tariffs->setStatusByCode($tariffElem['code'], false);
-        }
-
-        $this->shippingTariffs = $this->tariffs->data;
     }
 
     public function setCurrency($post)

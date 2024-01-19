@@ -1,10 +1,12 @@
 <?php
 
-namespace CDEK\model;
+namespace CDEK\Models;
 
+use CDEK\Contracts\ValidatableSettingsContract;
 use Exception;
+use RuntimeException;
 
-class SettingsPrice extends AbstractSettings
+class SettingsPrice extends ValidatableSettingsContract
 {
     const PARAM_ID
         = [
@@ -23,22 +25,22 @@ class SettingsPrice extends AbstractSettings
     /**
      * @throws Exception
      */
-    public function validate()
+    public function validate(): void
     {
         if ((float)$this->priceExtraPrice < 0) {
-            throw new Exception('cdek_error_price_extra_price_invalid');
+            throw new RuntimeException('cdek_error_price_extra_price_invalid');
         }
 
         if ((float)$this->pricePercentageIncrease < 0) {
-            throw new Exception('cdek_error_price_percentage_increase_invalid');
+            throw new RuntimeException('cdek_error_price_percentage_increase_invalid');
         }
 
         if ((float)$this->priceFix < 0) {
-            throw new Exception('cdek_error_price_fix_invalid');
+            throw new RuntimeException('cdek_error_price_fix_invalid');
         }
 
         if ((float)$this->priceFree < 0) {
-            throw new Exception('cdek_error_price_free_invalid');
+            throw new RuntimeException('cdek_error_price_free_invalid');
         }
     }
 }

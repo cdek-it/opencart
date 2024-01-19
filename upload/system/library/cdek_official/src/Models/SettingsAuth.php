@@ -1,10 +1,12 @@
 <?php
 
-namespace CDEK\model;
+namespace CDEK\Models;
 
+use CDEK\Contracts\ValidatableSettingsContract;
 use Exception;
+use RuntimeException;
 
-class SettingsAuth extends AbstractSettings
+class SettingsAuth extends ValidatableSettingsContract
 {
     const PARAM_ID
         = [
@@ -23,22 +25,22 @@ class SettingsAuth extends AbstractSettings
     /**
      * @throws Exception
      */
-    public function validate()
+    final public function validate(): void
     {
         if ($this->authTestMode === 'on') {
             return;
         }
 
         if (empty($this->authId)) {
-            throw new Exception('cdek_error_auth_id_empty');
+            throw new RuntimeException('cdek_error_auth_id_empty');
         }
 
         if (empty($this->authSecret)) {
-            throw new Exception('cdek_error_auth_secret_empty');
+            throw new RuntimeException('cdek_error_auth_secret_empty');
         }
 
         if (empty($this->apiKey)) {
-            throw new Exception('cdek_error_auth_secret_empty');
+            throw new RuntimeException('cdek_error_auth_secret_empty');
         }
     }
 }

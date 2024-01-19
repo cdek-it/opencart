@@ -2,28 +2,26 @@
 
 namespace CDEK;
 
+use CDEK\Helpers\LogHelper;
 use Registry;
 
 class CdekApi
 {
-    protected const TOKEN_PATH   = "oauth/token?parameters";
-    protected const REGION_PATH  = "location/cities";
-    protected const ORDERS_PATH  = "orders/";
-    protected const PVZ_PATH     = "deliverypoints";
-    protected const CALC_PATH    = "calculator/tarifflist";
-    protected const WAYBILL_PATH = "print/orders";
-    protected const CALL_COURIER = "intakes";
-    protected const API_URL      = "https://api.cdek.ru/v2/";
-    protected const API_TEST_URL = "https://api.edu.cdek.ru/v2/";
-    protected CdekHttpClient $httpClient;
-    protected Settings $settings;
-    protected Registry $registry;
+    private const TOKEN_PATH    = 'oauth/token?parameters';
+    private const REGION_PATH = 'location/cities';
+    private const ORDERS_PATH = 'orders/';
+    private const PVZ_PATH       = 'deliverypoints';
+    private const CALC_PATH    = 'calculator/tarifflist';
+    private const WAYBILL_PATH   = 'print/orders';
+    private const API_URL      = 'https://api.cdek.ru/v2/';
+    private const API_TEST_URL = 'https://api.edu.cdek.ru/v2/';
+    private CdekHttpClient $httpClient;
+    private Settings $settings;
 
-    public function __construct($registry, $settings)
+    public function __construct(Settings $settings)
     {
         $this->httpClient = new CdekHttpClient;
         $this->settings   = $settings;
-        $this->registry   = $registry;
     }
 
     public function checkAuth(): bool
@@ -129,10 +127,10 @@ class CdekApi
             "copy_count" => 2
         ];
         $requestBill = $this->sendRequest($url, 'POST', $data);
-        CdekLog::sendLog('RequestBill: ' . json_encode($requestBill));
+        LogHelper::write('RequestBill: ' . json_encode($requestBill));
         sleep(5);
         $result = $this->sendRequest($url . '/' . $requestBill->entity->uuid, 'GET');
-        CdekLog::sendLog('Result: ' . json_encode($result));
+        LogHelper::write('Result: ' . json_encode($result));
         header('Content-type', 'application/pdf');
         echo $this->httpClient->sendRequestBill($result->entity->url, $this->getToken());
         exit();

@@ -1,6 +1,6 @@
 <?php
 
-namespace CDEK\model;
+namespace CDEK\Models;
 
 class Currency
 {
@@ -30,7 +30,7 @@ class Currency
 
     public function selectCurrency(int $code): void
     {
-        for ($i = 0; $i < count($this->data); $i++) {
+        for ($i = 0, $iMax = count($this->data); $i < $iMax; $i++) {
             $this->data[$i]['select'] = false;
             if ($this->data[$i]['code'] === $code) {
                 $this->data[$i]['select'] = true;

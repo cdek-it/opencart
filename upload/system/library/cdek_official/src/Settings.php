@@ -2,11 +2,11 @@
 
 namespace CDEK;
 
-use CDEK\model\SettingsAuth;
-use CDEK\model\SettingsDimensions;
-use CDEK\model\SettingsPrice;
-use CDEK\model\SettingsSeller;
-use CDEK\model\SettingsShipping;
+use CDEK\Models\SettingsAuth;
+use CDEK\Models\SettingsDimensions;
+use CDEK\Models\SettingsPrice;
+use CDEK\Models\SettingsSeller;
+use CDEK\Models\SettingsShipping;
 use Exception;
 
 class Settings
