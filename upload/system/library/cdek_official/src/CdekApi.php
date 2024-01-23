@@ -53,13 +53,13 @@ class CdekApi
     public function getOrderByUuid($uuid)
     {
         $url = $this->getAuthUrl() . self::ORDERS_PATH . $uuid;
-        return $this->sendRequest($url, 'GET');
+        return $this->sendRequest($url, 'GET')['result'];
     }
 
     public function getCity($city)
     {
         $url = $this->getAuthUrl() . self::REGION_PATH;
-        return $this->sendRequest($url, 'GET', ['city' => $city, 'size' => 5]);
+        return $this->sendRequest($url, 'GET', ['city' => $city, 'size' => 5])['result'];
     }
 
     public function getOffices($param)
@@ -70,13 +70,13 @@ class CdekApi
     public function calculate($data)
     {
         $url = $this->getAuthUrl() . self::CALC_PATH;
-        return $this->sendRequest($url, 'POST', $data);
+        return $this->sendRequest($url, 'POST', $data)['result'];
     }
 
     public function createOrder($order)
     {
         $url = $this->getAuthUrl() . self::ORDERS_PATH;
-        return $this->sendRequest($url, 'POST', $order->getRequestData());
+        return $this->sendRequest($url, 'POST', $order->getRequestData())['result'];
     }
 
     private function getAuthUrl(): string
@@ -110,13 +110,13 @@ class CdekApi
     public function getCityByParam($city, $postcode)
     {
         $url = $this->getAuthUrl() . self::REGION_PATH;
-        return $this->sendRequest($url, 'GET', ['city' => $city, 'postal_code' => $postcode]);
+        return $this->sendRequest($url, 'GET', ['city' => $city, 'postal_code' => $postcode])['result'];
     }
 
     public function deleteOrder($uuid)
     {
         $url = $this->getAuthUrl() . self::ORDERS_PATH . $uuid;
-        return $this->sendRequest($url, 'DELETE');
+        return $this->sendRequest($url, 'DELETE')['result'];
     }
 
     public function getBill($uuid)
@@ -128,10 +128,10 @@ class CdekApi
             ],
             "copy_count" => 2
         ];
-        $requestBill = $this->sendRequest($url, 'POST', $data);
+        $requestBill = $this->sendRequest($url, 'POST', $data)['result'];
         CdekLog::sendLog('RequestBill: ' . json_encode($requestBill));
         sleep(5);
-        $result = $this->sendRequest($url . '/' . $requestBill->entity->uuid, 'GET');
+        $result = $this->sendRequest($url . '/' . $requestBill->entity->uuid, 'GET')['result'];
         CdekLog::sendLog('Result: ' . json_encode($result));
         header('Content-type', 'application/pdf');
         echo $this->httpClient->sendRequestBill($result->entity->url, $this->getToken());

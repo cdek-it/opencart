@@ -2,6 +2,8 @@
 
 namespace CDEK;
 
+use RuntimeException;
+
 class CdekHttpClient
 {
     public function sendRequest($url, $method, $token, $data = null, $raw = false)
@@ -24,10 +26,33 @@ class CdekHttpClient
         }
 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        $output = curl_exec($ch);
-        curl_close($ch);
+        curl_setopt($ch, CURLOPT_HEADER, 1);
 
-        return $raw ? $output : json_decode($output);
+        $output = curl_exec($ch);
+        $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $headers = substr($output, 0, $headerSize);
+        $result = substr($output, $headerSize);
+        $addedHeaders = $this->getHeaderValue($headers);
+        if ($result === false) {
+            throw new RuntimeException(curl_error($ch), curl_errno($ch));
+        }
+
+        return ['result' => $raw ? $result : json_decode($result), 'addedHeaders' => $addedHeaders];
+    }
+
+    private function getHeaderValue($headers): array
+    {
+        $headerLines = explode("\r\n", $headers);
+        $addedHeaders = [];
+        foreach ($headerLines as $line) {
+            if (!empty($line)) {
+                $parts = explode(': ', $line, 2);
+                $key = $parts[0];
+                $value = isset($parts[1]) ? $parts[1] : '';
+                $addedHeaders[$key] = $value;
+            }
+        }
+        return $addedHeaders;
     }
 
     public function sendRequestAuth($url, $data)

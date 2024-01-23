@@ -24,16 +24,27 @@ class ControllerExtensionShippingCdekOfficial extends Controller
         if (isset($this->request->get['cdekRequest']) && $this->request->get['cdekRequest'] === 'adminMap') {
             $param['city_code'] = null;
             $param['is_reception'] = true;
-            $this->response->setOutput($cdekApi->getOffices($param));
+            $officeData = $cdekApi->getOffices($param);
+            if (!empty($officeData['addedHeaders'])) {
+                foreach ($officeData['addedHeaders'] as $headerName => $headerValue) {
+                    $this->response->addHeader($headerName.': '.$headerValue);
+                }
+            }
+            $this->response->setOutput($officeData['result']);
         } else {
             try {
                 $city = $cdekApi->getCity($this->session->data['shipping_address']['city']);
                 $param['city_code'] = $city[0]->code;
-                $offices = $cdekApi->getOffices($param);
-                if (empty($offices)) {
+                $officeData = $cdekApi->getOffices($param);
+                if (empty($officeData)) {
                     throw new Exception($this->language->get('cdek_shipping__office_not_found'));
                 }
-                $this->response->setOutput($cdekApi->getOffices($param));
+                if (!empty($officeData['addedHeaders'])) {
+                    foreach ($officeData['addedHeaders'] as $headerName => $headerValue) {
+                        $this->response->addHeader($headerName.': '.$headerValue);
+                    }
+                }
+                $this->response->setOutput($officeData['result']);
             } catch (Exception $e) {
                 $this->response->addHeader('HTTP/1.1 500 Internal Server Error');
                 $this->response->setOutput(json_encode(array('message' => $e->getMessage())));
