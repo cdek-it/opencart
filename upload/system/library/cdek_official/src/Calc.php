@@ -56,9 +56,8 @@ class Calc
             return [];
         }
 
-        //От двери
-        $tariffCalculatedToDoor = [];
-        $recommendedDimensions  = $this->getRecommendedPackage($this->getPackage());
+        $tariffCalculated      = [];
+        $recommendedDimensions = $this->getRecommendedPackage($this->getPackage());
 
         if (empty($recommendedDimensions)) {
             return [];
@@ -77,87 +76,60 @@ class Calc
                     'city'         => $locality->city ?? '',
                 ],
                 'to_location'   => [
-                    "code" => $toLocationCode,
+                    'code' => $toLocationCode,
                 ],
                 'packages'      => $recommendedDimensions,
             ];
             $result   = $this->cdekApi->calculate($data);
             if (!empty($result) && isset($result->tariff_codes)) {
                 foreach ($result->tariff_codes as $tariff) {
-                    if (in_array($tariff->delivery_mode, [1, 2, 6])) {
-                        $tariffCalculatedToDoor[] = $tariff;
+                    if (!in_array($tariff->tariff_code, $this->settings->shippingSettings->enabledTariffs, true) ||
+                        Tariffs::isTariffFromDoor($tariff->tariff_code)) {
+                        continue;
                     }
+                    $tariffCalculated['cdek_official_' . $tariff->tariff_code] = $this->formatQuoteData($tariff);
                 }
             }
         }
 
-        //От пвз
-        $tariffCalculatedToPvz = [];
         if (!empty($this->settings->shippingSettings->shippingPvz)) {
             $locality = CdekHelper::getLocality($this->settings->shippingSettings->shippingPvz);
             if (CdekHelper::checkLocalityOffice($locality)) {
                 $data   = [
-                    "currency"      => $currencySelected,
-                    "from_location" => [
-                        "country_code" => $locality->country ?? '',
-                        "postal_code"  => $locality->postal ?? '',
-                        "city"         => $locality->city ?? '',
+                    'currency'      => $currencySelected,
+                    'from_location' => [
+                        'country_code' => $locality->country ?? '',
+                        'postal_code'  => $locality->postal ?? '',
+                        'city'         => $locality->city ?? '',
                     ],
-                    "to_location"   => [
-                        "code" => $toLocationCode,
+                    'to_location'   => [
+                        'code' => $toLocationCode,
                     ],
-                    "packages"      => $recommendedDimensions,
+                    'packages'      => $recommendedDimensions,
                 ];
                 $result = $this->cdekApi->calculate($data);
                 foreach ($result->tariff_codes as $tariff) {
-                    if (!in_array($tariff->delivery_mode, [1, 2, 6], true)) {
-                        $tariffCalculatedToPvz[] = $tariff;
+                    if (!in_array($tariff->tariff_code, $this->settings->shippingSettings->enabledTariffs, true) ||
+                        Tariffs::isTariffFromOffice($tariff->tariff_code)) {
+                        continue;
                     }
+
+                    $tariffCalculated['cdek_official_' . $tariff->tariff_code] = $this->formatQuoteData($tariff);
                 }
             }
         }
 
-        $tariffCalculated = array_merge($tariffCalculatedToDoor, $tariffCalculatedToPvz);
-
-        $tariffCodeEnable = [];
-        foreach ($tariffs->data as $tariff) {
-            if ($tariff['enable']) {
-                $tariffCodeEnable[] = $tariff['code'];
-            }
-        }
-
-        foreach ($tariffCalculated as $tariff) {
-            if (in_array($tariff->tariff_code, $tariffCodeEnable)) {
-                $title = $this->registry->get('language')->get('cdek_shipping__tariff_name_' . $tariff->tariff_code) .
-                         $this->getPeriod($tariff);
-                $total = $this->getTotalSum($tariff);
-
-                $quoteData['cdek_official_' . $tariff->tariff_code] = [
-                    'code'         => 'cdek_official.' .
-                                      (Tariffs::isTariffToDoor($tariff->tariff_code) ? 'door_' : 'office_') .
-                                      $tariff->tariff_code,
-                    'title'        => $this->registry->get('language')->get('text_title') . ': ' . $title,
-                    'cost'         => $total,
-                    'tax_class_id' => $tariff->tariff_code,
-                    'text'         => $this->registry->get('currency')->format($total,
-                                                                               $this->registry->get('session')->data['currency']),
-                ];
-            }
-        }
-
-        return $quoteData;
+        return $tariffCalculated;
     }
 
-    private function getRecommendedPackage($productsPackages)
+    private function getRecommendedPackage(array $packages)
     {
-        $defaultPackages = [
+        return CdekHelper::calculateRecomendedPackage($packages, [
             'length' => (int)$this->settings->dimensionsSettings->dimensionsLength,
             'width'  => (int)$this->settings->dimensionsSettings->dimensionsWidth,
             'height' => (int)$this->settings->dimensionsSettings->dimensionsHeight,
             'weight' => (int)$this->settings->dimensionsSettings->dimensionsWeight,
-        ];
-
-        return CdekHelper::calculateRecomendedPackage($productsPackages, $defaultPackages);
+        ]);
     }
 
     private function getPackage()
@@ -173,34 +145,36 @@ class Calc
         return $packages;
     }
 
-    private function getDimensions($product)
+    private function getDimensions(array $product): array
     {
-        $dimensions = [
-            'height'   => (int)$product['height'],
-            'length'   => (int)$product['length'],
-            'weight'   => (int)($this->weight->convert($product['weight'], $product['weight_class_id'], '2')) /
-                          (int)$product['quantity'],
-            'width'    => (int)$product['width'],
+        return [
+            'height'   => ((int)$product['height']) ?: (int)$this->settings->dimensionsSettings->dimensionsHeight,
+            'length'   => ((int)$product['length']) ?: (int)$this->settings->dimensionsSettings->dimensionsLength,
+            'weight'   => ((int)($this->weight->convert($product['weight'], $product['weight_class_id'], '2')) /
+                           (int)$product['quantity']) ?: (int)$this->settings->dimensionsSettings->dimensionsWeight,
+            'width'    => ((int)$product['width']) ?: (int)$this->settings->dimensionsSettings->dimensionsWidth,
             'quantity' => (int)$product['quantity'],
         ];
+    }
 
-        if ($dimensions["height"] === 0) {
-            $dimensions["height"] = (int)$this->settings->dimensionsSettings->dimensionsHeight;
-        }
+    private function formatQuoteData(object $tariff): array
+    {
+        $registry = RegistrySingleton::getInstance();
 
-        if ($dimensions["width"] === 0) {
-            $dimensions["width"] = (int)$this->settings->dimensionsSettings->dimensionsWidth;
-        }
+        $title = $registry->get('language')->get('cdek_shipping__tariff_name_' . $tariff->tariff_code) .
+                 $this->getPeriod($tariff);
+        $total = $this->getTotalSum($tariff);
 
-        if ($dimensions["length"] === 0) {
-            $dimensions["length"] = (int)$this->settings->dimensionsSettings->dimensionsLength;
-        }
-
-        if ($dimensions["weight"] === 0) {
-            $dimensions["weight"] = (int)$this->settings->dimensionsSettings->dimensionsWeight;
-        }
-
-        return $dimensions;
+        return [
+            'code'         => 'cdek_official.' .
+                              (Tariffs::isTariffToDoor($tariff->tariff_code) ? 'door_' : 'office_') .
+                              $tariff->tariff_code,
+            'title'        => $registry->get('language')->get('text_title') . ': ' . $title,
+            'cost'         => $total,
+            'tax_class_id' => $tariff->tariff_code,
+            'text'         => $registry->get('currency')->format($total,
+                                                                 $registry->get('session')->data['currency']),
+        ];
     }
 
     private function getPeriod($calc)
