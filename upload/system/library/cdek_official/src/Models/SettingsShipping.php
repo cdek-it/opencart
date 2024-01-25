@@ -10,8 +10,7 @@ class SettingsShipping extends ValidatableSettingsContract
 {
     protected const PARAM_ID
         = [
-            'cdek_official_shipping__tariff_name'   => 'shippingTariffName',
-            'cdek_official_shipping__tariff_plug'   => 'shippingTariffPlug',
+
             'cdek_official_shipping__many_packages' => 'shippingManyPackages',
             'cdek_official_shipping__extra_days'    => 'shippingExtraDays',
             'cdek_official_shipping__city'          => 'shippingCity',
@@ -22,8 +21,6 @@ class SettingsShipping extends ValidatableSettingsContract
         ];
     public array $enabledTariffs;
     public array $shippingCurrencies;
-    public $shippingTariffName;
-    public $shippingTariffPlug;
     public $shippingManyPackages;
     public $shippingExtraDays;
     public $shippingCity;
@@ -35,7 +32,7 @@ class SettingsShipping extends ValidatableSettingsContract
 
     public function __construct()
     {
-        $this->currency = new Currency;
+        $this->currency       = new Currency;
         $this->enabledTariffs = [];
     }
 
@@ -49,7 +46,8 @@ class SettingsShipping extends ValidatableSettingsContract
         }
     }
 
-    public function init(array $post){
+    final public function init(array $post): void
+    {
         $this->setTariffs($post);
         parent::init($post);
     }
@@ -58,13 +56,12 @@ class SettingsShipping extends ValidatableSettingsContract
     {
         foreach ($input as $key => $value) {
             if ($value && preg_match('/^cdek_official_shipping_tariff_\d+$/', $key)) {
-                var_dump($key);
-                $this->enabledTariffs[] = $key;
+                $this->enabledTariffs[] = $value;
             }
         }
     }
 
-    public function setCurrency($post)
+    public function setCurrency($post): void
     {
         if (isset($post['cdek_official_shipping__currency'])) {
             $currency = $post['cdek_official_shipping__currency'];

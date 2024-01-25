@@ -54,7 +54,6 @@ class CatalogController extends ControllerContract
 
     public function cdek_official_checkout_shipping_controller_after(&$route, &$data, &$output)
     {
-        $this->session->data['shipping_method']['title'] = $this->session->data['shipping_method']['extra'];
         $shippingMethod                                  = $this->request->post['shipping_method'];
         $shippingMethodExplode                           = explode('.', $shippingMethod);
         $shippingMethodName                              = $shippingMethodExplode[0];
@@ -83,8 +82,7 @@ class CatalogController extends ControllerContract
     {
         if (isset($this->session->data['order_id']) && isset($this->session->data['cdek_official_pvz_code'])) {
             try {
-                CdekOrderMetaRepository::insertPvzCode($this->db,
-                                                       DB_PREFIX,
+                CdekOrderMetaRepository::insertPvzCode(
                                                        $this->session->data['order_id'],
                                                        $this->session->data['cdek_official_pvz_code']);
 

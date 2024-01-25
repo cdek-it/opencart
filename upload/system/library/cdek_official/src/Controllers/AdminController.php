@@ -2,75 +2,54 @@
 
 namespace CDEK\Controllers;
 
-use CDEK\App;
+use CDEK\Actions\Admin\Installer\InstallExtensionAction;
+use CDEK\Actions\Admin\Installer\RemoveExtensionAction;
+use CDEK\Actions\Admin\Order\GetOrderInfoTabAction;
+use CDEK\Actions\Admin\Settings\GetOfficesAction;
+use CDEK\Actions\Admin\Settings\RenderSettingsPageAction;
+use CDEK\Actions\Admin\Settings\SaveSettingsAction;
 use CDEK\CdekApi;
-use CDEK\CdekConfig;
 use CDEK\CdekHelper;
 use CDEK\CdekOrderMetaRepository;
 use CDEK\Contracts\ControllerContract;
-use CDEK\Helpers\EventsHelper;
-use CDEK\Helpers\LogHelper;
 use CDEK\Settings;
+use Exception;
 
 class AdminController extends ControllerContract
 {
 
     final public function uninstall(): void
     {
-        LogHelper::write('uninstall start');
-        $this->load->model('setting/setting');
-        $data['shipping_cdek_official_status'] = 0;
-        $this->model_setting_setting->editSetting('shipping_cdek_official', $data);
-        EventsHelper::deleteEvents();
+        (new RemoveExtensionAction)();
     }
 
-    public function index()
+    /**
+     * @throws Exception
+     */
+    final public function index(): void
     {
-        $this->load->language('extension/shipping/cdek_official');
-        $this->document->setTitle($this->language->get('heading_title'));
-        $this->load->model('setting/setting');
-
-        $data     = [];
-        $registry = $this->registry;
-        $app      = new App($registry, $data, DIR_APPLICATION);
-        $app->handleAjaxRequest();
-        $app->run();
-
-        $app->checkState($app->data);
-        $userToken                = $this->session->data['user_token'];
-        $app->data['action']      = $this->url->link('extension/shipping/cdek_official',
-                                                     'user_token=' . $userToken,
-                                                     true);
-        $app->data['cancel']      = $this->url->link('extension/shipping', 'user_token=' . $userToken, true);
-        $app->data['header']      = $this->load->controller('common/header');
-        $app->data['column_left'] = $this->load->controller('common/column_left');
-        $app->data['footer']      = $this->load->controller('common/footer');
-        $app->data['user_token']  = $userToken;
-        if ($app->data['status_auth']) {
-            $app->data['city'] = $app->data['map_city'] ?? 'Москва';
-        } else {
-            $app->data['city'] = 'Москва';
-        }
-        $officeLocality                     = CdekHelper::getLocality($app->settings->shippingSettings->shippingPvz);
-        $app->data['office_code_selected']  = is_object($officeLocality) && property_exists($officeLocality, 'code') ?
-            $officeLocality->code : null;
-        $addressLocality
-                                            = CdekHelper::getLocality($app->settings->shippingSettings->shippingCityAddress);
-        $app->data['address_code_selected'] = is_object($addressLocality) &&
-                                              property_exists($addressLocality, 'formatted') ?
-            $addressLocality->formatted : null;
-        $app->data['apikey']                = $app->settings->authSettings->apiKey;
-        $app->data['map_lang']              = $app->settings->authSettings->mapLangCode ?? 'rus';
-        $app->data['map_src']               = $this->load->view('extension/shipping/cdek_official_src_map',
-                                                                ['map_version' => CdekConfig::MAP_VERSION]);
-
-        $app->data['root_url'] = HTTP_SERVER;
-
-        $this->response->setOutput($this->load->view('extension/shipping/cdek_official', $app->data));
+        (new RenderSettingsPageAction)();
     }
 
-    public function cdek_official_order_info(&$route, &$data, &$output)
+    final public function store(): void
     {
+        (new SaveSettingsAction)();
+    }
+
+    final public function map(): void
+    {
+        (new GetOfficesAction)();
+    }
+
+    /**
+     * @throws Exception
+     * @noinspection PhpUnused
+     */
+    final public function orderInfo(&$route, &$data, &$output): void
+    {
+        $data['tabs'][] = (new GetOrderInfoTabAction)((int)$this->registry->get('request')->get['order_id']);
+        return;
+
         $orderId = (int)$data['order_id'];
         if ($this->isCdekShipping($orderId)) {
             $remoteDelete                        = false;
@@ -78,8 +57,8 @@ class AdminController extends ControllerContract
             $dataOrderForm['cdek_order_deleted'] = false;
             $dataOrderForm['cdek_order_created'] = false;
             $dataOrderForm['order_id']           = $orderId;
-            $orderDeleted                        = CdekOrderMetaRepository::isOrderDeleted($this->db, $orderId);
-            $orderCreated                        = CdekOrderMetaRepository::isOrderCreated($this->db, $orderId);
+            $orderDeleted                        = CdekOrderMetaRepository::isOrderDeleted($orderId);
+            $orderCreated                        = CdekOrderMetaRepository::isOrderCreated($orderId);
 
             //created
             if ($orderCreated['created'] && !$orderDeleted['deleted']) {
@@ -93,8 +72,8 @@ class AdminController extends ControllerContract
                     foreach ($order->requests[0]->errors as $errors) {
                         $errorsCode[$errors->code] = $errors->message;
                     }
-                    if (in_array('v2_entity_not_found', array_keys($errorsCode))) {
-                        CdekOrderMetaRepository::deleteOrder($this->db, $orderId);
+                    if (array_key_exists('v2_entity_not_found', $errorsCode)) {
+                        CdekOrderMetaRepository::deleteOrder( $orderId);
                         $remoteDelete = true;
                     } else {
                         $invalidOrder = true;
@@ -117,7 +96,7 @@ class AdminController extends ControllerContract
                                               $order->entity->to_location->address,
                             'pvz_code'     => $order->entity->shipment_point ?? '',
                         ];
-                        CdekOrderMetaRepository::insertOrderMeta($this->db, $param, $dataOrderForm['order_id']);
+                        CdekOrderMetaRepository::insertOrderMeta($param, $dataOrderForm['order_id']);
                         $orderMetaData = CdekOrderMetaRepository::getOrder($this->db, $orderId);
                     }
                     $dataOrderForm = array_merge($dataOrderForm, $orderMetaData);
@@ -219,12 +198,6 @@ class AdminController extends ControllerContract
 
     final public function install(): void
     {
-        $this->load->model('setting/setting');
-        $data['shipping_cdek_official_status'] = 1;
-        $this->model_setting_setting->editSetting('shipping_cdek_official', $data);
-        LogHelper::write('install start');
-
-        EventsHelper::registerEvents();
-        CdekOrderMetaRepository::create($this->db, DB_PREFIX);
+        (new InstallExtensionAction)();
     }
 }

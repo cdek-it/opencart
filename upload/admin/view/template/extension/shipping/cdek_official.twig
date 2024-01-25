@@ -1,4 +1,3 @@
-{{ map_src }}
 {% if status_auth %}
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -73,7 +72,7 @@
                                       defaultLocation: '{{ city }}',
                                       apiKey: '{{ apikey }}',
                                       canChoose: true,
-                                      servicePath: '/upload/index.php?route=extension/shipping/cdek_official&cdekRequest=adminMap',
+                                      servicePath: '{{ map_service }}',
                                       sender: true,
                                       lang: '{{ map_lang }}',
                                       hideDeliveryOptions: {
@@ -109,7 +108,8 @@
         });
     </script>
 {% endif %}
-{{ header }}{{ column_left }}
+{{ header }}
+{{ column_left }}
 
 <div id="content">
     <div class="page-header">
@@ -487,12 +487,4 @@
         </div>
     </div>
 </div>
-
-<script type="text/javascript">
-    var userToken = '{{ user_token }}';
-</script>
-
-<style>
-    {{ settings_page_style|raw }}
-</style>
 {{ footer }}

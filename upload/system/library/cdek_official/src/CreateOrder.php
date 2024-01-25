@@ -53,8 +53,8 @@ class CreateOrder
                                       '' . ', ' . $order->entity->to_location->address,
                     'pvz_code'     => $order->entity->delivery_point ?? '',
                 ];
-                CdekOrderMetaRepository::insertOrderMeta($this->registry->get('db'), $data, $orderId);
-                LogHelper::write("Order validated");
+                CdekOrderMetaRepository::insertOrderMeta($data, $orderId);
+                LogHelper::write('Order validated');
                 echo json_encode(['state' => true, 'data' => $data]);
             }
         } else {

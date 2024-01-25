@@ -8,8 +8,8 @@ class EventsHelper
 {
     private const EVENTS
         = [
-            'admin/view/sale/order_info/after'                       => [
-                'cdek_official_order' => 'extension/shipping/cdek_official/cdek_official_order_info',
+            'admin/view/sale/order_info/before'                       => [
+                'cdek_official_order' => 'extension/shipping/cdek_official/orderInfo',
             ],
             'catalog/view/checkout/checkout/after'                   => [
                 'cdek_official_checkout' => 'extension/shipping/cdek_official/cdek_official_checkout_checkout_after',
@@ -37,6 +37,7 @@ class EventsHelper
 
         LogHelper::write('create events');
         $registry->get('load')->model('setting/event');
+        /** @var \ModelSettingEvent $eventModel */
         $eventModel = $registry->get('model_setting_event');
 
         foreach (self::EVENTS as $trigger => $actions) {
@@ -54,6 +55,7 @@ class EventsHelper
 
         LogHelper::write('delete events');
         $registry->get('load')->model('setting/event');
+        /** @var \ModelSettingEvent $eventModel */
         $eventModel = $registry->get('model_setting_event');
 
         foreach (self::EVENTS as $actions) {

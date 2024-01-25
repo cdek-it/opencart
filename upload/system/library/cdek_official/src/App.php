@@ -2,6 +2,7 @@
 
 namespace CDEK;
 
+use CDEK\Helpers\LogHelper;
 use CDEK\Models\Tariffs;
 use Exception;
 use Registry;
@@ -23,9 +24,9 @@ class App
     private $load;
     private $db;
 
-    public function __construct(Registry $registry, array $data, string $dirApplication)
+    public function __construct(array $data, string $dirApplication)
     {
-        $this->registry = $registry;
+        $this->registry = RegistrySingleton::getInstance();
 
         $this->data           = $data;
         $this->dirApplication = $dirApplication;
@@ -46,9 +47,7 @@ class App
     public function run(): void
     {
         $this->init();
-        $this->connectScripts();
         $this->checkError();
-        $this->breadcrumbs();
     }
 
     public function init(): void
@@ -70,8 +69,8 @@ class App
                 $this->settings->validate();
                 $this->session->data['success'] = $this->language->get('text_success');
             } catch (Exception $exception) {
-                $this->registry->get('log')->write(">CDEK_OFFICIAL_LOG Validation failed: " .
-                                                   $this->language->get($exception->getMessage()));
+                LogHelper::write('Validation failed: ' .
+                                 $this->language->get($exception->getMessage()));
                 $this->session->data['error_warning'] = $this->language->get('error_permission') .
                                                         $this->language->get($exception->getMessage());
             }
@@ -103,12 +102,6 @@ class App
         $this->data['currencies']     = $this->settings->shippingSettings->shippingCurrencies;
     }
 
-    public function connectScripts(): void
-    {
-        $stylePath                         = $this->dirApplication . 'view/stylesheet/cdek_official/settings_page.css';
-        $this->data['settings_page_style'] = file_exists($stylePath) ? file_get_contents($stylePath) : '';
-    }
-
     public function checkError(): void
     {
         $this->data['success'] = $this->session->data['success'] ?? '';
@@ -116,24 +109,6 @@ class App
 
         $this->data['error_warning'] = $this->session->data['error_warning'] ?? '';
         unset($this->session->data['error_warning']);
-    }
-
-    public function breadcrumbs(): void
-    {
-        $this->data['breadcrumbs'] = [
-            [
-                'text' => $this->language->get('text_home'),
-                'href' => $this->url->link('common/dashboard', "user_token=$this->userToken", true),
-            ],
-            [
-                'text' => $this->language->get('text_extension'),
-                'href' => $this->url->link('marketplace/extension', "user_token=$this->userToken&type=shipping", true),
-            ],
-            [
-                'text' => $this->language->get('heading_title'),
-                'href' => $this->url->link('extension/shipping/cdek_official', "user_token=$this->userToken", true),
-            ],
-        ];
     }
 
     public function handleAjaxRequest()
@@ -152,7 +127,7 @@ class App
 
         if ($requestAction === 'deleteOrder') {
             $order = CdekOrderMetaRepository::getOrder($this->db, (int)$this->request->post['order_id']);
-            CdekOrderMetaRepository::deleteOrder($this->db, (int)$this->request->post['order_id']);
+            CdekOrderMetaRepository::deleteOrder((int)$this->request->post['order_id']);
             $response = $this->cdekApi->deleteOrder($this->request->post['uuid']);
             if (CdekApiValidate::deleteOrder($response)) {
                 $message = 'Order successfully deleted';
