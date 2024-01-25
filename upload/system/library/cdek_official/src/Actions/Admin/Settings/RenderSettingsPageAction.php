@@ -81,6 +81,6 @@ class RenderSettingsPageAction
         $app->data['apikey']                = $app->settings->authSettings->apiKey;
         $app->data['map_lang']              = $app->settings->authSettings->mapLangCode ?? 'rus';
 
-        $registry->get('response')->setOutput($loader->view('extension/shipping/cdek_official', $app->data));
+        $registry->get('response')->setOutput($loader->view('extension/shipping/cdek_official/settings', $app->data));
     }
 }

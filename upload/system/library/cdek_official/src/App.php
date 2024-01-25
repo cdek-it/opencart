@@ -148,7 +148,7 @@ class App
         }
 
         if ($requestAction === 'getBill') {
-            $this->cdekApi->getBill($this->request->get['uuid']);
+            $this->cdekApi->renderWaybill($this->request->get['uuid']);
         }
     }
 

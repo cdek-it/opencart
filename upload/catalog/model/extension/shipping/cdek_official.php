@@ -1,19 +1,14 @@
 <?php
 
-use CDEK\Calc;
+use CDEK\Contracts\ModelContract;
+use CDEK\DeliveryCalculator;
 
 require_once(DIR_SYSTEM . 'library/cdek_official/vendor/autoload.php');
 
-class ModelExtensionShippingCdekOfficial extends Model
+class ModelExtensionShippingCdekOfficial extends ModelContract
 {
-    public function getQuote($address)
+    final public function getQuote(array $address): ?array
     {
-        $this->load->language('extension/shipping/cdek_official');
-        $cartProducts = $this->cart->getProducts();
-        $weight       = $this->weight;
-        $this->load->model('setting/setting');
-        $settings = $this->model_setting_setting->getSetting('cdek_official');
-        $calc     = new Calc($this->registry, $cartProducts, $settings, $address, $weight);
-        return $calc->getMethodData();
+        return DeliveryCalculator::getQuoteForAddress($address);
     }
 }

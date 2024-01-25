@@ -45,7 +45,7 @@ class AdminController extends ControllerContract
      * @throws Exception
      * @noinspection PhpUnused
      */
-    final public function orderInfo(&$route, &$data, &$output): void
+    final public function orderInfo(string &$route, array &$data): void
     {
         $data['tabs'][] = (new GetOrderInfoTabAction)((int)$this->registry->get('request')->get['order_id']);
         return;

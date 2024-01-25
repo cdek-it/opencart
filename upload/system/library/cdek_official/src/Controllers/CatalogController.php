@@ -3,6 +3,7 @@
 namespace CDEK\Controllers;
 
 use CDEK\CdekApi;
+use CDEK\CdekConfig;
 use CDEK\CdekOrderMetaRepository;
 use CDEK\Contracts\ControllerContract;
 use CDEK\Models\Tariffs;
@@ -95,9 +96,7 @@ class CatalogController extends ControllerContract
     public function addCheckoutHeaderScript(&$route, &$data)
     {
         $data['scripts'][] = 'catalog/view/javascript/shipping/cdek_official.js';
-        $data['scripts'][] = 'https://cdn.jsdelivr.net/gh/cdek-it/widget@' .
-                             CdekConfig::MAP_VERSION .
-                             '/dist/cdek-widget.umd.js';
+        $data['scripts'][] = '//cdn.jsdelivr.net/npm/@cdek-it/widget@' . CdekConfig::MAP_VERSION;
     }
 
     private function searchAndReplace(&$output, $search, $replace)

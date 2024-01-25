@@ -4,7 +4,7 @@ namespace CDEK;
 
 use CDEK\Models\Tariffs;
 
-class Calc
+class DeliveryCalculator
 {
     protected $registry;
     protected $cdekApi;
@@ -14,44 +14,46 @@ class Calc
     private $weight;
     private $link;
 
-    public function __construct($registry, $cartProducts, $modelSettings, $address, $weight)
+    public function __construct($cartProducts, $address, $weight)
     {
         $this->cartProducts = $cartProducts;
-        $this->registry     = $registry;
-        $this->registry->get('load')->language('extension/shipping/cdek_official');
+        $registry           = RegistrySingleton::getInstance();
+        $registry->get('load')->language('extension/shipping/cdek_official');
         $this->settings = new Settings;
         $this->settings->init($modelSettings);
         $this->cdekApi = new CdekApi($this->settings);
         $this->address = $address;
         $this->weight  = $weight;
-        $this->link    = $this->registry->get('link');
+        $this->link    = $registry->get('link');
     }
 
-    final public function getMethodData(): array
-    {
-        $quoteData  = $this->getQuote();
-        $methodData = [];
 
-        if (!empty($quoteData)) {
-            $methodData = [
-                'code'       => 'cdek_official',
-                'title'      => $this->registry->get('language')->get('text_title'),
-                'quote'      => $quoteData,
-                'sort_order' => $this->registry->get('config')->get('shipping_cdek_official_sort_order'),
-                'error'      => false,
-            ];
+    public static function getQuoteForAddress(array $deliveryAddress): ?array
+    {
+        $registry     = RegistrySingleton::getInstance();
+        $registry->get('load')->language('extension/shipping/cdek_official');
+        $cartProducts = $registry->get('cart')->getProducts();
+        $weight       = $registry->get('weight');
+        if (empty($cartProducts) && empty($weight)) {
+            return null;
         }
 
-        return $methodData;
+        return [
+            'code'       => 'cdek_official',
+            'title'      => $registry->get('language')->get('text_title'),
+            'quote'      => $quoteData,
+            'sort_order' => $registry->get('config')->get('shipping_cdek_official_sort_order'),
+            'error'      => false,
+        ];
     }
 
-    private function getQuote()
+    private function _getQuote()
     {
         $currency  = $this->settings->shippingSettings->currency;
         $quoteData = [];
         $this->registry->get('currency');
-        $recipientLocation = $this->cdekApi->getCityByParam(trim($this->address['city']),
-                                                            trim($this->address['postcode']));
+        $recipientLocation = $this->cdekApi->getCityByParam(trim($this->address['city'] ?? ''),
+                                                            trim($this->address['postcode'] ?? ''));
         if (empty($recipientLocation)) {
             return [];
         }
