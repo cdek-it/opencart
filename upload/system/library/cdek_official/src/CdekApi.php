@@ -133,7 +133,7 @@ class CdekApi
         sleep(5);
         $result = $this->sendRequest($url . '/' . $requestBill->entity->uuid, 'GET')['result'];
         CdekLog::sendLog('Result: ' . json_encode($result));
-        header('Content-type', 'application/pdf');
+        header('Content-type: application/pdf');
         echo $this->httpClient->sendRequestBill($result->entity->url, $this->getToken());
         exit();
     }
