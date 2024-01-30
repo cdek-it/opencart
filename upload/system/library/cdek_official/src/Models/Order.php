@@ -4,6 +4,7 @@ namespace CDEK\Models;
 
 use CDEK\Config;
 use CDEK\CdekHelper;
+use CDEK\Helpers\DeliveryCalculator;
 use CDEK\SettingsSingleton;
 
 class Order
@@ -102,8 +103,7 @@ class Order
                 'quantity' => (int)$this->products[$key]['quantity'],
             ];
         }
-        return CDEKHelper::calculateRecomendedPackage($productPackages,
-                                                      $this->settings->dimensionsSettings->getParams());
+        return DeliveryCalculator::getRecommendedPackage($productPackages);
     }
 
     private function getItems(): array

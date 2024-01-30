@@ -40,13 +40,4 @@ class SettingsShipping extends ValidatableSettingsContract
             }
         }
     }
-
-    public function setCurrency($post): void
-    {
-        if (isset($post['cdek_official_shipping__currency'])) {
-            $currency = $post['cdek_official_shipping__currency'];
-            $this->currency->selectCurrency((int)$currency);
-        }
-        $this->shippingCurrencies = $this->currency->getCurrency();
-    }
 }

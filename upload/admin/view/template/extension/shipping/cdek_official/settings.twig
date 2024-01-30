@@ -1,8 +1,8 @@
 {% if auth_status %}
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const officeInput = $('#cdek_official_shipping__pvz');
-            const doorInput = $('#cdek_official_shipping__city_address');
+            const officeInput = $('#cdek_official__shippingPvz');
+            const doorInput = $('#cdek_official__shippingCityAddress');
             const officeInputView = $('#cdek_official_shipping__pvz_view');
             const doorInputView = $('#cdek_official_shipping__city_address_view');
             const messageNotSelected = '{{ cdek_official_shipping__not_selected }}';
@@ -86,21 +86,21 @@
                                       onChoose: function(type, tariff, address) {
                                           console.log(address);
                                           if (type === 'office') {
-                                              $('#cdek_official_shipping__pvz').val(JSON.stringify({
-                                                                                                       country: address.country_code,
-                                                                                                       postal: address.postal_code,
-                                                                                                       city: address.city,
-                                                                                                       code: address.code,
-                                                                                                   }));
+                                              officeInput.val(JSON.stringify({
+                                                                                 country: address.country_code,
+                                                                                 postal: address.postal_code,
+                                                                                 city: address.city,
+                                                                                 code: address.code,
+                                                                             }));
                                               updateOfficeCode();
                                           } else if (type === 'door') {
-                                              $('#cdek_official_shipping__city_address').val(JSON.stringify({
-                                                                                                                country: address.country_code,
-                                                                                                                postal: address.postal_code,
-                                                                                                                city: address.city,
-                                                                                                                address: address.name,
-                                                                                                                formatted: address.formatted,
-                                                                                                            }));
+                                              doorInput.val(JSON.stringify({
+                                                                               country: address.country_code,
+                                                                               postal: address.postal_code,
+                                                                               city: address.city,
+                                                                               address: address.name,
+                                                                               formatted: address.formatted,
+                                                                           }));
                                               updateDoor();
                                           }
                                       },
@@ -187,11 +187,13 @@
                                         <select
                                                 class="form-control" id="cdek_official_mapLangCode"
                                                 name="cdek_official_mapLangCode">
-                                            <option value="rus" {% if cdek_official__mapLangCode is same as('rus') %}
+                                            <option
+                                                    value="rus" {% if cdek_official__mapLangCode is same as('rus') %}
                                                 selected="selected" {% endif %}>
                                                 Русский
                                             </option>
-                                            <option value="eng" {% if cdek_official__mapLangCode is same as('eng') %}
+                                            <option
+                                                    value="eng" {% if cdek_official__mapLangCode is same as('eng') %}
                                                 selected="selected" {% endif %}>
                                                 English
                                             </option>
@@ -216,8 +218,7 @@
                                                     name="cdek_official__authTestMode"
                                                     id="cdek_official__authTestMode"
                                                     value="on"
-                                                    {% if cdek_official__authTestMode is not same as 'off' %} checked {%
-                                                        endif %}
+                                                    {% if cdek_official__authTestMode is not same as 'off' %} checked {% endif %}
                                                     class="form-control" />
                                             <p style="margin: 10px;">{{ cdek_auth__test_mode }}</p>
                                         </div>
@@ -308,8 +309,7 @@
                                     <div class="row vertical-center" style="padding-bottom: 10px;">
                                         <label
                                                 class="col-sm-2 control-label"
-                                                for="cdek_official__shippingExtraDays">{{ cdek_shipping__extra_days
-                                            }}</label>
+                                                for="cdek_official__shippingExtraDays">{{ cdek_shipping__extra_days }}</label>
                                         <div class="col-sm-4">
                                             <input
                                                     type="text" name="cdek_official__shippingExtraDays"
@@ -320,14 +320,14 @@
                                         </div>
                                         <label
                                                 class="col-sm-2 control-label"
-                                                for="cdek_official__shippingCurrency">{{ cdek_shipping__currency
-                                            }}</label>
+                                                for="cdek_official__shippingCurrency">{{ cdek_shipping__currency }}</label>
                                         <div class="col-sm-4">
                                             <select
                                                     class="form-control" id="cdek_official__shippingCurrency"
                                                     name="cdek_official__shippingCurrency">
                                                 {% for currency in currencies %}
-                                                    <option value="{{ currency.code }}" {% if currency.code is same as
+                                                    <option
+                                                            value="{{ currency.code }}" {% if currency.code is same as
                                                         cdek_official__shippingCurrency %} selected="selected" {% endif %}>{{ attribute(_context, currency.key) }}</option>
                                                 {% endfor %}
                                             </select>
@@ -361,8 +361,7 @@
                                         </div>
                                         <input
                                                 type="hidden"
-                                                name="cdek_official__shippingCityAddressvvcccbcdierkrbefnjhfcecgnekrijntfrejgudhcrnn
-"
+                                                name="cdek_official__shippingCityAddress"
                                                 id="cdek_official__shippingCityAddress"
                                                 value="{{ cdek_official__shippingCityAddress }}"
                                                 readonly />

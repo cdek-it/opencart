@@ -40,7 +40,7 @@ class CdekApi
         return (self::testModeActive() ? Config::API_TEST_URL : Config::API_URL) . $path;
     }
 
-    final public static function testModeActive(): bool
+    public static function testModeActive(): bool
     {
         return SettingsSingleton::getInstance()->authSettings->authTestMode === 'on';
     }
@@ -61,15 +61,15 @@ class CdekApi
     /**
      * @throws JsonException
      */
-    final public function getOrderByUuid(string $uuid): object
+    public static function getOrderByUuid(string $uuid): object
     {
-        return HttpClient::sendCdekRequest(self::getApiUrl(self::ORDERS_PATH . $uuid), 'GET', $this->getToken());
+        return HttpClient::sendCdekRequest(self::getApiUrl(self::ORDERS_PATH . $uuid), 'GET', self::getToken());
     }
 
     /**
      * @throws JsonException
      */
-    final public function getCity(string $city): object
+    public static function getCity(string $city): object
     {
         return HttpClient::sendCdekRequest(self::getApiUrl(self::REGION_PATH),
                                            'GET',
@@ -80,7 +80,7 @@ class CdekApi
     /**
      * @throws JsonException
      */
-    final public function getOffices(array $param): string
+    public static function getOffices(array $param): string
     {
         return HttpClient::sendCdekRequest(self::getApiUrl(self::PVZ_PATH),
                                            'GET',
@@ -92,7 +92,7 @@ class CdekApi
     /**
      * @throws JsonException
      */
-    final public function calculate(array $data): object
+    public static function calculate(array $data): object
     {
         return HttpClient::sendCdekRequest(self::getApiUrl(self::CALC_PATH), 'POST', self::getToken(), $data);
     }
@@ -100,7 +100,7 @@ class CdekApi
     /**
      * @throws JsonException
      */
-    final public function createOrder(Order $order): object
+    public static function createOrder(Order $order): object
     {
         return HttpClient::sendCdekRequest(self::getApiUrl(self::ORDERS_PATH),
                                            'POST',
@@ -111,7 +111,7 @@ class CdekApi
     /**
      * @throws JsonException
      */
-    final public function getCityByParam(string $city, string $postcode): object
+    public static function getCityByParam(string $city, string $postcode): object
     {
         return HttpClient::sendCdekRequest(self::getApiUrl(self::REGION_PATH),
                                            'GET',
@@ -122,7 +122,7 @@ class CdekApi
     /**
      * @throws JsonException
      */
-    final public function deleteOrder(string $uuid): object
+    public static function deleteOrder(string $uuid): object
     {
         return HttpClient::sendCdekRequest(self::getApiUrl(self::ORDERS_PATH . $uuid),
                                            'DELETE',
@@ -132,7 +132,7 @@ class CdekApi
     /**
      * @throws JsonException
      */
-    final public function renderWaybill(string $uuid): void
+    public static function renderWaybill(string $uuid): void
     {
         $requestBill = HttpClient::sendCdekRequest(self::getApiUrl(self::WAYBILL_PATH),
                                                    'POST',

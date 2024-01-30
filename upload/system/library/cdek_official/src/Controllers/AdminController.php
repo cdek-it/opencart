@@ -10,6 +10,7 @@ use CDEK\Actions\Admin\Settings\RenderSettingsPageAction;
 use CDEK\Actions\Admin\Settings\SaveSettingsAction;
 use CDEK\CdekApi;
 use CDEK\CdekHelper;
+use CDEK\Helpers\DeliveryCalculator;
 use CDEK\OrderMetaRepository;
 use CDEK\Contracts\ControllerContract;
 use CDEK\SettingsSingleton;
@@ -148,14 +149,6 @@ class AdminController extends ControllerContract
     {
         $this->load->model('sale/order');
         $this->load->model('catalog/product');
-        $this->load->model('setting/setting');
-        $setting         = $this->model_setting_setting->getSetting('cdek_official');
-        $defaultPackages = [
-            'length' => (int)$setting['cdek_official_dimensions__length'],
-            'width'  => (int)$setting['cdek_official_dimensions__width'],
-            'height' => (int)$setting['cdek_official_dimensions__height'],
-            'weight' => (int)$setting['cdek_official_dimensions__weight'],
-        ];
         $products        = $this->model_sale_order->getOrderProducts($orderId);
         foreach ($products as $key => $product) {
             $productOC          = $this->model_catalog_product->getProduct($product['product_id']);
@@ -167,7 +160,7 @@ class AdminController extends ControllerContract
                 'quantity' => (int)$products[$key]['quantity'],
             ];
         }
-        return CdekHelper::calculateRecomendedPackage($productsPackages, $defaultPackages);
+        return DeliveryCalculator::getRecommendedPackage($productsPackages);
     }
 
     protected function displayCreateOrderForm(&$output, $data)

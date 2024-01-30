@@ -2,6 +2,7 @@
 
 namespace CDEK\Helpers;
 
+use Cart\Weight;
 use CDEK\CdekApi;
 use CDEK\CdekHelper;
 use CDEK\Models\Tariffs;
@@ -10,26 +11,6 @@ use CDEK\SettingsSingleton;
 
 class DeliveryCalculator
 {
-    protected $registry;
-    protected $cdekApi;
-    protected $address;
-    private $cartProducts;
-    private $settings;
-    private $weight;
-    private $link;
-
-    public function __construct($cartProducts, $address, $weight)
-    {
-        $this->cartProducts = $cartProducts;
-        $registry           = RegistrySingleton::getInstance();
-        $registry->get('load')->language('extension/shipping/cdek_official');
-        $this->cdekApi = new CdekApi;
-        $this->address = $address;
-        $this->weight  = $weight;
-        $this->link    = $registry->get('link');
-    }
-
-
     public static function getQuoteForAddress(array $deliveryAddress): ?array
     {
         $registry     = RegistrySingleton::getInstance();
@@ -43,36 +24,33 @@ class DeliveryCalculator
         return [
             'code'       => 'cdek_official',
             'title'      => $registry->get('language')->get('text_title'),
-            'quote'      => self::calcuateQuote(),
+            'quote'      => self::calcuateQuote($deliveryAddress),
             'sort_order' => $registry->get('config')->get('shipping_cdek_official_sort_order'),
             'error'      => false,
         ];
     }
 
-    private static function calcuateQuote()
+    private static function calcuateQuote(array $deliveryAddress): array
     {
-        $currency  = $this->settings->shippingSettings->currency;
-        $quoteData = [];
-        $this->registry->get('currency');
-        $recipientLocation = $this->cdekApi->getCityByParam(trim($this->address['city'] ?? ''),
-                                                            trim($this->address['postcode'] ?? ''));
+        $settings = SettingsSingleton::getInstance();
+        $recipientLocation = CdekApi::getCityByParam(trim($deliveryAddress['city'] ?? ''),
+                                                            trim($deliveryAddress['postcode'] ?? ''));
         if (empty($recipientLocation)) {
             return [];
         }
 
         $tariffCalculated      = [];
-        $recommendedDimensions = $this->getRecommendedPackage($this->getPackage());
+        $recommendedDimensions = self::getPackage();
 
         if (empty($recommendedDimensions)) {
             return [];
         }
 
-        $currencySelected = $currency->getSelectedCurrency();
         $toLocationCode   = $recipientLocation[0]->code;
-        if (!empty($this->settings->shippingSettings->shippingCityAddress)) {
-            $locality = CdekHelper::getLocality($this->settings->shippingSettings->shippingCityAddress);
+        if (!empty($settings->shippingSettings->shippingCityAddress)) {
+            $locality = CdekHelper::getLocality($settings->shippingSettings->shippingCityAddress);
             $data     = [
-                'currency'      => $currencySelected,
+                'currency'      => $settings->shippingSettings->shippingCurrency,
                 'from_location' => [
                     'address'      => $locality->address ?? '',
                     'country_code' => $locality->country ?? '',
@@ -84,23 +62,23 @@ class DeliveryCalculator
                 ],
                 'packages'      => $recommendedDimensions,
             ];
-            $result   = $this->cdekApi->calculate($data);
+            $result   = CdekApi::calculate($data);
             if (!empty($result) && isset($result->tariff_codes)) {
                 foreach ($result->tariff_codes as $tariff) {
-                    if (!in_array($tariff->tariff_code, $this->settings->shippingSettings->enabledTariffs, true) ||
+                    if (!in_array($tariff->tariff_code, $settings->shippingSettings->enabledTariffs, true) ||
                         Tariffs::isTariffFromDoor($tariff->tariff_code)) {
                         continue;
                     }
-                    $tariffCalculated['cdek_official_' . $tariff->tariff_code] = $this->formatQuoteData($tariff);
+                    $tariffCalculated['cdek_official_' . $tariff->tariff_code] = self::formatQuoteData($tariff);
                 }
             }
         }
 
-        if (!empty($this->settings->shippingSettings->shippingPvz)) {
-            $locality = CdekHelper::getLocality($this->settings->shippingSettings->shippingPvz);
+        if (!empty($settings->shippingSettings->shippingPvz)) {
+            $locality = CdekHelper::getLocality($settings->shippingSettings->shippingPvz);
             if (CdekHelper::checkLocalityOffice($locality)) {
                 $data   = [
-                    'currency'      => $currencySelected,
+                    'currency'      => $settings->shippingSettings->shippingCurrency,
                     'from_location' => [
                         'country_code' => $locality->country ?? '',
                         'postal_code'  => $locality->postal ?? '',
@@ -111,14 +89,14 @@ class DeliveryCalculator
                     ],
                     'packages'      => $recommendedDimensions,
                 ];
-                $result = $this->cdekApi->calculate($data);
+                $result = CdekApi::calculate($data);
                 foreach ($result->tariff_codes as $tariff) {
-                    if (!in_array($tariff->tariff_code, $this->settings->shippingSettings->enabledTariffs, true) ||
+                    if (!in_array($tariff->tariff_code, $settings->shippingSettings->enabledTariffs, true) ||
                         Tariffs::isTariffFromOffice($tariff->tariff_code)) {
                         continue;
                     }
 
-                    $tariffCalculated['cdek_official_' . $tariff->tariff_code] = $this->formatQuoteData($tariff);
+                    $tariffCalculated['cdek_official_' . $tariff->tariff_code] = self::formatQuoteData($tariff);
                 }
             }
         }
@@ -126,7 +104,7 @@ class DeliveryCalculator
         return $tariffCalculated;
     }
 
-    private static function getRecommendedPackage(array $packages)
+    public static function getRecommendedPackage(array $packages): array
     {
         $settings = SettingsSingleton::getInstance();
         $defaultPackages = [
@@ -176,38 +154,42 @@ class DeliveryCalculator
         ];
     }
 
-    private function getPackage()
+    private static function getPackage(): array
     {
+        $cartProducts = RegistrySingleton::getInstance()->get('cart')->getProducts();
         $packages = [];
-        foreach ($this->cartProducts as $product) {
+        foreach ($cartProducts as $product) {
             if ((int)$product['tax_class_id'] !== 10) {
-                $dimensions = $this->getDimensions($product);
+                $dimensions = self::getDimensions($product);
                 $packages[] = $dimensions;
             }
         }
 
-        return $packages;
+        return self::getRecommendedPackage($packages);
     }
 
-    private function getDimensions(array $product): array
+    private static function getDimensions(array $product): array
     {
+        $settings = SettingsSingleton::getInstance();
+        $registry = RegistrySingleton::getInstance();
         return [
-            'height'   => ((int)$product['height']) ?: (int)$this->settings->dimensionsSettings->dimensionsHeight,
-            'length'   => ((int)$product['length']) ?: (int)$this->settings->dimensionsSettings->dimensionsLength,
-            'weight'   => ((int)($this->weight->convert($product['weight'], $product['weight_class_id'], '2')) /
-                           (int)$product['quantity']) ?: (int)$this->settings->dimensionsSettings->dimensionsWeight,
-            'width'    => ((int)$product['width']) ?: (int)$this->settings->dimensionsSettings->dimensionsWidth,
+            'height'   => ((int)$product['height']) ?: $settings->dimensionsSettings->dimensionsHeight,
+            'length'   => ((int)$product['length']) ?: $settings->dimensionsSettings->dimensionsLength,
+            'weight'   => ((int)((new Weight($registry))->convert($product['weight'], $product['weight_class_id'],
+                                                                     '2')) /
+                           (int)$product['quantity']) ?: $settings->dimensionsSettings->dimensionsWeight,
+            'width'    => ((int)$product['width']) ?: $settings->dimensionsSettings->dimensionsWidth,
             'quantity' => (int)$product['quantity'],
         ];
     }
 
-    private function formatQuoteData(object $tariff): array
+    private static function formatQuoteData(object $tariff): array
     {
         $registry = RegistrySingleton::getInstance();
 
         $title = $registry->get('language')->get('cdek_shipping__tariff_name_' . $tariff->tariff_code) .
-                 $this->getPeriod($tariff);
-        $total = $this->getTotalSum($tariff);
+                 self::getPeriod($tariff);
+        $total = self::getTotalSum($tariff);
 
         return [
             'code'         => 'cdek_official.' .
@@ -221,37 +203,41 @@ class DeliveryCalculator
         ];
     }
 
-    private function getPeriod($calc)
+    private static function getPeriod(object $calc): string
     {
-        $extraDays = (int)$this->settings->shippingSettings->shippingExtraDays;
+        $settings = SettingsSingleton::getInstance();
+        $registry = RegistrySingleton::getInstance();
+        $extraDays = $settings->shippingSettings->shippingExtraDays;
         $min       = $calc->period_min + $extraDays;
         $max       = $calc->period_max + $extraDays;
 
-        return ' (' . $min . '-' . $max . ' ' . $this->registry->get('language')->get('cdek_shipping__days') . ')';
+        return ' (' . $min . '-' . $max . ' ' . $registry->get('language')->get('cdek_shipping__days') . ')';
     }
 
-    private function getTotalSum($result)
+    private static function getTotalSum(object $result): float
     {
+        $settings = SettingsSingleton::getInstance();
         $total = $result->delivery_sum;
 
-        if ($this->settings->priceSettings->priceExtraPrice !== '' &&
-            $this->settings->priceSettings->priceExtraPrice >= 0) {
-            $total = $total + $this->settings->priceSettings->priceExtraPrice;
+        if ($settings->priceSettings->priceExtraPrice !== '' &&
+            $settings->priceSettings->priceExtraPrice >= 0) {
+            $total += $settings->priceSettings->priceExtraPrice;
         }
 
-        if ($this->settings->priceSettings->pricePercentageIncrease !== '' &&
-            $this->settings->priceSettings->pricePercentageIncrease > 0) {
-            $added = $total / 100 * $this->settings->priceSettings->pricePercentageIncrease;
-            $total = $total + $added;
+        if ($settings->priceSettings->pricePercentageIncrease !== '' &&
+            $settings->priceSettings->pricePercentageIncrease > 0) {
+            $added = $total / 100 * $settings->priceSettings->pricePercentageIncrease;
+            $total += $added;
             $total = round($total);
         }
 
-        if ($this->settings->priceSettings->priceFix !== '' && $this->settings->priceSettings->priceFix >= 0) {
-            $total = (int)$this->settings->priceSettings->priceFix;
+        if ($settings->priceSettings->priceFix !== '' && $settings->priceSettings->priceFix >= 0) {
+            $total = (int)$settings->priceSettings->priceFix;
         }
 
-        if ($this->settings->priceSettings->priceFree !== '' && $this->settings->priceSettings->priceFree >= 0) {
-            if ($this->cartProducts[0]['total'] > (float)$this->settings->priceSettings->priceFree) {
+        if ($settings->priceSettings->priceFree !== '' && $settings->priceSettings->priceFree >= 0) {
+            $cartProducts = RegistrySingleton::getInstance()->get('cart')->getProducts();
+            if ($cartProducts[0]['total'] > (float)$settings->priceSettings->priceFree) {
                 $total = 0;
             }
         }
