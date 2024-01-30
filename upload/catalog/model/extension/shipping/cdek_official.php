@@ -1,7 +1,7 @@
 <?php
 
 use CDEK\Contracts\ModelContract;
-use CDEK\DeliveryCalculator;
+use CDEK\Helpers\DeliveryCalculator;
 
 require_once(DIR_SYSTEM . 'library/cdek_official/vendor/autoload.php');
 

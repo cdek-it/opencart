@@ -4,6 +4,7 @@ namespace CDEK;
 
 use CDEK\Helpers\LogHelper;
 use CDEK\Models\Order;
+use CDEK\Transport\HttpClient;
 use JsonException;
 
 class CdekApi
@@ -14,130 +15,147 @@ class CdekApi
     private const PVZ_PATH     = 'deliverypoints';
     private const CALC_PATH    = 'calculator/tarifflist';
     private const WAYBILL_PATH = 'print/orders/';
-    private const API_URL      = 'https://api.cdek.ru/v2/';
-    private const API_TEST_URL = 'https://api.edu.cdek.ru/v2/';
-    private Settings $settings;
 
-    public function __construct(Settings $settings)
+    /**
+     * @throws JsonException
+     */
+    final public static function checkAuth(): bool
     {
-        $this->settings = $settings;
-    }
-
-    final public function checkAuth(): bool
-    {
-        return (bool)$this->getToken();
+        return (bool)self::getToken();
     }
 
     /**
      * @throws JsonException
      */
-    private function getToken(): ?string
+    private static function getToken(): ?string
     {
-        $response = CdekHttpClient::sendRequest($this->getApiUrl(self::TOKEN_PATH),
-                                                'POST',
-                                                http_build_query($this->getAuthData()));
+        $response = HttpClient::sendRequest(self::getApiUrl(self::TOKEN_PATH),
+                                            'POST',
+                                            http_build_query(self::getAuthData()));
         return $response['access_token'] ?? null;
     }
 
-    private function getApiUrl(string $path): string
+    private static function getApiUrl(string $path): string
     {
-        return ($this->testModeActive() ? self::API_TEST_URL : self::API_URL) . $path;
+        return (self::testModeActive() ? Config::API_TEST_URL : Config::API_URL) . $path;
     }
 
-    final public function testModeActive(): bool
+    final public static function testModeActive(): bool
     {
-        return $this->settings->authSettings->authTestMode === 'on';
+        return SettingsSingleton::getInstance()->authSettings->authTestMode === 'on';
     }
 
-    private function getAuthData(): array
+    private static function getAuthData(): array
     {
-        return $this->testModeActive() ? [
+        return self::testModeActive() ? [
             'grant_type'    => 'client_credentials',
             'client_id'     => 'EMscd6r9JnFiQ3bLoyjJY6eM78JrJceI',
             'client_secret' => 'PjLZkKBHEiLK3YsjtNrt3TGNG0ahs3kG',
-            'base_url'      => substr(self::API_TEST_URL, 0, -1),
         ] : [
             'grant_type'    => 'client_credentials',
-            'client_id'     => $this->settings->authSettings->authId,
-            'client_secret' => $this->settings->authSettings->authSecret,
-            'base_url'      => substr(self::API_URL, 0, -1),
+            'client_id'     => SettingsSingleton::getInstance()->authSettings->authId,
+            'client_secret' => SettingsSingleton::getInstance()->authSettings->authSecret,
         ];
     }
 
+    /**
+     * @throws JsonException
+     */
     final public function getOrderByUuid(string $uuid): object
     {
-        return CdekHttpClient::sendCdekRequest($this->getApiUrl(self::ORDERS_PATH . $uuid), 'GET', $this->getToken());
+        return HttpClient::sendCdekRequest(self::getApiUrl(self::ORDERS_PATH . $uuid), 'GET', $this->getToken());
     }
 
+    /**
+     * @throws JsonException
+     */
     final public function getCity(string $city): object
     {
-        return CdekHttpClient::sendCdekRequest($this->getApiUrl(self::REGION_PATH),
-                                               'GET',
-                                               $this->getToken(),
-                                               ['city' => $city, 'size' => 5]);
+        return HttpClient::sendCdekRequest(self::getApiUrl(self::REGION_PATH),
+                                           'GET',
+                                           self::getToken(),
+                                           ['city' => $city, 'size' => 5]);
     }
 
-    final public function getOffices(array $param): object
+    /**
+     * @throws JsonException
+     */
+    final public function getOffices(array $param): string
     {
-        return CdekHttpClient::sendCdekRequest($this->getApiUrl(self::PVZ_PATH),
-                                               'GET',
-                                               $this->getToken(),
-                                               $param,
-                                               true);
+        return HttpClient::sendCdekRequest(self::getApiUrl(self::PVZ_PATH),
+                                           'GET',
+                                           self::getToken(),
+                                           $param,
+                                           true);
     }
 
+    /**
+     * @throws JsonException
+     */
     final public function calculate(array $data): object
     {
-        return CdekHttpClient::sendCdekRequest($this->getApiUrl(self::CALC_PATH), 'POST', $this->getToken(), $data);
+        return HttpClient::sendCdekRequest(self::getApiUrl(self::CALC_PATH), 'POST', self::getToken(), $data);
     }
 
+    /**
+     * @throws JsonException
+     */
     final public function createOrder(Order $order): object
     {
-        return CdekHttpClient::sendCdekRequest($this->getApiUrl(self::ORDERS_PATH),
-                                               'POST',
-                                               $this->getToken(),
-                                               $order->getRequestData());
+        return HttpClient::sendCdekRequest(self::getApiUrl(self::ORDERS_PATH),
+                                           'POST',
+                                           self::getToken(),
+                                           $order->getRequestData());
     }
 
+    /**
+     * @throws JsonException
+     */
     final public function getCityByParam(string $city, string $postcode): object
     {
-        return CdekHttpClient::sendCdekRequest($this->getApiUrl(self::REGION_PATH),
-                                               'GET',
-                                               $this->getToken(),
-                                               ['city' => $city, 'postal_code' => $postcode]);
+        return HttpClient::sendCdekRequest(self::getApiUrl(self::REGION_PATH),
+                                           'GET',
+                                           self::getToken(),
+                                           ['city' => $city, 'postal_code' => $postcode]);
     }
 
+    /**
+     * @throws JsonException
+     */
     final public function deleteOrder(string $uuid): object
     {
-        return CdekHttpClient::sendCdekRequest($this->getApiUrl(self::ORDERS_PATH . $uuid),
-                                               'DELETE',
-                                               $this->getToken());
+        return HttpClient::sendCdekRequest(self::getApiUrl(self::ORDERS_PATH . $uuid),
+                                           'DELETE',
+                                           self::getToken());
     }
 
+    /**
+     * @throws JsonException
+     */
     final public function renderWaybill(string $uuid): void
     {
-        $requestBill = CdekHttpClient::sendCdekRequest($this->getApiUrl(self::WAYBILL_PATH),
-                                                       'POST',
-                                                       $this->getToken(),
-                                                       [
+        $requestBill = HttpClient::sendCdekRequest(self::getApiUrl(self::WAYBILL_PATH),
+                                                   'POST',
+                                                   self::getToken(),
+                                                   [
                                                            'orders'     => [
                                                                'order_uuid' => $uuid,
                                                            ],
                                                            'copy_count' => 2,
                                                        ]);
-        LogHelper::write('RequestBill: ' . json_encode($requestBill));
+        LogHelper::write('RequestBill: ' . json_encode($requestBill, JSON_THROW_ON_ERROR));
 
         sleep(5);
 
-        $result = CdekHttpClient::sendCdekRequest($this->getApiUrl(self::WAYBILL_PATH . $requestBill->entity->uuid),
-                                                  'GET',
-                                                  $this->getToken());
-        LogHelper::write('Result: ' . json_encode($result));
+        $result = HttpClient::sendCdekRequest(self::getApiUrl(self::WAYBILL_PATH . $requestBill->entity->uuid),
+                                              'GET',
+                                              self::getToken());
+        LogHelper::write('Result: ' . json_encode($result, JSON_THROW_ON_ERROR));
 
         header('Content-type', 'application/pdf');
         header('Content-Disposition', 'inline; filename=waybill.pdf');
 
-        echo CdekHttpClient::sendCdekRequest($result->entity->url, 'GET', $this->getToken(), null, true);
+        echo HttpClient::sendCdekRequest($result->entity->url, 'GET', self::getToken(), null, true);
         exit();
     }
 }

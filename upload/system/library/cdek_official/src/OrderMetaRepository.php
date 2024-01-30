@@ -4,7 +4,7 @@ namespace CDEK;
 
 use DB;
 
-class CdekOrderMetaRepository
+class OrderMetaRepository
 {
     public static function create(): void
     {
@@ -14,24 +14,22 @@ class CdekOrderMetaRepository
         $tableExists = $db->query("SHOW TABLES LIKE '{$prefix}cdek_order_meta'")->num_rows > 0;
 
         if (!$tableExists) {
-            $createTableSQL = "
-            CREATE TABLE `{$prefix}cdek_order_meta` (
-                `id` INT(11) NOT NULL AUTO_INCREMENT,
-                `order_id` INT(11) NOT NULL,
-                `cdek_number` VARCHAR(255) NOT NULL,
-                `cdek_uuid` VARCHAR(255) NOT NULL,
-                `name` VARCHAR(255) NOT NULL,
-                `type` VARCHAR(255) NOT NULL,
-                `payment_type` VARCHAR(255) NOT NULL,
-                `to_location` VARCHAR(255) NOT NULL,
-                `pvz_code` VARCHAR(255) NOT NULL,
-                `created` INT(1) DEFAULT 0,
-                `deleted` INT(1) DEFAULT 0,
-                PRIMARY KEY (`id`),
-                UNIQUE KEY `order_id_unique` (`order_id`),
-                FOREIGN KEY (`order_id`) REFERENCES `{$prefix}order`(`order_id`)
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-        ";
+            $createTableSQL = "CREATE TABLE `{$prefix}cdek_order_meta` (
+                                    `id` INT(11) NOT NULL AUTO_INCREMENT,
+                                    `order_id` INT(11) NOT NULL,
+                                    `cdek_number` VARCHAR(255) NOT NULL,
+                                    `cdek_uuid` VARCHAR(255) NOT NULL,
+                                    `name` VARCHAR(255) NOT NULL,
+                                    `type` VARCHAR(255) NOT NULL,
+                                    `payment_type` VARCHAR(255) NOT NULL,
+                                    `to_location` VARCHAR(255) NOT NULL,
+                                    `pvz_code` VARCHAR(255) NOT NULL,
+                                    `created` INT(1) DEFAULT 0,
+                                    `deleted` INT(1) DEFAULT 0,
+                                    PRIMARY KEY (`id`),
+                                    UNIQUE KEY `order_id_unique` (`order_id`),
+                                    FOREIGN KEY (`order_id`) REFERENCES `{$prefix}order`(`order_id`)
+                                ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;";
             $db->query($createTableSQL);
         }
 
@@ -56,13 +54,14 @@ class CdekOrderMetaRepository
         /** @var DB $db */
         $db     = RegistrySingleton::getInstance()->get('db');
         $prefix = DB_PREFIX;
-        $db->query("INSERT INTO {$prefix}cdek_order_meta SET order_id = " .
-                   $orderId .
-                   ", pvz_code = '" .
-                   $db->escape($pvzCode) .
-                   "'" .
-                   " ON DUPLICATE KEY UPDATE " .
-                   "pvz_code = VALUES(pvz_code)");
+        $db->query(sprintf("INSERT INTO %scdek_order_meta 
+                                        (order_id, pvz_code) 
+                                        VALUES (%u, '%s') 
+                                        ON DUPLICATE KEY UPDATE
+                                        pvz_code = VALUES(pvz_code)",
+                           $prefix,
+                           $orderId,
+                           $db->escape($pvzCode)));
     }
 
     public static function getOrder(int $orderId): ?array

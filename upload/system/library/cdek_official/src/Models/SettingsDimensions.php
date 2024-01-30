@@ -8,19 +8,10 @@ use RuntimeException;
 
 class SettingsDimensions extends ValidatableSettingsContract
 {
-    const PARAM_ID
-        = [
-            'cdek_official_dimensions__length'      => 'dimensionsLength',
-            'cdek_official_dimensions__width'       => 'dimensionsWidth',
-            'cdek_official_dimensions__height'      => 'dimensionsHeight',
-            'cdek_official_dimensions__weight'      => 'dimensionsWeight',
-            'cdek_official_dimensions__use_default' => 'dimensionsUseDefault',
-        ];
-    public $dimensionsLength;
-    public $dimensionsWidth;
-    public $dimensionsHeight;
-    public $dimensionsWeight;
-    public $dimensionsUseDefault;
+    public int $dimensionsLength = 0;
+    public int $dimensionsWidth = 0;
+    public int $dimensionsHeight = 0;
+    public int $dimensionsWeight = 0;
 
     /**
      * @throws Exception

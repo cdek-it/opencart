@@ -2,13 +2,13 @@
 
 namespace CDEK\Models;
 
-use CDEK\CdekConfig;
+use CDEK\Config;
 use CDEK\CdekHelper;
-use CDEK\Settings;
+use CDEK\SettingsSingleton;
 
 class Order
 {
-    private Settings $settings;
+    private SettingsSingleton $settings;
     private $orderOC;
     private $products;
     private $model_catalog_product;
@@ -18,7 +18,7 @@ class Order
     private int $weightPackage = 0;
 
 
-    public function __construct(Settings $settings, array $orderData)
+    public function __construct(SettingsSingleton $settings, array $orderData)
     {
         $this->settings              = $settings;
         $this->orderOC               = $orderData['orderOC'];
@@ -34,7 +34,7 @@ class Order
         $order        = $this->getOrderData();
         $packageOrder = $this->getOrderPackage();
         $data         = [
-            'developer_key' => CdekConfig::DEVELOPER_KEY,
+            'developer_key' => Config::DEVELOPER_KEY,
             'packages'      => [
                 [
                     'number' => "package_order_{$this->orderOC['order_id']}",

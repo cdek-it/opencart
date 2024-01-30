@@ -1,10 +1,10 @@
 <?php
 
-namespace CDEK;
+namespace CDEK\Transport;
 
 use JsonException;
 
-class CdekHttpClient
+class HttpClient
 {
     /**
      * @throws JsonException
@@ -48,6 +48,6 @@ class CdekHttpClient
         $response = curl_exec($ch);
         curl_close($ch);
 
-        return $raw ? $response : json_decode($response, false, 512, JSON_THROW_ON_ERROR);
+        return $raw ? $response : json_decode($response, true, 512, JSON_THROW_ON_ERROR);
     }
 }

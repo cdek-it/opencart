@@ -53,7 +53,7 @@ class CreateOrder
                                       '' . ', ' . $order->entity->to_location->address,
                     'pvz_code'     => $order->entity->delivery_point ?? '',
                 ];
-                CdekOrderMetaRepository::insertOrderMeta($data, $orderId);
+                OrderMetaRepository::insertOrderMeta($data, $orderId);
                 LogHelper::write('Order validated');
                 echo json_encode(['state' => true, 'data' => $data]);
             }
@@ -114,7 +114,7 @@ class CreateOrder
 
     protected function getData($orderId): array
     {
-        $query = CdekOrderMetaRepository::getOrder($this->registry->get('db'), $orderId);
+        $query = OrderMetaRepository::getOrder($this->registry->get('db'), $orderId);
         $pvz   = $this->getPvz($query);
         $this->registry->get('load')->model('sale/order');
         $this->registry->get('load')->model('catalog/product');

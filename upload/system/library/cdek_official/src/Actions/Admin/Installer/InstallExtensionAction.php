@@ -2,7 +2,7 @@
 
 namespace CDEK\Actions\Admin\Installer;
 
-use CDEK\CdekOrderMetaRepository;
+use CDEK\OrderMetaRepository;
 use CDEK\Helpers\EventsHelper;
 use CDEK\Helpers\LogHelper;
 use CDEK\RegistrySingleton;
@@ -18,6 +18,6 @@ class InstallExtensionAction
         LogHelper::write('install start');
 
         EventsHelper::registerEvents();
-        CdekOrderMetaRepository::create();
+        OrderMetaRepository::create();
     }
 }

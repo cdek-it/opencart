@@ -8,19 +8,11 @@ use RuntimeException;
 
 class SettingsAuth extends ValidatableSettingsContract
 {
-    const PARAM_ID
-        = [
-            'cdek_official_auth_id'         => 'authId',
-            'cdek_official_auth_secret'     => 'authSecret',
-            'cdek_official_api_key'         => 'apiKey',
-            'cdek_official_map_lang_code'   => 'mapLangCode',
-            'cdek_official_auth__test_mode' => 'authTestMode',
-        ];
-    public $authId;
-    public $authSecret;
-    public $apiKey;
-    public $mapLangCode;
-    public $authTestMode;
+    public string $authId = '';
+    public string $authSecret = '';
+    public string $apiKey = '';
+    public string $mapLangCode = 'rus';
+    public string $authTestMode = 'off';
 
     /**
      * @throws Exception

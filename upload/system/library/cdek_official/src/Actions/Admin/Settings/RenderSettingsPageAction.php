@@ -3,14 +3,19 @@
 namespace CDEK\Actions\Admin\Settings;
 
 use CDEK\App;
-use CDEK\CdekConfig;
+use CDEK\CdekApi;
 use CDEK\CdekHelper;
+use CDEK\Config;
+use CDEK\Models\Currency;
+use CDEK\Models\Tariffs;
 use CDEK\RegistrySingleton;
+use CDEK\SettingsSingleton;
 use Document;
 use Exception;
 use Language;
 use Loader;
 use Url;
+use Session;
 
 class RenderSettingsPageAction
 {
@@ -34,53 +39,52 @@ class RenderSettingsPageAction
 
         $document->setTitle($language->get('heading_title'));
         $document->addStyle('view/stylesheet/cdek_official/settings_page.css');
-        $document->addScript('//cdn.jsdelivr.net/npm/@cdek-it/widget@' . CdekConfig::MAP_VERSION);
+        $document->addScript('//cdn.jsdelivr.net/npm/@cdek-it/widget@' . Config::MAP_VERSION);
 
         $loader->model('setting/setting');
 
-        $app = new App([], DIR_APPLICATION);
-        $app->handleAjaxRequest();
-        $app->run();
+        /** @var Session $session */
+        $session = $registry->get('session');
 
-        $app->checkState($app->data);
-        $userToken = $registry->get('session')->data['user_token'];
+        $userToken = $session->data['user_token'];
 
-        $app->data['action']      = $url->link('extension/shipping/cdek_official/store', "user_token=$userToken", true);
-        $app->data['map_service'] = $url->link("extension/shipping/cdek_official/map&user_token=$userToken", '', true);
-        $app->data['cancel']      = $url->link('extension/shipping', "user_token=$userToken", true);
+        $settings = SettingsSingleton::getInstance()->__serialize();
 
-        $app->data['header']      = $loader->controller('common/header');
-        $app->data['column_left'] = $loader->controller('common/column_left');
-        $app->data['footer']      = $loader->controller('common/footer');
+        $data = [
+            'success'       => $session->data['success'] ?? '',
+            'error_warning' => $session->data['error_warning'] ?? '',
 
-        $app->data['breadcrumbs'] = [
-            [
-                'text' => $language->get('text_home'),
-                'href' => $url->link('common/dashboard', "user_token=$userToken", true),
+            'action'      => $url->link('extension/shipping/cdek_official/store', "user_token=$userToken", true),
+            'map_service' => $url->link("extension/shipping/cdek_official/map&user_token=$userToken", '', true),
+            'cancel'      => $url->link('extension/shipping', "user_token=$userToken", true),
+
+            'header'      => $loader->controller('common/header'),
+            'column_left' => $loader->controller('common/column_left'),
+            'footer'      => $loader->controller('common/footer'),
+
+            'breadcrumbs' => [
+                [
+                    'text' => $language->get('text_home'),
+                    'href' => $url->link('common/dashboard', "user_token=$userToken", true),
+                ],
+                [
+                    'text' => $language->get('text_extension'),
+                    'href' => $url->link('marketplace/extension', "user_token=$userToken&type=shipping", true),
+                ],
+                [
+                    'text' => $language->get('heading_title'),
+                    'href' => $url->link('extension/shipping/cdek_official', "user_token=$userToken", true),
+                ],
             ],
-            [
-                'text' => $language->get('text_extension'),
-                'href' => $url->link('marketplace/extension', "user_token=$userToken&type=shipping", true),
-            ],
-            [
-                'text' => $language->get('heading_title'),
-                'href' => $url->link('extension/shipping/cdek_official', "user_token=$userToken", true),
-            ],
+
+            'tariffs' => Tariffs::getTariffList(),
+            'currencies' => Currency::listCurrencies(),
+            'auth_status' => CdekApi::checkAuth(),
         ];
 
-        $app->data['city'] = $app->data['map_city'] ?? 'Москва';
+        unset($session->data['success'], $session->data['error_warning']);
 
-        $officeLocality                     = CdekHelper::getLocality($app->settings->shippingSettings->shippingPvz);
-        $app->data['office_code_selected']  = is_object($officeLocality) && property_exists($officeLocality, 'code') ?
-            $officeLocality->code : null;
-        $addressLocality
-                                            = CdekHelper::getLocality($app->settings->shippingSettings->shippingCityAddress);
-        $app->data['address_code_selected'] = is_object($addressLocality) &&
-                                              property_exists($addressLocality, 'formatted') ?
-            $addressLocality->formatted : null;
-        $app->data['apikey']                = $app->settings->authSettings->apiKey;
-        $app->data['map_lang']              = $app->settings->authSettings->mapLangCode ?? 'rus';
-
-        $registry->get('response')->setOutput($loader->view('extension/shipping/cdek_official/settings', $app->data));
+        $registry->get('response')->setOutput($loader->view('extension/shipping/cdek_official/settings',
+                                                            array_merge($data, $settings)));
     }
 }

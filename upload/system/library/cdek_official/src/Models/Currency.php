@@ -4,47 +4,23 @@ namespace CDEK\Models;
 
 class Currency
 {
-    private array $data
-        = [
+    private const DATA = [
             [
-                'code'   => 1,
+                'code'   => 'RUB',
                 'key'    => 'cdek_shipping__currency_rub',
-                'select' => true
             ],
             [
-                'code'   => 3,
+                'code'   => 'USD',
                 'key'    => 'cdek_shipping__currency_usd',
-                'select' => false
             ],
             [
-                'code'   => 4,
+                'code'   => 'EUR',
                 'key'    => 'cdek_shipping__currency_eur',
-                'select' => false
             ],
         ];
 
-    public function getCurrency(): array
+    public static function listCurrencies(): array
     {
-        return $this->data;
-    }
-
-    public function selectCurrency(int $code): void
-    {
-        for ($i = 0, $iMax = count($this->data); $i < $iMax; $i++) {
-            $this->data[$i]['select'] = false;
-            if ($this->data[$i]['code'] === $code) {
-                $this->data[$i]['select'] = true;
-            }
-        }
-    }
-
-    public function getSelectedCurrency(): string
-    {
-        foreach ($this->data as $currency) {
-            if ($currency['select']) {
-                return (string)$currency['code'];
-            }
-        }
-        return '1';
+        return self::DATA;
     }
 }

@@ -9,7 +9,7 @@ class CdekHelper
     public static function getLocality($locality)
     {
         $shippingOfficeJson = html_entity_decode($locality);
-        return json_decode($shippingOfficeJson);
+        return json_decode($shippingOfficeJson, true, 512, JSON_THROW_ON_ERROR);
     }
 
     public static function checkLocalityAddress($locality): bool

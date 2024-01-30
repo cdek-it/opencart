@@ -1,8 +1,12 @@
 <?php
 
-namespace CDEK;
+namespace CDEK\Helpers;
 
+use CDEK\CdekApi;
+use CDEK\CdekHelper;
 use CDEK\Models\Tariffs;
+use CDEK\RegistrySingleton;
+use CDEK\SettingsSingleton;
 
 class DeliveryCalculator
 {
@@ -19,9 +23,7 @@ class DeliveryCalculator
         $this->cartProducts = $cartProducts;
         $registry           = RegistrySingleton::getInstance();
         $registry->get('load')->language('extension/shipping/cdek_official');
-        $this->settings = new Settings;
-        $this->settings->init($modelSettings);
-        $this->cdekApi = new CdekApi($this->settings);
+        $this->cdekApi = new CdekApi;
         $this->address = $address;
         $this->weight  = $weight;
         $this->link    = $registry->get('link');
@@ -41,13 +43,13 @@ class DeliveryCalculator
         return [
             'code'       => 'cdek_official',
             'title'      => $registry->get('language')->get('text_title'),
-            'quote'      => $quoteData,
+            'quote'      => self::calcuateQuote(),
             'sort_order' => $registry->get('config')->get('shipping_cdek_official_sort_order'),
             'error'      => false,
         ];
     }
 
-    private function _getQuote()
+    private static function calcuateQuote()
     {
         $currency  = $this->settings->shippingSettings->currency;
         $quoteData = [];
@@ -124,14 +126,54 @@ class DeliveryCalculator
         return $tariffCalculated;
     }
 
-    private function getRecommendedPackage(array $packages)
+    private static function getRecommendedPackage(array $packages)
     {
-        return CdekHelper::calculateRecomendedPackage($packages, [
-            'length' => (int)$this->settings->dimensionsSettings->dimensionsLength,
-            'width'  => (int)$this->settings->dimensionsSettings->dimensionsWidth,
-            'height' => (int)$this->settings->dimensionsSettings->dimensionsHeight,
-            'weight' => (int)$this->settings->dimensionsSettings->dimensionsWeight,
-        ]);
+        $settings = SettingsSingleton::getInstance();
+        $defaultPackages = [
+            $settings->dimensionsSettings->dimensionsLength,
+            $settings->dimensionsSettings->dimensionsWidth,
+            $settings->dimensionsSettings->dimensionsHeight,
+        ];
+        $lengthList = [];
+        $widthList  = [];
+        $heightList = [];
+
+        $weightTotal = 0;
+        foreach ($packages as $product) {
+            $weight = $product['weight'];
+            if ($weight === 0) {
+                $weight = $settings->dimensionsSettings->dimensionsWeight;
+            }
+            $weightTotal += $product['quantity'] * $weight;
+
+            $packageProduct = [$product['length'], $product['width'], $product['height']];
+            sort($packageProduct);
+
+            if ($product['quantity'] > 1) {
+                $packageProduct[0] = $product['quantity'] * $packageProduct[0];
+                sort($packageProduct);
+            }
+
+            $lengthList[] = $packageProduct[0];
+            $heightList[] = $packageProduct[1];
+            $widthList[]  = $packageProduct[2];
+        }
+
+        sort($defaultPackages);
+        $lengthList[] = (int)$defaultPackages[0];
+        $widthList[]  = (int)$defaultPackages[1];
+        $heightList[] = (int)$defaultPackages[2];
+
+        rsort($lengthList);
+        rsort($widthList);
+        rsort($heightList);
+
+        return [
+            'length' => $lengthList[0],
+            'width'  => $widthList[0],
+            'height' => $heightList[0],
+            'weight' => $weightTotal,
+        ];
     }
 
     private function getPackage()

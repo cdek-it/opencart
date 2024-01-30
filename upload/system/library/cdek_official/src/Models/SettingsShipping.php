@@ -8,33 +8,11 @@ use RuntimeException;
 
 class SettingsShipping extends ValidatableSettingsContract
 {
-    protected const PARAM_ID
-        = [
-
-            'cdek_official_shipping__many_packages' => 'shippingManyPackages',
-            'cdek_official_shipping__extra_days'    => 'shippingExtraDays',
-            'cdek_official_shipping__city'          => 'shippingCity',
-            'cdek_official_shipping__city_code'     => 'shippingCityCode',
-            'cdek_official_shipping__city_address'  => 'shippingCityAddress',
-            'cdek_official_shipping__pvz'           => 'shippingPvz',
-            'cdek_official_shipping__pvz_code'      => 'shippingPvzCode',
-        ];
-    public array $enabledTariffs;
-    public array $shippingCurrencies;
-    public $shippingManyPackages;
-    public $shippingExtraDays;
-    public $shippingCity;
-    public $shippingCityCode;
-    public $shippingCityAddress;
-    public $shippingPvz;
-    public $shippingPvzCode;
-    public Currency $currency;
-
-    public function __construct()
-    {
-        $this->currency       = new Currency;
-        $this->enabledTariffs = [];
-    }
+    public array $enabledTariffs = [];
+    public string $shippingCurrency = 'RUB';
+    public int $shippingExtraDays = 0;
+    public string $shippingCityAddress = '';
+    public string $shippingPvz = '';
 
     /**
      * @throws Exception
@@ -46,10 +24,12 @@ class SettingsShipping extends ValidatableSettingsContract
         }
     }
 
-    final public function init(array $post): void
+    public function __construct(array $data = null)
     {
-        $this->setTariffs($post);
-        parent::init($post);
+        if($data !== null){
+            $this->setTariffs($data);
+        }
+        parent::__construct($data);
     }
 
     final public function setTariffs(array $input): void

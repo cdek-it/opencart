@@ -40,8 +40,8 @@ class App
         $this->db             = $this->registry->get('db');
         $this->load->model('setting/setting');
         $this->modelSetting = $this->registry->get('model_setting_setting');
-        $this->settings     = new Settings;
-        $this->cdekApi      = new CdekApi($this->settings);
+        $this->settings     = new SettingsSingleton;
+        $this->cdekApi      = new CdekApi();
     }
 
     public function run(): void
@@ -52,37 +52,8 @@ class App
 
     public function init(): void
     {
-        if ($this->requestMethod === 'POST') {
-            $postSettings = $this->request->post;
-            $this->settings->init($postSettings);
-            $this->settings->updateData($this->data);
-            $this->modelSetting->editSetting('cdek_official', $postSettings);
-            $isAuth                    = $this->cdekApi->checkAuth();
-            $this->data['status_auth'] = $isAuth;
-            if (!$isAuth) {
-                $redirectUrl = $this->url->link('extension/shipping/cdek_official',
-                                                "user_token=$this->userToken",
-                                                true);
-                $this->registry->get('response')->redirect($redirectUrl);
-            }
-            try {
-                $this->settings->validate();
-                $this->session->data['success'] = $this->language->get('text_success');
-            } catch (Exception $exception) {
-                LogHelper::write('Validation failed: ' .
-                                 $this->language->get($exception->getMessage()));
-                $this->session->data['error_warning'] = $this->language->get('error_permission') .
-                                                        $this->language->get($exception->getMessage());
-            }
-
-            $redirectUrl = $this->url->link('extension/shipping/cdek_official', "user_token=$this->userToken", true);
-            $this->registry->get('response')->redirect($redirectUrl);
-        }
-
-        $this->settings->init($this->modelSetting->getSetting('cdek_official'));
-        $isAuth                    = $this->cdekApi->checkAuth();
-        $this->data['status_auth'] = $isAuth;
-        $this->settings->updateData($this->data);
+        $this->data = $this->settings->__serialize();
+        $this->data['status_auth'] = $this->cdekApi->checkAuth();
 
         $this->data['map_city'] = 'Москва';
         if (!empty($this->settings->shippingSettings->shippingPvz)) {
@@ -118,16 +89,14 @@ class App
         }
         $requestAction = $this->request->post['cdekRequest'] ?? $this->request->get['cdekRequest'];
 
-        $this->settings->init($this->modelSetting->getSetting('cdek_official'));
-
         if ($requestAction === 'createOrder') {
             $createOrder = new CreateOrder($this->registry, $this->settings, $this->cdekApi);
             $createOrder->create();
         }
 
         if ($requestAction === 'deleteOrder') {
-            $order = CdekOrderMetaRepository::getOrder($this->db, (int)$this->request->post['order_id']);
-            CdekOrderMetaRepository::deleteOrder((int)$this->request->post['order_id']);
+            $order = OrderMetaRepository::getOrder($this->db, (int)$this->request->post['order_id']);
+            OrderMetaRepository::deleteOrder((int)$this->request->post['order_id']);
             $response = $this->cdekApi->deleteOrder($this->request->post['uuid']);
             if (CdekApiValidate::deleteOrder($response)) {
                 $message = 'Order successfully deleted';

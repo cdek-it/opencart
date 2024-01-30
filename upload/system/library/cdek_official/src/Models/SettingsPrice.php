@@ -8,19 +8,10 @@ use RuntimeException;
 
 class SettingsPrice extends ValidatableSettingsContract
 {
-    const PARAM_ID
-        = [
-            'cdek_official_price__extra_price'         => 'priceExtraPrice',
-            'cdek_official_price__percentage_increase' => 'pricePercentageIncrease',
-            'cdek_official_price__fix'                 => 'priceFix',
-            'cdek_official_price__free'                => 'priceFree',
-            'cdek_official_price__insurance'           => 'priceInsurance',
-        ];
-    public $priceExtraPrice;
-    public $pricePercentageIncrease;
-    public $priceFix;
-    public $priceFree;
-    public $priceInsurance;
+    public float $priceExtraPrice = 0;
+    public float $pricePercentageIncrease = 0;
+    public float $priceFix = 0;
+    public float $priceFree = 0;
 
     /**
      * @throws Exception

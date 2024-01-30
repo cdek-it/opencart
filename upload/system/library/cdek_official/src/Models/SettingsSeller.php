@@ -9,33 +9,18 @@ use RuntimeException;
 
 class SettingsSeller extends ValidatableSettingsContract
 {
-    const PARAM_ID
-        = [
-            'cdek_official_seller_international_shipping_checkbox' => 'sellerInternationalShippingCheckbox',
-            'cdek_official_shipping_seller_name'                   => 'shippingSellerName',
-            'cdek_official_shipping_seller_phone'                  => 'shippingSellerPhone',
-            'cdek_official_seller__true_seller_address'            => 'sellerTrueSellerAddress',
-            'cdek_official_seller__shipper'                        => 'sellerShipper',
-            'cdek_official_seller__shipper_address'                => 'sellerShipperAddress',
-            'cdek_official_seller__passport_series'                => 'sellerPassportSeries',
-            'cdek_official_seller__passport_number'                => 'sellerPassportNumber',
-            'cdek_official_seller__passport_issue_date'            => 'sellerPassportIssueDate',
-            'cdek_official_seller__passport_issuing_authority'     => 'sellerPassportIssuingAuthority',
-            'cdek_official_seller__tin'                            => 'sellerTin',
-            'cdek_official_seller__date_of_birth'                  => 'sellerDateOfBirth',
-        ];
-    public $sellerInternationalShippingCheckbox;
-    public $shippingSellerName;
-    public $shippingSellerPhone;
-    public $sellerTrueSellerAddress;
-    public $sellerShipper;
-    public $sellerShipperAddress;
-    public $sellerPassportSeries;
-    public $sellerPassportNumber;
-    public $sellerPassportIssueDate;
-    public $sellerPassportIssuingAuthority;
-    public $sellerTin;
-    public $sellerDateOfBirth;
+    public string $sellerInternationalShippingCheckbox = 'no';
+    public string $shippingSellerName = '';
+    public string $shippingSellerPhone = '';
+    public string $sellerTrueSellerAddress = '';
+    public string $sellerShipper = '';
+    public string $sellerShipperAddress = '';
+    public string $sellerPassportSeries = '';
+    public string $sellerPassportNumber = '';
+    public string $sellerPassportIssueDate = '';
+    public string $sellerPassportIssuingAuthority = '';
+    public string $sellerTin = '';
+    public string $sellerDateOfBirth = '';
 
     /**
      * @throws Exception

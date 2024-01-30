@@ -10,9 +10,9 @@ use CDEK\Actions\Admin\Settings\RenderSettingsPageAction;
 use CDEK\Actions\Admin\Settings\SaveSettingsAction;
 use CDEK\CdekApi;
 use CDEK\CdekHelper;
-use CDEK\CdekOrderMetaRepository;
+use CDEK\OrderMetaRepository;
 use CDEK\Contracts\ControllerContract;
-use CDEK\Settings;
+use CDEK\SettingsSingleton;
 use Exception;
 
 class AdminController extends ControllerContract
@@ -57,13 +57,13 @@ class AdminController extends ControllerContract
             $dataOrderForm['cdek_order_deleted'] = false;
             $dataOrderForm['cdek_order_created'] = false;
             $dataOrderForm['order_id']           = $orderId;
-            $orderDeleted                        = CdekOrderMetaRepository::isOrderDeleted($orderId);
-            $orderCreated                        = CdekOrderMetaRepository::isOrderCreated($orderId);
+            $orderDeleted                        = OrderMetaRepository::isOrderDeleted($orderId);
+            $orderCreated                        = OrderMetaRepository::isOrderCreated($orderId);
 
             //created
             if ($orderCreated['created'] && !$orderDeleted['deleted']) {
                 $orderMetaData = $orderCreated['row'];
-                $settings      = new Settings;
+                $settings      = new SettingsSingleton;
                 $settings->init($this->model_setting_setting->getSetting('cdek_official'));
                 $cdekApi = new CdekApi($settings);
                 $order   = $cdekApi->getOrderByUuid($orderMetaData['cdek_uuid']);
@@ -73,7 +73,7 @@ class AdminController extends ControllerContract
                         $errorsCode[$errors->code] = $errors->message;
                     }
                     if (array_key_exists('v2_entity_not_found', $errorsCode)) {
-                        CdekOrderMetaRepository::deleteOrder( $orderId);
+                        OrderMetaRepository::deleteOrder($orderId);
                         $remoteDelete = true;
                     } else {
                         $invalidOrder = true;
@@ -96,8 +96,8 @@ class AdminController extends ControllerContract
                                               $order->entity->to_location->address,
                             'pvz_code'     => $order->entity->shipment_point ?? '',
                         ];
-                        CdekOrderMetaRepository::insertOrderMeta($param, $dataOrderForm['order_id']);
-                        $orderMetaData = CdekOrderMetaRepository::getOrder($this->db, $orderId);
+                        OrderMetaRepository::insertOrderMeta($param, $dataOrderForm['order_id']);
+                        $orderMetaData = OrderMetaRepository::getOrder($this->db, $orderId);
                     }
                     $dataOrderForm = array_merge($dataOrderForm, $orderMetaData);
                 }
@@ -108,7 +108,7 @@ class AdminController extends ControllerContract
                 if ((!$orderCreated['created'] && $orderDeleted['deleted']) || $remoteDelete) {
                     $dataOrderForm['cdek_order_deleted'] = true;
                     $dataOrderForm['cdek_order_created'] = false;
-                    $data                                = CdekOrderMetaRepository::getOrder($this->db, $orderId);
+                    $data                                = OrderMetaRepository::getOrder($this->db, $orderId);
                     $dataOrderForm                       = array_merge($dataOrderForm, $data->rows[0]);
                 }
             } else {
@@ -116,7 +116,7 @@ class AdminController extends ControllerContract
             }
 
             $recommendedDimensions = $this->getRecommendedPackage($orderId);
-            $orderMeta             = CdekOrderMetaRepository::getOrder($this->db, $orderId);
+            $orderMeta             = OrderMetaRepository::getOrder($this->db, $orderId);
             $this->load->model('sale/order');
             $dataOrderForm['order_direction'] = CdekHelper::getTariffDirectionByOrderId($this->model_sale_order,
                                                                                         $orderId);

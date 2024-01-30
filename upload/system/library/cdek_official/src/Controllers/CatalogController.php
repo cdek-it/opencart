@@ -3,11 +3,11 @@
 namespace CDEK\Controllers;
 
 use CDEK\CdekApi;
-use CDEK\CdekConfig;
-use CDEK\CdekOrderMetaRepository;
+use CDEK\Config;
+use CDEK\OrderMetaRepository;
 use CDEK\Contracts\ControllerContract;
 use CDEK\Models\Tariffs;
-use CDEK\Settings;
+use CDEK\SettingsSingleton;
 use Throwable;
 
 class CatalogController extends ControllerContract
@@ -18,7 +18,7 @@ class CatalogController extends ControllerContract
         $this->load->model('setting/setting');
         $this->load->language('extension/shipping/cdek_official');
         $param    = $this->model_setting_setting->getSetting('cdek_official');
-        $settings = new Settings;
+        $settings = new SettingsSingleton;
         $settings->init($param);
         $cdekApi = new CdekApi($settings);
 
@@ -66,7 +66,7 @@ class CatalogController extends ControllerContract
                 if (!empty($this->request->post['cdek_official_pvz_code'])) {
                     $this->load->model('setting/setting');
                     $param    = $this->model_setting_setting->getSetting('cdek_official');
-                    $settings = new Settings;
+                    $settings = new SettingsSingleton;
                     $settings->init($param);
                     $this->session->data['cdek_official_pvz_code'] = $this->request->post['cdek_official_pvz_code'];
                 } else {
@@ -83,7 +83,7 @@ class CatalogController extends ControllerContract
     {
         if (isset($this->session->data['order_id']) && isset($this->session->data['cdek_official_pvz_code'])) {
             try {
-                CdekOrderMetaRepository::insertPvzCode(
+                OrderMetaRepository::insertPvzCode(
                                                        $this->session->data['order_id'],
                                                        $this->session->data['cdek_official_pvz_code']);
 
@@ -96,7 +96,7 @@ class CatalogController extends ControllerContract
     public function addCheckoutHeaderScript(&$route, &$data)
     {
         $data['scripts'][] = 'catalog/view/javascript/shipping/cdek_official.js';
-        $data['scripts'][] = '//cdn.jsdelivr.net/npm/@cdek-it/widget@' . CdekConfig::MAP_VERSION;
+        $data['scripts'][] = '//cdn.jsdelivr.net/npm/@cdek-it/widget@' . Config::MAP_VERSION;
     }
 
     private function searchAndReplace(&$output, $search, $replace)

@@ -3,9 +3,10 @@
 namespace CDEK\Actions\Admin\Settings;
 
 use CDEK\CdekApi;
+use CDEK\Config;
 use CDEK\Helpers\LogHelper;
 use CDEK\RegistrySingleton;
-use CDEK\Settings;
+use CDEK\SettingsSingleton;
 use Exception;
 
 class SaveSettingsAction
@@ -16,7 +17,7 @@ class SaveSettingsAction
 
         $redirectUrl = $registry->get('url')
                                 ->link(
-                                    'extension/shipping/cdek_official',
+                                    'extension/shipping/' . Config::DELIVERY_NAME,
                                     'user_token=' . $registry->get('session')->data['user_token'],
                                     true,
                                 );
@@ -29,13 +30,11 @@ class SaveSettingsAction
             return;
         }
 
-        $modelSetting = $registry->get('model_setting_setting');
-        $settings     = new Settings;
-        $settings->init($_POST);
-        $cdekApi      = new CdekApi($settings);
+        $registry->get('load')->model('setting/setting');
 
-        $modelSetting->editSetting('cdek_official', $_POST);
-        if (!$cdekApi->checkAuth()){
+        $settings     = SettingsSingleton::getInstance($_POST);
+
+        if (!CdekApi::checkAuth()){
             $response->redirect($redirectUrl);
             return;
         }
@@ -46,6 +45,7 @@ class SaveSettingsAction
         $language = $registry->get('language');
 
         try {
+            $settings->save();
             $settings->validate();
             $session->data['success'] = $language->get('text_success');
         } catch (Exception $exception) {
