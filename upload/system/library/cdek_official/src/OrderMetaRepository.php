@@ -49,7 +49,7 @@ class OrderMetaRepository
         }
     }
 
-    public static function insertPvzCode(int $orderId, string $pvzCode): void
+    public static function insertOfficeCode(int $orderId, string $pvzCode): void
     {
         /** @var DB $db */
         $db     = RegistrySingleton::getInstance()->get('db');

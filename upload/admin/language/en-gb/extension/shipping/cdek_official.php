@@ -90,9 +90,6 @@ $_['cdek_order_call_courier_name']                     = 'Call a courier';
 $_['cdek_order_delete_order_name']                     = 'Delete order';
 
 $_['cdek_shipping__currency']     = 'Currency';
-$_['cdek_shipping__currency_rub'] = 'RUB';
-$_['cdek_shipping__currency_usd'] = 'USD';
-$_['cdek_shipping__currency_eur'] = 'EUR';
 
 $_['cdek_shipping__tariffs_name']                        = 'Edit tariffs name';
 $_['cdek_shipping__tariff_plug']                         = 'Name tariff plug';

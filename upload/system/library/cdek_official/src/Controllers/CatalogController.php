@@ -2,110 +2,65 @@
 
 namespace CDEK\Controllers;
 
-use CDEK\CdekApi;
+use CDEK\Actions\Catalog\Checkout\GetFrontendParamsAction;
+use CDEK\Actions\Catalog\Checkout\GetOfficesAction;
+use CDEK\Actions\Catalog\Checkout\CacheOfficeCodeAction;
+use CDEK\Actions\Catalog\Checkout\SaveOfficeCodeAction;
+use CDEK\Actions\Catalog\Checkout\ValidateOfficeCodeAction;
 use CDEK\Config;
-use CDEK\OrderMetaRepository;
 use CDEK\Contracts\ControllerContract;
-use CDEK\Models\Tariffs;
-use CDEK\SettingsSingleton;
-use Throwable;
+use JsonException;
 
 class CatalogController extends ControllerContract
 {
-
-    public function index(): void
+    /**
+     * @throws JsonException
+     */
+    final public function map(): void
     {
-        $this->load->model('setting/setting');
-        $this->load->language('extension/shipping/cdek_official');
-        $param    = $this->model_setting_setting->getSetting('cdek_official');
-        $settings = new SettingsSingleton;
-        $settings->init($param);
-        $cdekApi = new CdekApi($settings);
-
-        $param = $this->request->get;
-        if (isset($this->request->get['cdekRequest']) && $this->request->get['cdekRequest'] === 'adminMap') {
-            $param['city_code']    = null;
-            $param['is_reception'] = true;
-            $this->response->setOutput($cdekApi->getOffices($param));
-        } else {
-            try {
-                $city               = $cdekApi->getCity($this->session->data['shipping_address']['city']);
-                $param['city_code'] = $city[0]->code;
-                $offices            = $cdekApi->getOffices($param);
-                if (empty($offices)) {
-                    throw new \RuntimeException($this->language->get('cdek_shipping__office_not_found'));
-                }
-                $this->response->setOutput($cdekApi->getOffices($param));
-            } catch (Throwable $e) {
-                $this->response->addHeader('HTTP/1.1 500 Internal Server Error');
-                $this->response->setOutput(json_encode(array('message' => $e->getMessage())));
-            }
-        }
+        (new GetOfficesAction)();
     }
 
-    public function cdek_official_checkout_checkout_after(&$route, &$data, &$output)
+    /** @noinspection PhpUnused */
+    final public function cacheOfficeCode(): void
     {
-        //for cdek_official_pvz_code add session
-        $postParamForTransfer
-                = "data: $('#collapse-shipping-method input[type=\'radio\']:checked, #collapse-shipping-method textarea')";
-        $postParamForTransferEdited
-                = "data: $('#collapse-shipping-method input[type=\'radio\']:checked, #collapse-shipping-method textarea, #collapse-shipping-method input[type=\'hidden\']')";
-        $output = str_replace($postParamForTransfer, $postParamForTransferEdited, $output);
+        (new CacheOfficeCodeAction)();
     }
 
-    public function cdek_official_checkout_shipping_controller_after(&$route, &$data, &$output)
+    /**
+     * @noinspection PhpUnused
+     * @throws JsonException
+     */
+    final public function validateOfficeCode(): ?bool
     {
-        $shippingMethod                                  = $this->request->post['shipping_method'];
-        $shippingMethodExplode                           = explode('.', $shippingMethod);
-        $shippingMethodName                              = $shippingMethodExplode[0];
-        if ($shippingMethodName === 'cdek_official') {
-            $shippingMethodTariff        = $shippingMethodExplode[1];
-            $shippingMethodTariffExplode = explode('_', $shippingMethodTariff);
-            $tariffCode                  = end($shippingMethodTariffExplode);
-            if (Tariffs::isTariffToOffice((int)$tariffCode)) {
-                if (!empty($this->request->post['cdek_official_pvz_code'])) {
-                    $this->load->model('setting/setting');
-                    $param    = $this->model_setting_setting->getSetting('cdek_official');
-                    $settings = new SettingsSingleton;
-                    $settings->init($param);
-                    $this->session->data['cdek_official_pvz_code'] = $this->request->post['cdek_official_pvz_code'];
-                } else {
-                    $this->load->language('extension/shipping/cdek_official');
-                    $json['error']['warning'] = $this->language->get('cdek_pvz_not_found');
-                    $this->response->addHeader('Content-Type: application/json');
-                    $this->response->setOutput(json_encode($json));
-                }
-            }
-        }
+        return (new ValidateOfficeCodeAction)();
     }
 
-    public function cdek_official_checkout_confirm_after()
+    /**
+     * @noinspection PhpUnused
+     */
+    final public function saveOfficeCode(): void
     {
-        if (isset($this->session->data['order_id']) && isset($this->session->data['cdek_official_pvz_code'])) {
-            try {
-                OrderMetaRepository::insertPvzCode(
-                                                       $this->session->data['order_id'],
-                                                       $this->session->data['cdek_official_pvz_code']);
-
-            } catch (Throwable $e) {
-            }
-            unset($this->session->data['cdek_official_pvz_code']);
-        }
+        (new SaveOfficeCodeAction)();
     }
 
-    public function addCheckoutHeaderScript(&$route, &$data)
+    /**
+     * @throws JsonException
+     */
+    final public function getParams(): void
+    {
+        (new GetFrontendParamsAction)();
+    }
+
+    /** @noinspection PhpUnused */
+    final public function addCheckoutHeaderScript(string &$route, array &$data): void
     {
         $data['scripts'][] = 'catalog/view/javascript/shipping/cdek_official.js';
         $data['scripts'][] = '//cdn.jsdelivr.net/npm/@cdek-it/widget@' . Config::MAP_VERSION;
-    }
-
-    private function searchAndReplace(&$output, $search, $replace)
-    {
-        $pos = strpos($output, $search);
-
-        if ($pos !== false) {
-            $insertPos = $pos + strlen($search);
-            $output    = substr_replace($output, $replace, $insertPos, 0);
-        }
+        $data['styles'][]  = [
+            'rel'   => 'stylesheet',
+            'href'  => 'catalog/view/theme/default/stylesheet/shipping/cdek_official.css',
+            'media' => 'all',
+        ];
     }
 }

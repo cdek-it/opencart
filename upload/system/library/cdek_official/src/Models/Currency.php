@@ -6,16 +6,16 @@ class Currency
 {
     private const DATA = [
             [
-                'code'   => 'RUB',
-                'key'    => 'cdek_shipping__currency_rub',
+                'code'   => 1,
+                'key'    => 'RUB',
             ],
             [
-                'code'   => 'USD',
-                'key'    => 'cdek_shipping__currency_usd',
+                'code'   => 2,
+                'key'    => 'USD',
             ],
             [
-                'code'   => 'EUR',
-                'key'    => 'cdek_shipping__currency_eur',
+                'code'   => 4,
+                'key'    => 'EUR',
             ],
         ];
 

@@ -91,9 +91,6 @@ $_['cdek_order_call_courier_name']                     = 'Вызвать кур�
 $_['cdek_order_delete_order_name']                     = 'Удалить заказ';
 
 $_['cdek_shipping__currency']     = 'Валюта';
-$_['cdek_shipping__currency_rub'] = 'RUB';
-$_['cdek_shipping__currency_usd'] = 'USD';
-$_['cdek_shipping__currency_eur'] = 'EUR';
 
 $_['cdek_shipping__tariffs_name']                        = 'Редактировать название тарифа';
 $_['cdek_shipping__tariff_plug']                         = 'Название тарифа плагина';

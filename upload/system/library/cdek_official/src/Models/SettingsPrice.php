@@ -8,10 +8,10 @@ use RuntimeException;
 
 class SettingsPrice extends ValidatableSettingsContract
 {
-    public float $priceExtraPrice = 0;
-    public float $pricePercentageIncrease = 0;
-    public float $priceFix = 0;
-    public float $priceFree = 0;
+    public ?float $priceExtraPrice = null;
+    public ?float $pricePercentageIncrease = null;
+    public ?float $priceFix = null;
+    public ?float $priceFree = null;
 
     /**
      * @throws Exception

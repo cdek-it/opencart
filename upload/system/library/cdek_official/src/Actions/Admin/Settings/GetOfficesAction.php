@@ -8,14 +8,15 @@ use CDEK\SettingsSingleton;
 
 class GetOfficesAction
 {
+    /**
+     * @throws \JsonException
+     */
     public function __invoke(): void
     {
         $registry = RegistrySingleton::getInstance();
-        $registry->get('load')->model('setting/setting');
-        $cdekApi               = new CdekApi;
         $param                 = $registry->get('request')->get;
         $param['city_code']    = null;
         $param['is_reception'] = true;
-        $registry->get('response')->setOutput($cdekApi->getOffices($param));
+        $registry->get('response')->setOutput(CdekApi::getOffices($param));
     }
 }

@@ -1,0 +1,7 @@
+input[name="shipping_method"]:checked ~ button.cdek_btn, input[name="shipping_method"]:checked ~ div.cdek_office_info {
+    display: block
+}
+
+button.cdek_btn, div.cdek_office_info {
+    display: none
+}

@@ -52,10 +52,10 @@ class DeliveryCalculator
             $data     = [
                 'currency'      => $settings->shippingSettings->shippingCurrency,
                 'from_location' => [
-                    'address'      => $locality->address ?? '',
-                    'country_code' => $locality->country ?? '',
-                    'postal_code'  => $locality->postal ?? '',
-                    'city'         => $locality->city ?? '',
+                    'address'      => $locality['address'] ?? '',
+                    'country_code' => $locality['country'] ?? '',
+                    'postal_code'  => $locality['postal'] ?? '',
+                    'city'         => $locality['city'] ?? '',
                 ],
                 'to_location'   => [
                     'code' => $toLocationCode,
@@ -65,11 +65,14 @@ class DeliveryCalculator
             $result   = CdekApi::calculate($data);
             if (!empty($result) && isset($result['tariff_codes'])) {
                 foreach ($result['tariff_codes'] as $tariff) {
-                    if (!in_array($tariff['tariff_code'], $settings->shippingSettings->enabledTariffs, true) ||
+                    if (!in_array((string)$tariff['tariff_code'], $settings->shippingSettings->enabledTariffs, true) ||
                         Tariffs::isTariffFromDoor($tariff['tariff_code'])) {
                         continue;
                     }
-                    $tariffCalculated["cdek_official_{$tariff['tariff_code']}"] = self::formatQuoteData($tariff);
+
+                    $prefix = Tariffs::isTariffToDoor($tariff['tariff_code']) ? 'door' : 'office';
+
+                    $tariffCalculated["{$prefix}_{$tariff['tariff_code']}"] = self::formatQuoteData($tariff);
                 }
             }
         }
@@ -80,9 +83,9 @@ class DeliveryCalculator
                 $data   = [
                     'currency'      => $settings->shippingSettings->shippingCurrency,
                     'from_location' => [
-                        'country_code' => $locality->country ?? '',
-                        'postal_code'  => $locality->postal ?? '',
-                        'city'         => $locality->city ?? '',
+                        'country_code' => $locality['country'] ?? '',
+                        'postal_code'  => $locality['postal'] ?? '',
+                        'city'         => $locality['city'] ?? '',
                     ],
                     'to_location'   => [
                         'code' => $toLocationCode,
@@ -91,12 +94,14 @@ class DeliveryCalculator
                 ];
                 $result = CdekApi::calculate($data);
                 foreach ($result['tariff_codes'] as $tariff) {
-                    if (!in_array($tariff['tariff_code'], $settings->shippingSettings->enabledTariffs, true) ||
+                    if (!in_array((string)$tariff['tariff_code'], $settings->shippingSettings->enabledTariffs, true) ||
                         Tariffs::isTariffFromOffice($tariff['tariff_code'])) {
                         continue;
                     }
 
-                    $tariffCalculated["cdek_official_{$tariff['tariff_code']}"] = self::formatQuoteData($tariff);
+                    $prefix = Tariffs::isTariffToDoor($tariff['tariff_code']) ? 'door' : 'office';
+
+                    $tariffCalculated["{$prefix}_{$tariff['tariff_code']}"] = self::formatQuoteData($tariff);
                 }
             }
         }
@@ -219,23 +224,23 @@ class DeliveryCalculator
         $settings = SettingsSingleton::getInstance();
         $total = $tariff['delivery_sum'];
 
-        if ($settings->priceSettings->priceExtraPrice !== '' &&
+        if ($settings->priceSettings->priceExtraPrice !== null &&
             $settings->priceSettings->priceExtraPrice >= 0) {
             $total += $settings->priceSettings->priceExtraPrice;
         }
 
-        if ($settings->priceSettings->pricePercentageIncrease !== '' &&
+        if ($settings->priceSettings->pricePercentageIncrease !== null &&
             $settings->priceSettings->pricePercentageIncrease > 0) {
             $added = $total / 100 * $settings->priceSettings->pricePercentageIncrease;
             $total += $added;
             $total = round($total);
         }
 
-        if ($settings->priceSettings->priceFix !== '' && $settings->priceSettings->priceFix >= 0) {
+        if ($settings->priceSettings->priceFix !== null && $settings->priceSettings->priceFix >= 0) {
             $total = (int)$settings->priceSettings->priceFix;
         }
 
-        if ($settings->priceSettings->priceFree !== '' && $settings->priceSettings->priceFree >= 0) {
+        if ($settings->priceSettings->priceFree !== null && $settings->priceSettings->priceFree >= 0) {
             $cartProducts = RegistrySingleton::getInstance()->get('cart')->getProducts();
             if ($cartProducts[0]['total'] > (float)$settings->priceSettings->priceFree) {
                 $total = 0;

@@ -9,10 +9,9 @@ abstract class ValidatableSettingsContract
 {
     private const PARAM_PREFIX = 'cdek_official__';
 
-    abstract public function validate(): void;
-
-    public function __construct(array $data = null) {
-        if($data){
+    public function __construct(array $data = null)
+    {
+        if ($data) {
             $this->__unserialize($data);
         }
     }
@@ -28,9 +27,12 @@ abstract class ValidatableSettingsContract
             if (!$reflect->hasProperty($propertyName)) {
                 continue;
             }
-            $this->$propertyName = $property;
+            $this->$propertyName = ($property === '' && $reflect->getProperty($propertyName)->getType()->allowsNull()) ?
+                null : $property;
         }
     }
+
+    abstract public function validate(): void;
 
     final public function __serialize(): array
     {
