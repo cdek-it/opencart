@@ -69,7 +69,7 @@ class CdekApi
     /**
      * @throws JsonException
      */
-    public static function getCity(string $city): object
+    public static function getCity(string $city): array
     {
         return HttpClient::sendCdekRequest(self::getApiUrl(self::REGION_PATH),
                                            'GET',
@@ -92,7 +92,7 @@ class CdekApi
     /**
      * @throws JsonException
      */
-    public static function calculate(array $data): object
+    public static function calculate(array $data): array
     {
         return HttpClient::sendCdekRequest(self::getApiUrl(self::CALC_PATH), 'POST', self::getToken(), $data);
     }
@@ -100,7 +100,7 @@ class CdekApi
     /**
      * @throws JsonException
      */
-    public static function createOrder(Order $order): object
+    public static function createOrder(Order $order): array
     {
         return HttpClient::sendCdekRequest(self::getApiUrl(self::ORDERS_PATH),
                                            'POST',
@@ -111,7 +111,7 @@ class CdekApi
     /**
      * @throws JsonException
      */
-    public static function getCityByParam(string $city, string $postcode): object
+    public static function getCityByParam(string $city, string $postcode): array
     {
         return HttpClient::sendCdekRequest(self::getApiUrl(self::REGION_PATH),
                                            'GET',
@@ -122,7 +122,7 @@ class CdekApi
     /**
      * @throws JsonException
      */
-    public static function deleteOrder(string $uuid): object
+    public static function deleteOrder(string $uuid): array
     {
         return HttpClient::sendCdekRequest(self::getApiUrl(self::ORDERS_PATH . $uuid),
                                            'DELETE',
@@ -147,7 +147,7 @@ class CdekApi
 
         sleep(5);
 
-        $result = HttpClient::sendCdekRequest(self::getApiUrl(self::WAYBILL_PATH . $requestBill->entity->uuid),
+        $result = HttpClient::sendCdekRequest(self::getApiUrl(self::WAYBILL_PATH . $requestBill['entity']['uuid']),
                                               'GET',
                                               self::getToken());
         LogHelper::write('Result: ' . json_encode($result, JSON_THROW_ON_ERROR));
@@ -155,7 +155,7 @@ class CdekApi
         header('Content-type', 'application/pdf');
         header('Content-Disposition', 'inline; filename=waybill.pdf');
 
-        echo HttpClient::sendCdekRequest($result->entity->url, 'GET', self::getToken(), null, true);
+        echo HttpClient::sendCdekRequest($result['entity']['url'], 'GET', self::getToken(), null, true);
         exit();
     }
 }

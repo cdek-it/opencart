@@ -16,7 +16,7 @@ class HttpClient
 
     /**
      * @param array|string $data
-     * @return object|string
+     * @return array|string
      * @throws JsonException
      */
     public static function sendRequest(

@@ -11,6 +11,9 @@ class EventsHelper
             'admin/view/sale/order_info/before'                       => [
                 'cdek_official_order' => 'extension/shipping/cdek_official/orderInfo',
             ],
+            'admin/controller/sale/order/info/before'                       => [
+                'cdek_official_order_scripts' => 'extension/shipping/cdek_official/orderInfoScripts',
+            ],
             'catalog/view/checkout/checkout/after'                   => [
                 'cdek_official_checkout' => 'extension/shipping/cdek_official/cdek_official_checkout_checkout_after',
             ],

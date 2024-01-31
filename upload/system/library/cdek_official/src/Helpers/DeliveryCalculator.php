@@ -46,7 +46,7 @@ class DeliveryCalculator
             return [];
         }
 
-        $toLocationCode   = $recipientLocation[0]->code;
+        $toLocationCode   = $recipientLocation[0]['code'];
         if (!empty($settings->shippingSettings->shippingCityAddress)) {
             $locality = CdekHelper::getLocality($settings->shippingSettings->shippingCityAddress);
             $data     = [
@@ -63,13 +63,13 @@ class DeliveryCalculator
                 'packages'      => $recommendedDimensions,
             ];
             $result   = CdekApi::calculate($data);
-            if (!empty($result) && isset($result->tariff_codes)) {
-                foreach ($result->tariff_codes as $tariff) {
-                    if (!in_array($tariff->tariff_code, $settings->shippingSettings->enabledTariffs, true) ||
-                        Tariffs::isTariffFromDoor($tariff->tariff_code)) {
+            if (!empty($result) && isset($result['tariff_codes'])) {
+                foreach ($result['tariff_codes'] as $tariff) {
+                    if (!in_array($tariff['tariff_code'], $settings->shippingSettings->enabledTariffs, true) ||
+                        Tariffs::isTariffFromDoor($tariff['tariff_code'])) {
                         continue;
                     }
-                    $tariffCalculated['cdek_official_' . $tariff->tariff_code] = self::formatQuoteData($tariff);
+                    $tariffCalculated["cdek_official_{$tariff['tariff_code']}"] = self::formatQuoteData($tariff);
                 }
             }
         }
@@ -90,13 +90,13 @@ class DeliveryCalculator
                     'packages'      => $recommendedDimensions,
                 ];
                 $result = CdekApi::calculate($data);
-                foreach ($result->tariff_codes as $tariff) {
-                    if (!in_array($tariff->tariff_code, $settings->shippingSettings->enabledTariffs, true) ||
-                        Tariffs::isTariffFromOffice($tariff->tariff_code)) {
+                foreach ($result['tariff_codes'] as $tariff) {
+                    if (!in_array($tariff['tariff_code'], $settings->shippingSettings->enabledTariffs, true) ||
+                        Tariffs::isTariffFromOffice($tariff['tariff_code'])) {
                         continue;
                     }
 
-                    $tariffCalculated['cdek_official_' . $tariff->tariff_code] = self::formatQuoteData($tariff);
+                    $tariffCalculated["cdek_official_{$tariff['tariff_code']}"] = self::formatQuoteData($tariff);
                 }
             }
         }
@@ -183,41 +183,41 @@ class DeliveryCalculator
         ];
     }
 
-    private static function formatQuoteData(object $tariff): array
+    private static function formatQuoteData(array $tariff): array
     {
         $registry = RegistrySingleton::getInstance();
 
-        $title = $registry->get('language')->get('cdek_shipping__tariff_name_' . $tariff->tariff_code) .
+        $title = $registry->get('language')->get("cdek_shipping__tariff_name_{$tariff['tariff_code']}") .
                  self::getPeriod($tariff);
         $total = self::getTotalSum($tariff);
 
         return [
             'code'         => 'cdek_official.' .
-                              (Tariffs::isTariffToDoor($tariff->tariff_code) ? 'door_' : 'office_') .
-                              $tariff->tariff_code,
+                              (Tariffs::isTariffToDoor($tariff['tariff_code']) ? 'door_' : 'office_') .
+                              $tariff['tariff_code'],
             'title'        => $registry->get('language')->get('text_title') . ': ' . $title,
             'cost'         => $total,
-            'tax_class_id' => $tariff->tariff_code,
+            'tax_class_id' => $tariff['tariff_code'],
             'text'         => $registry->get('currency')->format($total,
                                                                  $registry->get('session')->data['currency']),
         ];
     }
 
-    private static function getPeriod(object $calc): string
+    private static function getPeriod(array $tariff): string
     {
         $settings = SettingsSingleton::getInstance();
         $registry = RegistrySingleton::getInstance();
         $extraDays = $settings->shippingSettings->shippingExtraDays;
-        $min       = $calc->period_min + $extraDays;
-        $max       = $calc->period_max + $extraDays;
+        $min       = $tariff['period_min'] + $extraDays;
+        $max       = $tariff['period_max'] + $extraDays;
 
         return ' (' . $min . '-' . $max . ' ' . $registry->get('language')->get('cdek_shipping__days') . ')';
     }
 
-    private static function getTotalSum(object $result): float
+    private static function getTotalSum(array $tariff): float
     {
         $settings = SettingsSingleton::getInstance();
-        $total = $result->delivery_sum;
+        $total = $tariff['delivery_sum'];
 
         if ($settings->priceSettings->priceExtraPrice !== '' &&
             $settings->priceSettings->priceExtraPrice >= 0) {

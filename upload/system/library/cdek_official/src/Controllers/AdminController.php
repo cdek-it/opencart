@@ -4,6 +4,7 @@ namespace CDEK\Controllers;
 
 use CDEK\Actions\Admin\Installer\InstallExtensionAction;
 use CDEK\Actions\Admin\Installer\RemoveExtensionAction;
+use CDEK\Actions\Admin\Order\GetOrderInfoScriptsAction;
 use CDEK\Actions\Admin\Order\GetOrderInfoTabAction;
 use CDEK\Actions\Admin\Settings\GetOfficesAction;
 use CDEK\Actions\Admin\Settings\RenderSettingsPageAction;
@@ -13,6 +14,7 @@ use CDEK\CdekHelper;
 use CDEK\Helpers\DeliveryCalculator;
 use CDEK\OrderMetaRepository;
 use CDEK\Contracts\ControllerContract;
+use CDEK\RegistrySingleton;
 use CDEK\SettingsSingleton;
 use Exception;
 
@@ -40,6 +42,14 @@ class AdminController extends ControllerContract
     final public function map(): void
     {
         (new GetOfficesAction)();
+    }
+
+    /**
+     * @noinspection PhpUnused
+     */
+    final public function orderInfoScripts(): void
+    {
+        (new GetOrderInfoScriptsAction)();
     }
 
     /**

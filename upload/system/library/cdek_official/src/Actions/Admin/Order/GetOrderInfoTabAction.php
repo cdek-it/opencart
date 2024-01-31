@@ -2,6 +2,7 @@
 
 namespace CDEK\Actions\Admin\Order;
 
+use CDEK\OrderMetaRepository;
 use CDEK\RegistrySingleton;
 use Exception;
 use Language;
@@ -31,7 +32,10 @@ class GetOrderInfoTabAction
             'title'   => $language->get('heading_title'),
             'content' => explode('.', $orderInfo['shipping_code'])[0] !== 'cdek_official' ?
                 $loader->view('extension/shipping/cdek_official/foreign_delivery') :
-                $loader->view('extension/shipping/cdek_official/create_order'),
+                $loader->view('extension/shipping/cdek_official/create_order', [
+                    'orderInfo' => $orderInfo,
+                    'meta' => OrderMetaRepository::getOrder($orderId),
+                ]),
         ];
     }
 }
