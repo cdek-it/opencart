@@ -14,10 +14,6 @@
     padding-left: 15px;
 }
 
-/*#cdek_order_created {*/
-/*    display: none;*/
-/*}*/
-
 #cdek_delete_order_btn {
     color: red;
     cursor: pointer;
@@ -60,4 +56,17 @@
     padding: 10px;
     margin-bottom: 18px;
     border-radius: 3px;
+}
+
+.cdek_error_alert {
+    background-color: #FFADAD;
+    border-color: #FF6969;
+    color: #A62222;
+    padding: 10px;
+    margin-bottom: 18px;
+    border-radius: 3px;
+}
+.cdek_error_alert ul{
+    margin-bottom: 0;
+    padding-left: 10px;
 }

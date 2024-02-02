@@ -1,5 +1,5 @@
 {
-  "name":"cdek/opencart_delivery_module",
+  "name": "cdek/opencart_delivery_module",
   "type": "library",
   "require": {
     "php": "^7.4",

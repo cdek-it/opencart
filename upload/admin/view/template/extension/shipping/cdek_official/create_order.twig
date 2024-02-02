@@ -1,0 +1,153 @@
+<div class="panel" id="cdek_official_order_info">
+    <div
+            id="cdek_order_create_form"
+            class="panel-body" {% if meta.cdek_uuid or meta.deleted_at %} style="display: none" {% else %}
+        style="display: block" {% endif %}>
+        <div class="cdek-loader" style="display: none"></div>
+        <form id="create-order-form" action="{{ actions.create }}" method="post">
+            {% if errors %}
+                <div class="cdek_error_alert">
+                    <ul>
+                        {% for error in errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            <div class="cdek_info_alert">
+                {{ cdek_package_info }} {{ meta.length }}х{{ meta.width }}х{{ meta.height }} {{ meta.weight }}g
+            </div>
+            {% if direction == 'office' %}
+                {% if meta.pvz_code %}
+                    <div>
+                        {{ cdek_official_office_receiver_label }}: {{ meta.pvz_code }}
+                    </div>
+                {% else %}
+                    <div>
+                        {{ cdek_official_office_receiver_error }}
+                    </div>
+                {% endif %}
+            {% endif %}
+            <div class="form-group">
+                <label for="cdek_order_length">{{ cdek_dimensions__length }}:</label>
+                <input
+                        type="number" value="{{ meta.length }}" class="form-control" id="cdek_order_length"
+                        name="cdek_order_length"
+                        required>
+            </div>
+            <div class="form-group">
+                <label for="cdek_order_width">{{ cdek_dimensions__width }}:</label>
+                <input
+                        type="number" value="{{ meta.width }}" class="form-control" id="cdek_order_width"
+                        name="cdek_order_width" required>
+            </div>
+            <div class="form-group">
+                <label for="cdek_order_height">{{ cdek_dimensions__height }}:</label>
+                <input
+                        type="number" value="{{ meta.height }}" class="form-control" id="cdek_order_height"
+                        name="cdek_order_height" required>
+            </div>
+            <button type="submit" class="btn btn-primary">{{ cdek_auth__btn_submit }}</button>
+        </form>
+    </div>
+
+    <div
+            id="cdek_order_created"
+            class="panel-body" {% if meta.cdek_uuid and meta.deleted_at is null %} style="display: block" {% else %}
+        style="display: none" {% endif %}>
+        {% if errors %}
+            <div class="cdek_error_alert">
+                <ul>
+                    {% for error in errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <td class="text-left" colspan=2>{{ cdek_order_create_info_name }}</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% if meta.cdek_number %}
+                <tr>
+                    <td style="width: 15%" class="text-left">{{ cdek_order_number_name }}</td>
+                    <td class="text-left">{{ meta.cdek_number }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td style="width: 15%" class="text-left">{{ cdek_order_uuid_name }}</td>
+                    <td class="text-left">{{ meta.cdek_uuid }}</td>
+                </tr>
+            {% endif %}
+            {% if direction == 'office' %}
+                <tr>
+                    <td class="text-left">{{ cdek_order_pvz_code }}</td>
+                    <td class="text-left">{{ meta.pvz_code }}</td>
+                </tr>
+            {% endif %}
+            </tbody>
+        </table>
+        <fieldset>
+            <div class="col-sm-12">
+                <div class="row">
+                    <div class="col-sm-8"></div>
+                    <div id="cdek_order_action" class="col-sm-4" style="text-align: right; display: grid">
+                        <a
+                                href="{{ actions.waybill }}"
+                                target="_blank"
+                        >{{ cdek_order_get_bill_name }}</a>
+                        <a
+                                id="cdek_delete_order_btn"
+                                href="{{ actions.delete }}">{{ cdek_order_delete_order_name }}</a>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+
+    </div>
+
+    <div
+            id="cdek_order_deleted"
+            class="panel-body" {% if meta.deleted_at %} style="display: block" {% else %} style="display: none" {% endif %}>
+        <div class="cdek-loader" style="display: none"></div>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <td class="text-left" colspan=2>{{ cdek_order_deleted_info_name }}</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% if meta.cdek_number %}
+                <tr>
+                    <td style="width: 15%" class="text-left">{{ cdek_order_number_name }}</td>
+                    <td class="text-left">{{ meta.cdek_number }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td style="width: 15%" class="text-left">{{ cdek_order_uuid_name }}</td>
+                    <td class="text-left">{{ meta.cdek_uuid }}</td>
+                </tr>
+            {% endif %}
+            {% if direction == 'office' %}
+                <tr>
+                    <td class="text-left">{{ cdek_order_pvz_code }}</td>
+                    <td class="text-left">{{ meta.pvz_code }}</td>
+                </tr>
+            {% endif %}
+            </tbody>
+        </table>
+        <fieldset>
+            <div class="col-sm-12">
+                <div class="row">
+                    <div class="col-sm-8"></div>
+                    <div id="cdek_order_action" class="col-sm-4" style="text-align: right; display: grid">
+                        <a id="cdek_recreate_btn">{{ cdek_recreate_info }}</a>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+</div>
