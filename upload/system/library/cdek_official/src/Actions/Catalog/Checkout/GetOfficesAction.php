@@ -2,8 +2,8 @@
 
 namespace CDEK\Actions\Catalog\Checkout;
 
-use CDEK\CdekApi;
 use CDEK\RegistrySingleton;
+use CDEK\Transport\CdekApi;
 use Response;
 use Session;
 use Throwable;

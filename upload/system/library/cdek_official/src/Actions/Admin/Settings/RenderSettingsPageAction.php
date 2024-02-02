@@ -2,18 +2,18 @@
 
 namespace CDEK\Actions\Admin\Settings;
 
-use CDEK\CdekApi;
 use CDEK\Config;
 use CDEK\Models\Currency;
 use CDEK\Models\Tariffs;
 use CDEK\RegistrySingleton;
 use CDEK\SettingsSingleton;
+use CDEK\Transport\CdekApi;
 use Document;
 use Exception;
 use Language;
 use Loader;
-use Url;
 use Session;
+use Url;
 
 class RenderSettingsPageAction
 {

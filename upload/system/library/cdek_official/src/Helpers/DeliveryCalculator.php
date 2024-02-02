@@ -3,11 +3,10 @@
 namespace CDEK\Helpers;
 
 use Cart\Weight;
-use CDEK\CdekApi;
-use CDEK\CdekHelper;
 use CDEK\Models\Tariffs;
 use CDEK\RegistrySingleton;
 use CDEK\SettingsSingleton;
+use CDEK\Transport\CdekApi;
 
 class DeliveryCalculator
 {
@@ -53,7 +52,7 @@ class DeliveryCalculator
         $session->data['cdek_width'] = $recommendedDimensions['width'];
 
         if (!empty($settings->shippingSettings->shippingCityAddress)) {
-            $locality = CdekHelper::getLocality($settings->shippingSettings->shippingCityAddress);
+            $locality = LocationHelper::getLocality($settings->shippingSettings->shippingCityAddress);
             $result   = CdekApi::calculate([
                                                'currency'      => $settings->shippingSettings->shippingCurrency,
                                                'from_location' => [
@@ -82,7 +81,7 @@ class DeliveryCalculator
         }
 
         if (!empty($settings->shippingSettings->shippingPvz)) {
-            $locality = CdekHelper::getLocality($settings->shippingSettings->shippingPvz);
+            $locality = LocationHelper::getLocality($settings->shippingSettings->shippingPvz);
             $result   = CdekApi::calculate([
                                                'currency'      => $settings->shippingSettings->shippingCurrency,
                                                'from_location' => [

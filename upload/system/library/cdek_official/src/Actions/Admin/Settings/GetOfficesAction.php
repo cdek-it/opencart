@@ -2,9 +2,8 @@
 
 namespace CDEK\Actions\Admin\Settings;
 
-use CDEK\CdekApi;
 use CDEK\RegistrySingleton;
-use CDEK\SettingsSingleton;
+use CDEK\Transport\CdekApi;
 
 class GetOfficesAction
 {

@@ -2,11 +2,11 @@
 
 namespace CDEK\Actions\Admin\Settings;
 
-use CDEK\CdekApi;
 use CDEK\Config;
 use CDEK\Helpers\LogHelper;
 use CDEK\RegistrySingleton;
 use CDEK\SettingsSingleton;
+use CDEK\Transport\CdekApi;
 use Exception;
 
 class SaveSettingsAction

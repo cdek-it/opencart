@@ -1,9 +1,10 @@
 <?php
 
-namespace CDEK;
+namespace CDEK\Transport;
 
+use CDEK\Config;
 use CDEK\Helpers\LogHelper;
-use CDEK\Transport\HttpClient;
+use CDEK\SettingsSingleton;
 use JsonException;
 
 class CdekApi

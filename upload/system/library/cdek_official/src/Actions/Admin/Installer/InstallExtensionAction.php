@@ -2,9 +2,9 @@
 
 namespace CDEK\Actions\Admin\Installer;
 
-use CDEK\OrderMetaRepository;
 use CDEK\Helpers\EventsHelper;
 use CDEK\Helpers\LogHelper;
+use CDEK\Models\OrderMetaRepository;
 use CDEK\RegistrySingleton;
 
 class InstallExtensionAction

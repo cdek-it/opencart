@@ -2,7 +2,7 @@
 
 namespace CDEK\Actions\Catalog\Checkout;
 
-use CDEK\OrderMetaRepository;
+use CDEK\Models\OrderMetaRepository;
 use CDEK\RegistrySingleton;
 
 class SaveOrderMetaAction

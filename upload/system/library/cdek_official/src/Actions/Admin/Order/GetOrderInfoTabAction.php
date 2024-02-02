@@ -2,10 +2,10 @@
 
 namespace CDEK\Actions\Admin\Order;
 
-use CDEK\CdekApi;
 use CDEK\Config;
-use CDEK\OrderMetaRepository;
+use CDEK\Models\OrderMetaRepository;
 use CDEK\RegistrySingleton;
+use CDEK\Transport\CdekApi;
 use Exception;
 use Language;
 use Loader;

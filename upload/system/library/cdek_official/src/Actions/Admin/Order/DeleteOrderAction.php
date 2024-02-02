@@ -2,9 +2,9 @@
 
 namespace CDEK\Actions\Admin\Order;
 
-use CDEK\CdekApi;
-use CDEK\OrderMetaRepository;
+use CDEK\Models\OrderMetaRepository;
 use CDEK\RegistrySingleton;
+use CDEK\Transport\CdekApi;
 
 class DeleteOrderAction
 {

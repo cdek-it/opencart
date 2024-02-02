@@ -3,16 +3,16 @@
 namespace CDEK\Actions\Admin\Order;
 
 use Cart\Weight;
-use CDEK\CdekApi;
-use CDEK\CdekHelper;
 use CDEK\Config;
 use CDEK\Exceptions\ValidationException;
+use CDEK\Helpers\LocationHelper;
 use CDEK\Helpers\LogHelper;
 use CDEK\Helpers\StringHelper;
+use CDEK\Models\OrderMetaRepository;
 use CDEK\Models\Tariffs;
-use CDEK\OrderMetaRepository;
 use CDEK\RegistrySingleton;
 use CDEK\SettingsSingleton;
+use CDEK\Transport\CdekApi;
 use Exception;
 use JsonException;
 use Loader;
@@ -141,10 +141,10 @@ class CreateOrderAction
         }
 
         if (Tariffs::isTariffFromOffice($params['tariff_code'])) {
-            $office                   = CdekHelper::getLocality($settings->shippingSettings->shippingPvz);
+            $office                   = LocationHelper::getLocality($settings->shippingSettings->shippingPvz);
             $params['shipment_point'] = $office['code'];
         } else {
-            $address = CdekHelper::getLocality($settings->shippingSettings->shippingCityAddress);
+            $address = LocationHelper::getLocality($settings->shippingSettings->shippingCityAddress);
 
             $params['from_location'] = [
                 'postal_code'  => $address['postal'] ?? null,

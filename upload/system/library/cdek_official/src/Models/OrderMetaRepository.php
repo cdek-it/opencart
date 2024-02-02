@@ -1,7 +1,8 @@
 <?php
 
-namespace CDEK;
+namespace CDEK\Models;
 
+use CDEK\RegistrySingleton;
 use DB;
 
 class OrderMetaRepository
