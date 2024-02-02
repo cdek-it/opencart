@@ -152,9 +152,6 @@ class CdekApi
                                               self::getToken());
         LogHelper::write('Result: ' . json_encode($result, JSON_THROW_ON_ERROR));
 
-        header('Content-type', 'application/pdf');
-        header('Content-Disposition', 'inline; filename=waybill.pdf');
-
         return HttpClient::sendCdekRequest($result['entity']['url'], 'GET', self::getToken(), null, true);
     }
 }

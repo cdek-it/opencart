@@ -45,6 +45,7 @@ class HttpClient
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
             }
         }
+        $headers[] = 'User-agent: oc/2.0';
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         $response = curl_exec($ch);
         curl_close($ch);
