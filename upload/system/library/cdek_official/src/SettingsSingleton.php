@@ -48,17 +48,6 @@ class SettingsSingleton
         return self::$instance;
     }
 
-    public function init($post): void
-    {
-        $this->authSettings->__unserialize($post);
-        $this->sellerSettings->__unserialize($post);
-        $this->shippingSettings->__unserialize($post);
-        $this->shippingSettings->setTariffs($post);
-        //$this->shippingSettings->setCurrency($post);
-        $this->dimensionsSettings->__unserialize($post);
-        $this->priceSettings->__unserialize($post);
-    }
-
     public function save(): void
     {
         $registry = RegistrySingleton::getInstance();
