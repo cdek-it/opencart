@@ -3,8 +3,8 @@
             id="cdek_order_create_form"
             class="panel-body" {% if meta.cdek_uuid or meta.deleted_at %} style="display: none" {% else %}
         style="display: block" {% endif %}>
-        <div id="cdek-loader" style="display: none"></div>
-        <form id="create-order-form" action="{{ actions.create_order }}" method="post">
+        <div class="cdek-loader" style="display: none"></div>
+        <form id="create-order-form" action="{{ actions.create }}" method="post">
             {% if errors %}
                 <div class="cdek_error_alert">
                     <ul>
@@ -53,7 +53,8 @@
 
     <div
             id="cdek_order_created"
-            class="panel-body" {% if meta.cdek_uuid %} style="display: block" {% else %} style="display: none" {% endif %}>
+            class="panel-body" {% if meta.cdek_uuid and meta.deleted_at is null %} style="display: block" {% else %}
+        style="display: none" {% endif %}>
         {% if errors %}
             <div class="cdek_error_alert">
                 <ul>
@@ -95,12 +96,12 @@
                     <div class="col-sm-8"></div>
                     <div id="cdek_order_action" class="col-sm-4" style="text-align: right; display: grid">
                         <a
-                                href="{{ actions.get_waybill }}"
+                                href="{{ actions.waybill }}"
                                 target="_blank"
                         >{{ cdek_order_get_bill_name }}</a>
                         <a
                                 id="cdek_delete_order_btn"
-                                data-uuid="{% if cdek_order_created %}{{ cdek_uuid }}{% endif %}">{{ cdek_order_delete_order_name }}</a>
+                                href="{{ actions.delete }}">{{ cdek_order_delete_order_name }}</a>
                     </div>
                 </div>
             </div>
@@ -110,7 +111,8 @@
 
     <div
             id="cdek_order_deleted"
-            class="panel-body" {% if cdek_order_deleted %} style="display: block" {% else %} style="display: none" {% endif %}>
+            class="panel-body" {% if meta.deleted_at %} style="display: block" {% else %} style="display: none" {% endif %}>
+        <div class="cdek-loader" style="display: none"></div>
         <table class="table table-bordered">
             <thead>
             <tr>
@@ -118,30 +120,23 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td style="width: 15%" class="text-left">{{ cdek_order_number_name }}</td>
-                <td id="cdek_order_number_name" class="text-left">{{ cdek_number }}</td>
-            </tr>
-            <tr>
-                <td class="text-left">{{ cdek_order_customer_name }}</td>
-                <td id="cdek_order_customer_name" class="text-left">{{ name }}</td>
-            </tr>
-            <tr>
-                <td class="text-left">{{ cdek_order_type_name }}</td>
-                <td id="cdek_order_type_name" class="text-left">{{ type }}</td>
-            </tr>
-            <tr>
-                <td class="text-left">{{ cdek_order_payment_type_name }}</td>
-                <td id="cdek_order_payment_type_name" class="text-left">{{ payment_type }}</td>
-            </tr>
-            <tr>
-                <td class="text-left">{{ cdek_order_direction_name }}</td>
-                <td id="cdek_order_direction_name" class="text-left">{{ to_location }}</td>
-            </tr>
-            <tr id="cdek_order_pvz_code_tr" {% if pvz_code is empty %} style="display: none" {% endif %}>
-                <td class="text-left">{{ cdek_order_pvz_code }}</td>
-                <td id="cdek_order_pvz_code" class="text-left">{{ pvz_code }}</td>
-            </tr>
+            {% if meta.cdek_number %}
+                <tr>
+                    <td style="width: 15%" class="text-left">{{ cdek_order_number_name }}</td>
+                    <td class="text-left">{{ meta.cdek_number }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td style="width: 15%" class="text-left">{{ cdek_order_uuid_name }}</td>
+                    <td class="text-left">{{ meta.cdek_uuid }}</td>
+                </tr>
+            {% endif %}
+            {% if direction == 'office' %}
+                <tr>
+                    <td class="text-left">{{ cdek_order_pvz_code }}</td>
+                    <td class="text-left">{{ meta.pvz_code }}</td>
+                </tr>
+            {% endif %}
             </tbody>
         </table>
         <fieldset>

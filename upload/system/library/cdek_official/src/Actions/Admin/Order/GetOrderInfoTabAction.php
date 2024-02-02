@@ -40,10 +40,11 @@ class GetOrderInfoTabAction
 
         unset($session->data['errors']);
 
-        if (!empty($meta['cdek_uuid']) && empty($meta['cdek_number'])) {
+        if (!empty($meta['cdek_uuid']) && empty($meta['cdek_number']) && empty($meta['deleted_at'])) {
             $order = CdekApi::getOrderByUuid($meta['cdek_uuid']);
+
             if (!empty($order['requests'][0]['errors'])) {
-                foreach($order['requests'][0]['errors'] as $error){
+                foreach ($order['requests'][0]['errors'] as $error) {
                     $errors[] = $error['message'];
                 }
             } else {
@@ -63,18 +64,24 @@ class GetOrderInfoTabAction
                     'meta'      => $meta,
                     'errors'    => $errors,
                     'actions'   => [
-                        'create_order' => $url->link('extension/shipping/cdek_official/create',
-                                                     http_build_query([
-                                                                          'order_id'   => $orderId,
-                                                                          'user_token' => $session->data['user_token'],
-                                                                      ]),
-                                                     true),
-                        'get_waybill'  => $url->link('extension/shipping/cdek_official/waybill',
-                                                     http_build_query([
-                                                                          'order_id'   => $orderId,
-                                                                          'user_token' => $session->data['user_token'],
-                                                                      ]),
-                                                     true),
+                        'create'  => $url->link('extension/shipping/cdek_official/create',
+                                                http_build_query([
+                                                                     'order_id'   => $orderId,
+                                                                     'user_token' => $session->data['user_token'],
+                                                                 ]),
+                                                true),
+                        'waybill' => $url->link('extension/shipping/cdek_official/waybill',
+                                                http_build_query([
+                                                                     'order_id'   => $orderId,
+                                                                     'user_token' => $session->data['user_token'],
+                                                                 ]),
+                                                true),
+                        'delete'  => $url->link('extension/shipping/cdek_official/delete',
+                                                http_build_query([
+                                                                     'order_id'   => $orderId,
+                                                                     'user_token' => $session->data['user_token'],
+                                                                 ]),
+                                                true),
                     ],
                 ]),
         ];

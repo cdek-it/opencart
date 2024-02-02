@@ -67,7 +67,7 @@ class OrderMetaRepository
     {
         /** @var DB $db */
         $db = RegistrySingleton::getInstance()->get('db');
-        $db->query(sprintf('UPDATE %s SET cdek_uuid="%s" WHERE `order_id` = %u',
+        $db->query(sprintf('UPDATE %s SET cdek_uuid="%s", deleted_at=null WHERE `order_id` = %u',
                            DB_PREFIX . self::TABLE_NAME,
                            $orderUuid,
                            $orderId));

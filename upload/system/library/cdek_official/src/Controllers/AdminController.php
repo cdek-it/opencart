@@ -5,6 +5,7 @@ namespace CDEK\Controllers;
 use CDEK\Actions\Admin\Installer\InstallExtensionAction;
 use CDEK\Actions\Admin\Installer\RemoveExtensionAction;
 use CDEK\Actions\Admin\Order\CreateOrderAction;
+use CDEK\Actions\Admin\Order\DeleteOrderAction;
 use CDEK\Actions\Admin\Order\GetOrderInfoScriptsAction;
 use CDEK\Actions\Admin\Order\GetOrderInfoTabAction;
 use CDEK\Actions\Admin\Order\GetWaybillAction;
@@ -58,8 +59,14 @@ class AdminController extends ControllerContract
                                 $request->post['length']);
     }
 
+    final public function delete(): void
+    {
+        (new DeleteOrderAction)($this->registry->get('request')->get['order_id']);
+    }
+
     /**
      * @noinspection PhpUnused
+     * @throws JsonException
      */
     final public function waybill(): void
     {

@@ -46,7 +46,7 @@ class CreateOrderAction
 
         $result = CdekApi::createOrder($request);
 
-        if (self::orderHasCreationErrors($result)) {
+        if (self::doOrderHasCreationErrors($result)) {
             $response->setOutput((new GetOrderInfoTabAction)($orderId)['content']);
             return;
         }
@@ -204,7 +204,7 @@ class CreateOrderAction
     /**
      * @throws JsonException
      */
-    private static function orderHasCreationErrors(array $order): bool
+    private static function doOrderHasCreationErrors(array $order): bool
     {
         if (empty($order['requests'][0]['errors'])) {
             return false;
