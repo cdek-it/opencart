@@ -6,28 +6,18 @@ use CDEK\Models\Tariffs;
 
 class CdekHelper
 {
-    public static function getLocality($locality)
+    public static function getLocality(string $locality): array
     {
         $shippingOfficeJson = html_entity_decode($locality);
         return json_decode($shippingOfficeJson, true, 512, JSON_THROW_ON_ERROR);
     }
 
-    public static function checkLocalityAddress($locality): bool
+    public static function checkLocalityAddress(array $locality): bool
     {
-        return is_object($locality) &&
-               ((!empty($locality->address) && is_string($locality->address)) ||
-                (!empty($locality->country) && is_string($locality->country)) ||
-                (!empty($locality->postal) && is_string($locality->postal)) ||
-                (!empty($locality->city) && is_string($locality->city)));
-    }
-
-    public static function checkLocalityOffice($locality): bool
-    {
-        return is_object($locality) &&
-               ((!empty($locality->code) && is_string($locality->code)) ||
-                (!empty($locality->country) && is_string($locality->country)) ||
-                (!empty($locality->postal) && is_string($locality->postal)) ||
-                (!empty($locality->city) && is_string($locality->city)));
+        return ((!empty($locality['address']) && is_string($locality['address'])) ||
+                (!empty($locality['country']) && is_string($locality['country'])) ||
+                (!empty($locality['postal']) && is_string($locality['postal'])) ||
+                (!empty($locality['city']) && is_string($locality['city'])));
     }
 
     public static function hasLocalityCity($locality): bool

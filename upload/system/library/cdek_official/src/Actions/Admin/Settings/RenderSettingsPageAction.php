@@ -2,9 +2,7 @@
 
 namespace CDEK\Actions\Admin\Settings;
 
-use CDEK\App;
 use CDEK\CdekApi;
-use CDEK\CdekHelper;
 use CDEK\Config;
 use CDEK\Models\Currency;
 use CDEK\Models\Tariffs;
@@ -46,17 +44,15 @@ class RenderSettingsPageAction
         /** @var Session $session */
         $session = $registry->get('session');
 
-        $userToken = $session->data['user_token'];
-
         $settings = SettingsSingleton::getInstance()->__serialize();
 
         $data = [
             'success'       => $session->data['success'] ?? '',
             'error_warning' => $session->data['error_warning'] ?? '',
 
-            'action'      => $url->link('extension/shipping/cdek_official/store', "user_token=$userToken", true),
-            'map_service' => $url->link("extension/shipping/cdek_official/map&user_token=$userToken", '', true),
-            'cancel'      => $url->link('extension/shipping', "user_token=$userToken", true),
+            'action'      => $url->link('extension/shipping/cdek_official/store', "user_token={$session->data['user_token']}", true),
+            'map_service' => $url->link("extension/shipping/cdek_official/map&user_token={$session->data['user_token']}", '', true),
+            'cancel'      => $url->link('extension/shipping', "user_token={$session->data['user_token']}", true),
 
             'header'      => $loader->controller('common/header'),
             'column_left' => $loader->controller('common/column_left'),
@@ -65,15 +61,15 @@ class RenderSettingsPageAction
             'breadcrumbs' => [
                 [
                     'text' => $language->get('text_home'),
-                    'href' => $url->link('common/dashboard', "user_token=$userToken", true),
+                    'href' => $url->link('common/dashboard', "user_token={$session->data['user_token']}", true),
                 ],
                 [
                     'text' => $language->get('text_extension'),
-                    'href' => $url->link('marketplace/extension', "user_token=$userToken&type=shipping", true),
+                    'href' => $url->link('marketplace/extension', "user_token={$session->data['user_token']}&type=shipping", true),
                 ],
                 [
                     'text' => $language->get('heading_title'),
-                    'href' => $url->link('extension/shipping/cdek_official', "user_token=$userToken", true),
+                    'href' => $url->link('extension/shipping/cdek_official', "user_token={$session->data['user_token']}", true),
                 ],
             ],
 

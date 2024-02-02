@@ -146,7 +146,7 @@ class Order
             if (CdekHelper::checkLocalityAddress($locality)) {
                 $result = [
                     'from_location' => [
-                        "address"      => $locality->address ?? '',
+                        'address'      => $locality->address ?? '',
                         'country_code' => $locality->country ?? '',
                         'postal_code'  => $locality->postal ?? '',
                         'city'         => $locality->city ?? '',

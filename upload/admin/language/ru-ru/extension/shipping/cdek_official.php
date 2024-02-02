@@ -61,7 +61,6 @@ $_['cdek_shipping__tariff_name_366']                   = 'Посылка две�
 $_['cdek_shipping__tariff_name_368']                   = 'Посылка склад-постамат';
 $_['cdek_shipping__tariff_name_376']                   = 'Экономичная посылка дверь-постамат';
 $_['cdek_shipping__tariff_name_378']                   = 'Экономичная посылка склад-постамат';
-$_['cdek_shipping__tariff_name_378']                   = 'Экономичная посылка склад-постамат';
 $_['cdek_shipping__tariff_name_480']                   = 'Экспресс дверь-дверь';
 $_['cdek_shipping__tariff_name_481']                   = 'Экспресс дверь-склад';
 $_['cdek_shipping__tariff_name_482']                   = 'Экспресс склад-дверь';
@@ -81,6 +80,7 @@ $_['cdek_recreate_info']                               = 'Пересоздать
 $_['cdek_order_deleted_info_name']                     = 'Заказ удален';
 $_['cdek_order_create_error_template']                 = 'При последней попытке создания заказа произошла ошибка: ';
 $_['cdek_order_number_name']                           = 'Номер заказа';
+$_['cdek_order_uuid_name']                             = 'UUID заказа';
 $_['cdek_order_customer_name']                         = 'Имя';
 $_['cdek_order_type_name']                             = 'Тип';
 $_['cdek_order_payment_type_name']                     = 'Способ оплаты';
@@ -90,7 +90,9 @@ $_['cdek_order_get_bill_name']                         = 'Получить на�
 $_['cdek_order_call_courier_name']                     = 'Вызвать курьера';
 $_['cdek_order_delete_order_name']                     = 'Удалить заказ';
 
-$_['cdek_shipping__currency']     = 'Валюта';
+$_['cdek_order_creation_error'] = 'Ошибка при создании заказа';
+
+$_['cdek_shipping__currency'] = 'Валюта';
 
 $_['cdek_shipping__tariffs_name']                        = 'Редактировать название тарифа';
 $_['cdek_shipping__tariff_plug']                         = 'Название тарифа плагина';

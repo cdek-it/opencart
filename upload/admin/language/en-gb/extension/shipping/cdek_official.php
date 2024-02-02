@@ -80,6 +80,7 @@ $_['cdek_order_create_info_name']                      = 'Order created';
 $_['cdek_order_deleted_info_name']                     = 'Order deleted';
 $_['cdek_recreate_info']                               = 'Recreate';
 $_['cdek_order_number_name']                           = 'Order number';
+$_['cdek_order_uuid_name']                             = 'Order UUID';
 $_['cdek_order_customer_name']                         = 'Name';
 $_['cdek_order_type_name']                             = 'Type';
 $_['cdek_order_payment_type_name']                     = 'Payment type';
@@ -89,7 +90,9 @@ $_['cdek_order_get_bill_name']                         = 'Get the delivery note'
 $_['cdek_order_call_courier_name']                     = 'Call a courier';
 $_['cdek_order_delete_order_name']                     = 'Delete order';
 
-$_['cdek_shipping__currency']     = 'Currency';
+$_['cdek_order_creation_error'] = 'Order creation error';
+
+$_['cdek_shipping__currency'] = 'Currency';
 
 $_['cdek_shipping__tariffs_name']                        = 'Edit tariffs name';
 $_['cdek_shipping__tariff_plug']                         = 'Name tariff plug';

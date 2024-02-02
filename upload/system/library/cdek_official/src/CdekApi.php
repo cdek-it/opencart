@@ -3,7 +3,6 @@
 namespace CDEK;
 
 use CDEK\Helpers\LogHelper;
-use CDEK\Models\Order;
 use CDEK\Transport\HttpClient;
 use JsonException;
 
@@ -61,7 +60,7 @@ class CdekApi
     /**
      * @throws JsonException
      */
-    public static function getOrderByUuid(string $uuid): object
+    public static function getOrderByUuid(string $uuid): array
     {
         return HttpClient::sendCdekRequest(self::getApiUrl(self::ORDERS_PATH . $uuid), 'GET', self::getToken());
     }
@@ -100,12 +99,12 @@ class CdekApi
     /**
      * @throws JsonException
      */
-    public static function createOrder(Order $order): array
+    public static function createOrder(array $requestData): array
     {
         return HttpClient::sendCdekRequest(self::getApiUrl(self::ORDERS_PATH),
                                            'POST',
                                            self::getToken(),
-                                           $order->getRequestData());
+                                           $requestData);
     }
 
     /**
@@ -132,17 +131,17 @@ class CdekApi
     /**
      * @throws JsonException
      */
-    public static function renderWaybill(string $uuid): void
+    public static function getWaybill(string $orderUuid): string
     {
         $requestBill = HttpClient::sendCdekRequest(self::getApiUrl(self::WAYBILL_PATH),
                                                    'POST',
                                                    self::getToken(),
                                                    [
-                                                           'orders'     => [
-                                                               'order_uuid' => $uuid,
-                                                           ],
-                                                           'copy_count' => 2,
-                                                       ]);
+                                                       'orders'     => [
+                                                           'order_uuid' => $orderUuid,
+                                                       ],
+                                                       'copy_count' => 2,
+                                                   ]);
         LogHelper::write('RequestBill: ' . json_encode($requestBill, JSON_THROW_ON_ERROR));
 
         sleep(5);
@@ -155,7 +154,6 @@ class CdekApi
         header('Content-type', 'application/pdf');
         header('Content-Disposition', 'inline; filename=waybill.pdf');
 
-        echo HttpClient::sendCdekRequest($result['entity']['url'], 'GET', self::getToken(), null, true);
-        exit();
+        return HttpClient::sendCdekRequest($result['entity']['url'], 'GET', self::getToken(), null, true);
     }
 }

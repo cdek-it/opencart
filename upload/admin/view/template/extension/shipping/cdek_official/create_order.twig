@@ -1,24 +1,26 @@
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title"><i class="fa fa-truck"></i> CDEK</h3>
-    </div>
-    <div
-            id="cdek_order_create_error"
-            class="cdek-error" {% if cdek_order_error_create %} style="display: block" {% else %} style="display: none" {% endif %}>{{ cdek_order_create_error_template }}{{ cdek_order_error_create_message }}</div>
-    <div id="cdek_order_create_success" class="cdek-success"></div>
-
+<div class="panel" id="cdek_official_order_info">
     <div
             id="cdek_order_create_form"
-            class="panel-body" {% if cdek_order_created or cdek_order_deleted %} style="display: none" {% else %} style="display: block" {% endif %}>
+            class="panel-body" {% if meta.cdek_uuid or meta.deleted_at %} style="display: none" {% else %}
+        style="display: block" {% endif %}>
         <div id="cdek-loader" style="display: none"></div>
-        <form id="dimensions-form" action="" method="post">
+        <form id="create-order-form" action="{{ actions.create_order }}" method="post">
+            {% if errors %}
+                <div class="cdek_error_alert">
+                    <ul>
+                        {% for error in errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
             <div class="cdek_info_alert">
-                {{ cdek_package_info }} {{ length }}х{{ width }}х{{ height }}
+                {{ cdek_package_info }} {{ meta.length }}х{{ meta.width }}х{{ meta.height }} {{ meta.weight }}g
             </div>
-            {% if order_direction == 'store' %}
-                {% if pvz_code_info %}
+            {% if direction == 'office' %}
+                {% if meta.pvz_code %}
                     <div>
-                        {{ cdek_official_office_receiver_label }}: {{ pvz_code_info }}
+                        {{ cdek_official_office_receiver_label }}: {{ meta.pvz_code }}
                     </div>
                 {% else %}
                     <div>
@@ -28,23 +30,39 @@
             {% endif %}
             <div class="form-group">
                 <label for="cdek_order_length">{{ cdek_dimensions__length }}:</label>
-                <input type="number" class="form-control" id="cdek_order_length" name="cdek_order_length" required>
+                <input
+                        type="number" value="{{ meta.length }}" class="form-control" id="cdek_order_length"
+                        name="cdek_order_length"
+                        required>
             </div>
             <div class="form-group">
                 <label for="cdek_order_width">{{ cdek_dimensions__width }}:</label>
-                <input type="number" class="form-control" id="cdek_order_width" name="cdek_order_width" required>
+                <input
+                        type="number" value="{{ meta.width }}" class="form-control" id="cdek_order_width"
+                        name="cdek_order_width" required>
             </div>
             <div class="form-group">
                 <label for="cdek_order_height">{{ cdek_dimensions__height }}:</label>
-                <input type="number" class="form-control" id="cdek_order_height" name="cdek_order_height" required>
+                <input
+                        type="number" value="{{ meta.height }}" class="form-control" id="cdek_order_height"
+                        name="cdek_order_height" required>
             </div>
-            <button id="create-order" type="submit" class="btn btn-primary">{{ cdek_auth__btn_submit }}</button>
+            <button type="submit" class="btn btn-primary">{{ cdek_auth__btn_submit }}</button>
         </form>
     </div>
 
     <div
             id="cdek_order_created"
-            class="panel-body" {% if cdek_order_created %} style="display: block" {% else %} style="display: none" {% endif %}>
+            class="panel-body" {% if meta.cdek_uuid %} style="display: block" {% else %} style="display: none" {% endif %}>
+        {% if errors %}
+            <div class="cdek_error_alert">
+                <ul>
+                    {% for error in errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
         <table class="table table-bordered">
             <thead>
             <tr>
@@ -52,40 +70,23 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td style="width: 15%" class="text-left">{{ cdek_order_number_name }}</td>
-                <td
-                        id="cdek_order_number_name"
-                        class="text-left">{% if cdek_order_created %} {{ cdek_number }} {% endif %}</td>
-            </tr>
-            <tr>
-                <td class="text-left">{{ cdek_order_customer_name }}</td>
-                <td
-                        id="cdek_order_customer_name"
-                        class="text-left">{% if cdek_order_created %} {{ name }} {% endif %}</td>
-            </tr>
-            <tr>
-                <td class="text-left">{{ cdek_order_type_name }}</td>
-                <td id="cdek_order_type_name" class="text-left">{% if cdek_order_created %} {{ type }} {% endif %}</td>
-            </tr>
-            <tr>
-                <td class="text-left">{{ cdek_order_payment_type_name }}</td>
-                <td
-                        id="cdek_order_payment_type_name"
-                        class="text-left">{% if cdek_order_created %} {{ payment_type }} {% endif %}</td>
-            </tr>
-            <tr>
-                <td class="text-left">{{ cdek_order_direction_name }}</td>
-                <td
-                        id="cdek_order_direction_name"
-                        class="text-left">{% if cdek_order_created %} {{ to_location }} {% endif %}</td>
-            </tr>
-            <tr id="cdek_order_pvz_code_tr" {% if pvz_code is empty %} style="display: none" {% endif %}>
-                <td class="text-left">{{ cdek_order_pvz_code }}</td>
-                <td
-                        id="cdek_order_pvz_code"
-                        class="text-left">{% if cdek_order_created %} {{ pvz_code }} {% endif %}</td>
-            </tr>
+            {% if meta.cdek_number %}
+                <tr>
+                    <td style="width: 15%" class="text-left">{{ cdek_order_number_name }}</td>
+                    <td class="text-left">{{ meta.cdek_number }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td style="width: 15%" class="text-left">{{ cdek_order_uuid_name }}</td>
+                    <td class="text-left">{{ meta.cdek_uuid }}</td>
+                </tr>
+            {% endif %}
+            {% if direction == 'office' %}
+                <tr>
+                    <td class="text-left">{{ cdek_order_pvz_code }}</td>
+                    <td class="text-left">{{ meta.pvz_code }}</td>
+                </tr>
+            {% endif %}
             </tbody>
         </table>
         <fieldset>
@@ -94,8 +95,9 @@
                     <div class="col-sm-8"></div>
                     <div id="cdek_order_action" class="col-sm-4" style="text-align: right; display: grid">
                         <a
-                                id="cdek_get_bill_btn"
-                                data-uuid="{% if cdek_order_created %}{{ cdek_uuid }}{% endif %}">{{ cdek_order_get_bill_name }}</a>
+                                href="{{ actions.get_waybill }}"
+                                target="_blank"
+                        >{{ cdek_order_get_bill_name }}</a>
                         <a
                                 id="cdek_delete_order_btn"
                                 data-uuid="{% if cdek_order_created %}{{ cdek_uuid }}{% endif %}">{{ cdek_order_delete_order_name }}</a>
@@ -154,13 +156,3 @@
         </fieldset>
     </div>
 </div>
-
-<script type="text/javascript">
-    var userToken = '{{ user_token }}';
-    var orderId = '{{ order_id }}';
-    {{ create_order_js|raw }}
-</script>
-
-<style>
-    {{ create_order_style|raw }}
-</style>

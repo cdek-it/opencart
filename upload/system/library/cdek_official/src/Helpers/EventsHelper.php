@@ -31,6 +31,9 @@ class EventsHelper
             'cdek_official_shipping',
             'cdek_official_checkout_map',
             'cdek_official_checkout',
+            'cdek_official_order',
+            'cdek_official_controller',
+            'cdek_official_checkout_confirm',
         ];
 
     public static function registerEvents(): void

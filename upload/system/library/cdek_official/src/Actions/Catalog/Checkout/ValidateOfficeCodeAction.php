@@ -16,7 +16,9 @@ class ValidateOfficeCodeAction
 
         $shippingMethod = explode('.', $registry->get('request')->post['shipping_method']);
 
-        if (($shippingMethod[0] !== 'cdek_official') || !empty($registry->get('session')->data['cdek_office_code'])) {
+        if (($shippingMethod[0] !== 'cdek_official') ||
+            !empty($registry->get('session')->data['cdek_office_code']) ||
+            explode('_', $shippingMethod[1])[0] === 'door') {
             return null;
         }
 

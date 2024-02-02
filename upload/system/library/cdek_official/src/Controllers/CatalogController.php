@@ -5,7 +5,7 @@ namespace CDEK\Controllers;
 use CDEK\Actions\Catalog\Checkout\GetFrontendParamsAction;
 use CDEK\Actions\Catalog\Checkout\GetOfficesAction;
 use CDEK\Actions\Catalog\Checkout\CacheOfficeCodeAction;
-use CDEK\Actions\Catalog\Checkout\SaveOfficeCodeAction;
+use CDEK\Actions\Catalog\Checkout\SaveOrderMetaAction;
 use CDEK\Actions\Catalog\Checkout\ValidateOfficeCodeAction;
 use CDEK\Config;
 use CDEK\Contracts\ControllerContract;
@@ -41,7 +41,7 @@ class CatalogController extends ControllerContract
      */
     final public function saveOfficeCode(): void
     {
-        (new SaveOfficeCodeAction)();
+        (new SaveOrderMetaAction)();
     }
 
     /**
