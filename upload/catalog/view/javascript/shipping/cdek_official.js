@@ -59,6 +59,8 @@ $(() => {
                                                                           });
                                                                         $('.cdek_office_info')
                                                                           .remove();
+                                                                        window.cdek.office_code = address.code;
+                                                                        window.cdek.office_address = address.address;
                                                                         $('button.cdek_btn')
                                                                           .before(
                                                                             $('<div class="cdek_office_info"></div>')

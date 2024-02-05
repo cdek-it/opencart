@@ -18,8 +18,11 @@ class EventsHelper
             'catalog/controller/checkout/shipping_method/save/before' => [
                 'cdek_official_validate_office_code' => 'extension/shipping/cdek_official/validateOfficeCode',
             ],
-            'catalog/controller/checkout/confirm/after'              => [
-                'cdek_official_checkout_confirm' => 'extension/shipping/cdek_official/saveOfficeCode',
+            'catalog/controller/checkout/success/after'              => [
+                'cdek_official_checkout_success' => 'extension/shipping/cdek_official/saveOfficeCode',
+            ],
+            'catalog/controller/checkout/success/before'              => [
+                'cdek_official_checkout_success_before' => 'extension/shipping/cdek_official/saveOrderCheckoutBefore',
             ],
             'catalog/view/common/header/before'                      => [
                 'cdek_official_header_before' => 'extension/shipping/cdek_official/addCheckoutHeaderScript',
