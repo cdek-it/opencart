@@ -7,6 +7,7 @@ use CDEK\Models\Tariffs;
 use CDEK\RegistrySingleton;
 use CDEK\SettingsSingleton;
 use CDEK\Transport\CdekApi;
+use Throwable;
 
 class DeliveryCalculator
 {
@@ -45,11 +46,11 @@ class DeliveryCalculator
             return [];
         }
 
-        $session = RegistrySingleton::getInstance()->get('session');
+        $session                      = RegistrySingleton::getInstance()->get('session');
         $session->data['cdek_weight'] = $recommendedDimensions['weight'];
         $session->data['cdek_height'] = $recommendedDimensions['height'];
         $session->data['cdek_length'] = $recommendedDimensions['length'];
-        $session->data['cdek_width'] = $recommendedDimensions['width'];
+        $session->data['cdek_width']  = $recommendedDimensions['width'];
 
         if (!empty($settings->shippingSettings->shippingCityAddress)) {
             $locality = LocationHelper::getLocality($settings->shippingSettings->shippingCityAddress);
@@ -68,8 +69,13 @@ class DeliveryCalculator
                                            ]);
             if (!empty($result) && isset($result['tariff_codes'])) {
                 foreach ($result['tariff_codes'] as $tariff) {
-                    if (!in_array((string)$tariff['tariff_code'], $settings->shippingSettings->enabledTariffs, true) ||
-                        Tariffs::isTariffFromDoor($tariff['tariff_code'])) {
+                    try {
+                        if (!in_array((string)$tariff['tariff_code'],
+                                      $settings->shippingSettings->enabledTariffs,
+                                      true) || Tariffs::isTariffFromDoor($tariff['tariff_code'])) {
+                            continue;
+                        }
+                    } catch (Throwable $e) {
                         continue;
                     }
 
@@ -95,8 +101,12 @@ class DeliveryCalculator
                                                'packages'      => $recommendedDimensions,
                                            ]);
             foreach ($result['tariff_codes'] as $tariff) {
-                if (!in_array((string)$tariff['tariff_code'], $settings->shippingSettings->enabledTariffs, true) ||
-                    Tariffs::isTariffFromOffice($tariff['tariff_code'])) {
+                try {
+                    if (!in_array((string)$tariff['tariff_code'], $settings->shippingSettings->enabledTariffs, true) ||
+                        Tariffs::isTariffFromOffice($tariff['tariff_code'])) {
+                        continue;
+                    }
+                } catch (Throwable $e) {
                     continue;
                 }
 
