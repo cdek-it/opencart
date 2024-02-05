@@ -208,7 +208,7 @@
                                     <div class="col-sm-2"></div>
                                     <div class="col-sm-2">
                                         <p style="margin: 0;">{{ cdek_auth__status }}
-                                            : {% if cdek_official__authTestMode is not same as 'off' %} {{ cdek_auth__test_mode_label }}
+                                            : {% if cdek_official__authTestMode is same as('on') %} {{ cdek_auth__test_mode_label }}
                                             {% elseif auth_status %} {{ cdek_auth__status_connected }} {% else %} {{ cdek_auth__status_unconnected }} {% endif %}</p>
                                     </div>
                                     <div class="col-sm-6">
@@ -218,7 +218,7 @@
                                                     name="cdek_official__authTestMode"
                                                     id="cdek_official__authTestMode"
                                                     value="on"
-                                                    {% if cdek_official__authTestMode is not same as 'off' %} checked {% endif %}
+                                                    {% if cdek_official__authTestMode is same as('off') %} checked {% endif %}
                                                     class="form-control" />
                                             <p style="margin: 10px;">{{ cdek_auth__test_mode }}</p>
                                         </div>
@@ -327,8 +327,7 @@
                                                     name="cdek_official__shippingCurrency">
                                                 {% for currency in currencies %}
                                                     <option
-                                                            value="{{ currency.code }}" {% if currency.code is same as
-                                                        cdek_official__shippingCurrency %} selected="selected" {% endif %}>{{ currency.key }}</option>
+                                                            value="{{ currency.code }}" {% if currency.code is same as(cdek_official__shippingCurrency) %} selected="selected" {% endif %}>{{ currency.key }}</option>
                                                 {% endfor %}
                                             </select>
                                         </div>
