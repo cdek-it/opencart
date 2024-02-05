@@ -74,7 +74,7 @@ class DeliveryCalculator
                     try {
                         if (!in_array((string)$tariff['tariff_code'],
                                       $settings->shippingSettings->enabledTariffs,
-                                      true) || Tariffs::isTariffFromDoor($tariff['tariff_code'])) {
+                                      true) || !Tariffs::isTariffFromDoor($tariff['tariff_code'])) {
                             continue;
                         }
                     } catch (Throwable $e) {
@@ -105,7 +105,7 @@ class DeliveryCalculator
             foreach ($result['tariff_codes'] as $tariff) {
                 try {
                     if (!in_array((string)$tariff['tariff_code'], $settings->shippingSettings->enabledTariffs, true) ||
-                        Tariffs::isTariffFromOffice($tariff['tariff_code'])) {
+                        !Tariffs::isTariffFromOffice($tariff['tariff_code'])) {
                         continue;
                     }
                 } catch (Throwable $e) {
