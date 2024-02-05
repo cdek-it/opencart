@@ -21,10 +21,12 @@ class DeliveryCalculator
             return null;
         }
 
-        return [
+        $calculatedQuote = self::calculateQuote($deliveryAddress);
+
+        return empty($calculatedQuote) ? [] : [
             'code'       => 'cdek_official',
             'title'      => $registry->get('language')->get('text_title'),
-            'quote'      => self::calculateQuote($deliveryAddress),
+            'quote'      => $calculatedQuote,
             'sort_order' => $registry->get('config')->get('shipping_cdek_official_sort_order'),
             'error'      => false,
         ];
