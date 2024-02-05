@@ -235,7 +235,18 @@ class DeliveryCalculator
     private static function getTotalSum(array $tariff): float
     {
         $settings = SettingsSingleton::getInstance();
-        $total    = $tariff['delivery_sum'];
+
+        if ($settings->priceSettings->priceFree !== null &&
+            $settings->priceSettings->priceFree >= 0 &&
+            RegistrySingleton::getInstance()->get('cart')->getSubTotal() > (float)$settings->priceSettings->priceFree) {
+            return 0;
+        }
+
+        if ($settings->priceSettings->priceFix !== null && $settings->priceSettings->priceFix >= 0) {
+            return (int)$settings->priceSettings->priceFix;
+        }
+
+        $total = $tariff['delivery_sum'];
 
         if ($settings->priceSettings->priceExtraPrice !== null && $settings->priceSettings->priceExtraPrice >= 0) {
             $total += $settings->priceSettings->priceExtraPrice;
@@ -246,17 +257,6 @@ class DeliveryCalculator
             $added = $total / 100 * $settings->priceSettings->pricePercentageIncrease;
             $total += $added;
             $total = round($total);
-        }
-
-        if ($settings->priceSettings->priceFix !== null && $settings->priceSettings->priceFix >= 0) {
-            $total = (int)$settings->priceSettings->priceFix;
-        }
-
-        if ($settings->priceSettings->priceFree !== null && $settings->priceSettings->priceFree >= 0) {
-            $cartProducts = RegistrySingleton::getInstance()->get('cart')->getProducts();
-            if ($cartProducts[0]['total'] > (float)$settings->priceSettings->priceFree) {
-                $total = 0;
-            }
         }
 
         return $total;
