@@ -19,7 +19,7 @@ class SaveOrderMetaAction
         }
 
         try {
-            OrderMetaRepository::insertInitialData($session->data['cdek_order_id'],
+            OrderMetaRepository::insertInitialData($session->data['order_id'],
                                                $session->data['cdek_office_code'] ?? '',
                                                    $session->data['cdek_height'],
                                                    $session->data['cdek_width'],

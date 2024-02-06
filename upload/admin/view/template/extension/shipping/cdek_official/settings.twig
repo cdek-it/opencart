@@ -84,7 +84,6 @@
                                           office: '{{ office_code_selected }}',
                                       },
                                       onChoose: function(type, tariff, address) {
-                                          console.log(address);
                                           if (type === 'office') {
                                               officeInput.val(JSON.stringify({
                                                                                  country: address.country_code,

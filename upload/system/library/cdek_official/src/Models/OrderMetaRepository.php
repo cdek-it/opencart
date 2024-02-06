@@ -123,7 +123,6 @@ class OrderMetaRepository
         /** @var DB $db */
         $db    = RegistrySingleton::getInstance()->get('db');
         $table = DB_PREFIX . self::TABLE_NAME;
-        $db->query(sprintf("UPDATE %s SET deleted_at=FROM_UNIXTIME('%s') WHERE order_id='%s'", $table, time(),
-                           $orderId));
+        $db->query(sprintf("UPDATE %s SET deleted_at=now() WHERE order_id='%s'", $table, $orderId));
     }
 }
