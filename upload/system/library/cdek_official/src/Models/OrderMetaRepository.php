@@ -117,4 +117,12 @@ class OrderMetaRepository
 
         return $query->num_rows === 0 ? null : $query->rows[0];
     }
+
+    public static function deleteOrder(int $orderId)
+    {
+        /** @var DB $db */
+        $db    = RegistrySingleton::getInstance()->get('db');
+        $table = DB_PREFIX . self::TABLE_NAME;
+        $db->query(sprintf("UPDATE %s SET deleted_at=now() WHERE order_id='%s'", $table, $orderId));
+    }
 }
