@@ -5,7 +5,6 @@ namespace CDEK\Controllers;
 use CDEK\Actions\Catalog\Checkout\GetFrontendParamsAction;
 use CDEK\Actions\Catalog\Checkout\GetOfficesAction;
 use CDEK\Actions\Catalog\Checkout\CacheOfficeCodeAction;
-use CDEK\Actions\Catalog\Checkout\SaveOrderCheckoutBeforeAction;
 use CDEK\Actions\Catalog\Checkout\SaveOrderMetaAction;
 use CDEK\Actions\Catalog\Checkout\ValidateOfficeCodeAction;
 use CDEK\Config;
@@ -45,13 +44,6 @@ class CatalogController extends ControllerContract
         (new SaveOrderMetaAction)();
     }
 
-    /**
-     * @noinspection PhpUnused
-     */
-    final public function saveOrderCheckoutBefore(): void
-    {
-        (new SaveOrderCheckoutBeforeAction)();
-    }
     /**
      * @throws JsonException
      */

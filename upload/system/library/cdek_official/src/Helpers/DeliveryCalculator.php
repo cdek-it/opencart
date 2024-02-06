@@ -7,6 +7,7 @@ use CDEK\Models\Tariffs;
 use CDEK\RegistrySingleton;
 use CDEK\SettingsSingleton;
 use CDEK\Transport\CdekApi;
+use Throwable;
 
 class DeliveryCalculator
 {
@@ -20,10 +21,12 @@ class DeliveryCalculator
             return null;
         }
 
-        return [
+        $calculatedQuote = self::calculateQuote($deliveryAddress);
+
+        return empty($calculatedQuote) ? [] : [
             'code'       => 'cdek_official',
             'title'      => $registry->get('language')->get('text_title'),
-            'quote'      => self::calculateQuote($deliveryAddress),
+            'quote'      => $calculatedQuote,
             'sort_order' => $registry->get('config')->get('shipping_cdek_official_sort_order'),
             'error'      => false,
         ];
@@ -45,11 +48,11 @@ class DeliveryCalculator
             return [];
         }
 
-        $session = RegistrySingleton::getInstance()->get('session');
+        $session                      = RegistrySingleton::getInstance()->get('session');
         $session->data['cdek_weight'] = $recommendedDimensions['weight'];
         $session->data['cdek_height'] = $recommendedDimensions['height'];
         $session->data['cdek_length'] = $recommendedDimensions['length'];
-        $session->data['cdek_width'] = $recommendedDimensions['width'];
+        $session->data['cdek_width']  = $recommendedDimensions['width'];
 
         if (!empty($settings->shippingSettings->shippingCityAddress)) {
             $locality = LocationHelper::getLocality($settings->shippingSettings->shippingCityAddress);
@@ -68,8 +71,13 @@ class DeliveryCalculator
                                            ]);
             if (!empty($result) && isset($result['tariff_codes'])) {
                 foreach ($result['tariff_codes'] as $tariff) {
-                    if (!in_array((string)$tariff['tariff_code'], $settings->shippingSettings->enabledTariffs, true) ||
-                        Tariffs::isTariffFromDoor($tariff['tariff_code'])) {
+                    try {
+                        if (!in_array((string)$tariff['tariff_code'],
+                                      $settings->shippingSettings->enabledTariffs,
+                                      true) || !Tariffs::isTariffFromDoor($tariff['tariff_code'])) {
+                            continue;
+                        }
+                    } catch (Throwable $e) {
                         continue;
                     }
 
@@ -95,8 +103,12 @@ class DeliveryCalculator
                                                'packages'      => $recommendedDimensions,
                                            ]);
             foreach ($result['tariff_codes'] as $tariff) {
-                if (!in_array((string)$tariff['tariff_code'], $settings->shippingSettings->enabledTariffs, true) ||
-                    Tariffs::isTariffFromOffice($tariff['tariff_code'])) {
+                try {
+                    if (!in_array((string)$tariff['tariff_code'], $settings->shippingSettings->enabledTariffs, true) ||
+                        !Tariffs::isTariffFromOffice($tariff['tariff_code'])) {
+                        continue;
+                    }
+                } catch (Throwable $e) {
                     continue;
                 }
 
@@ -223,7 +235,18 @@ class DeliveryCalculator
     private static function getTotalSum(array $tariff): float
     {
         $settings = SettingsSingleton::getInstance();
-        $total    = $tariff['delivery_sum'];
+
+        if ($settings->priceSettings->priceFree !== null &&
+            $settings->priceSettings->priceFree >= 0 &&
+            RegistrySingleton::getInstance()->get('cart')->getSubTotal() > (float)$settings->priceSettings->priceFree) {
+            return 0;
+        }
+
+        if ($settings->priceSettings->priceFix !== null && $settings->priceSettings->priceFix >= 0) {
+            return (int)$settings->priceSettings->priceFix;
+        }
+
+        $total = $tariff['delivery_sum'];
 
         if ($settings->priceSettings->priceExtraPrice !== null && $settings->priceSettings->priceExtraPrice >= 0) {
             $total += $settings->priceSettings->priceExtraPrice;
@@ -234,17 +257,6 @@ class DeliveryCalculator
             $added = $total / 100 * $settings->priceSettings->pricePercentageIncrease;
             $total += $added;
             $total = round($total);
-        }
-
-        if ($settings->priceSettings->priceFix !== null && $settings->priceSettings->priceFix >= 0) {
-            $total = (int)$settings->priceSettings->priceFix;
-        }
-
-        if ($settings->priceSettings->priceFree !== null && $settings->priceSettings->priceFree >= 0) {
-            $cartProducts = RegistrySingleton::getInstance()->get('cart')->getProducts();
-            if ($cartProducts[0]['total'] > (float)$settings->priceSettings->priceFree) {
-                $total = 0;
-            }
         }
 
         return $total;
