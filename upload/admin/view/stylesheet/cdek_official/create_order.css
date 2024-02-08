@@ -27,7 +27,7 @@
     cursor: pointer;
 }
 
-#cdek-loader {
+.cdek-loader {
     z-index: 50;
     position: absolute;
     /* Set the position relative to the parent element */
