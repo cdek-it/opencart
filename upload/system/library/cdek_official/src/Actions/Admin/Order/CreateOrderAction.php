@@ -52,6 +52,7 @@ class CreateOrderAction
         }
 
         OrderMetaRepository::insertCdekUuid($orderId, $result['entity']['uuid']);
+        OrderMetaRepository::insertCdekTrack($orderId, '');
 
         LogHelper::write("Send order $orderId with uuid {$result['entity']['uuid']}");
 

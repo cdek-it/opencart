@@ -40,7 +40,7 @@ class GetOrderInfoTabAction
 
         unset($session->data['errors']);
 
-        if (!empty($meta['cdek_uuid']) && empty($meta['deleted_at'])) {
+        if (!empty($meta['cdek_uuid']) && empty($meta['cdek_number']) && empty($meta['deleted_at'])) {
             $order = CdekApi::getOrderByUuid($meta['cdek_uuid']);
 
             if (!empty($order['requests'][0]['errors'])) {
