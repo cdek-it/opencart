@@ -12,6 +12,7 @@ $(() => {
 
     const updateGlobalData = () => $.getJSON(
       'index.php?route=extension/shipping/cdek_official/getParams',
+      {},
       (data) => {
           window.cdek = data;
       });
