@@ -19,6 +19,7 @@ class GetFrontendParamsAction
         $session = $registry->get('session');
 
         $response->addHeader('Content-Type: application/json');
+        $response->addHeader('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
         $response->setOutput(json_encode([
                                              'apikey' => SettingsSingleton::getInstance()->authSettings->apiKey,
                                              'city' => $session->data['shipping_address']['city'] ?? null,
