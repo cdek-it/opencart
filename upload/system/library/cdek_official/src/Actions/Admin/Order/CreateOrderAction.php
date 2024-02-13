@@ -157,7 +157,8 @@ class CreateOrderAction
 
         if ($order['payment_code'] === 'cod') {
             $params['delivery_recipient_cost'] = [
-                'value' => $order['total'],
+                'value' => array_reduce($registry->get('model_sale_order')->getOrderTotals($orderId),
+                    static fn($cr, $el) => $el['code'] === 'shipping' ? $cr += $el['value'] : $cr, 0),
             ];
         }
 

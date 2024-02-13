@@ -9,10 +9,10 @@ class EventsHelper
 {
     private const EVENTS
         = [
-            'admin/view/sale/order_info/before'                      => [
+            'admin/view/sale/order_info/before'                       => [
                 'cdek_official_order_info' => 'extension/shipping/cdek_official/orderInfo',
             ],
-            'admin/controller/sale/order/info/before'                => [
+            'admin/controller/sale/order/info/before'                 => [
                 'cdek_official_order_info_scripts' => 'extension/shipping/cdek_official/orderInfoScripts',
             ],
             'catalog/controller/checkout/shipping_method/save/before' => [
@@ -21,7 +21,10 @@ class EventsHelper
             'catalog/controller/checkout/success/before'              => [
                 'cdek_official_checkout_success' => 'extension/shipping/cdek_official/saveOfficeCode',
             ],
-            'catalog/view/common/header/before'                      => [
+            'catalog/controller/checkout/confirm/after'               => [
+                'cdek_official_checkout_confirm' => 'extension/shipping/cdek_official/saveOfficeCode',
+            ],
+            'catalog/view/common/header/before'                       => [
                 'cdek_official_header_before' => 'extension/shipping/cdek_official/addCheckoutHeaderScript',
             ],
         ];
