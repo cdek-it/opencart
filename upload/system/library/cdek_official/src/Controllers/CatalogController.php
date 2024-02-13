@@ -57,10 +57,5 @@ class CatalogController extends ControllerContract
     {
         $data['scripts'][] = 'catalog/view/javascript/shipping/cdek_official.js';
         $data['scripts'][] = '//cdn.jsdelivr.net/npm/@cdek-it/widget@' . Config::MAP_VERSION;
-        $data['styles'][]  = [
-            'rel'   => 'stylesheet',
-            'href'  => 'catalog/view/theme/default/stylesheet/shipping/cdek_official.css',
-            'media' => 'all',
-        ];
     }
 }
