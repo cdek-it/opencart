@@ -23,7 +23,15 @@ class GetWaybillAction
             return;
         }
 
-        $response->setOutput(CdekApi::getWaybill($meta['cdek_uuid']));
+        $waybill = CdekApi::getWaybill($meta['cdek_uuid']);
+
+        if($waybill === null){
+            $response->addHeader('HTTP/1.1 404 Not Found');
+            $response->setOutput('Waybill not found');
+            return;
+        }
+
+        $response->setOutput($waybill);
         $response->addHeader('Content-Type: application/pdf');
     }
 }

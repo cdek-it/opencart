@@ -132,7 +132,7 @@ class CdekApi
     /**
      * @throws JsonException
      */
-    public static function getWaybill(string $orderUuid): string
+    public static function getWaybill(string $orderUuid): ?string
     {
         $requestBill = HttpClient::sendCdekRequest(self::getApiUrl(self::WAYBILL_PATH),
                                                    'POST',
@@ -151,6 +151,10 @@ class CdekApi
                                               'GET',
                                               self::getToken());
         LogHelper::write('Result: ' . json_encode($result, JSON_THROW_ON_ERROR));
+
+        if(empty($result['entity']['url'])){
+            return null;
+        }
 
         return HttpClient::sendCdekRequest($result['entity']['url'], 'GET', self::getToken(), null, true);
     }
