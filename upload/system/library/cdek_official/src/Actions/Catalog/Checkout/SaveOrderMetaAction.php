@@ -9,6 +9,10 @@ class SaveOrderMetaAction
 {
     final public function __invoke(): void
     {
+        if(empty($session->data['order_id'])) {
+            return;
+        }
+
         $registry = RegistrySingleton::getInstance();
 
         /** @var \Session $session */
