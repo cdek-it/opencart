@@ -25,58 +25,62 @@ $(() => {
 
         const object = $(e.target);
 
-        object.after($('<button class="cdek_btn">Выбрать ПВЗ</button>').on(
-          'click',
-          () => {
-              updateGlobalData().done(() => {
-                  if (window.cdekWidget === undefined) {
-                      window.cdekWidget = new window.CDEKWidget({
-                                                                    apiKey: window.cdek.apikey,
-                                                                    defaultLocation: window.cdek.city,
-                                                                    popup: true,
-                                                                    canChoose: true,
-                                                                    hideDeliveryOptions: {
-                                                                        office: false,
-                                                                        door: true,
-                                                                    },
-                                                                    servicePath: '/index.php?route=extension/shipping/cdek_official/map',
-                                                                    onChoose: function(type,
-                                                                      tariff,
-                                                                      address) {
-                                                                        $.post(
-                                                                          '/index.php?route=extension/shipping/cdek_official/cacheOfficeCode',
-                                                                          {
-                                                                              office_code: address.code,
-                                                                              office_address: address.address,
-                                                                          });
-                                                                        $('.cdek_office_info')
-                                                                          .remove();
-                                                                        $('button.cdek_btn')
-                                                                          .before(
-                                                                            $('<div class="cdek_office_info"></div>')
-                                                                              .html(
-                                                                                `[${address.code}] ${address.address}`));
-                                                                    },
-                                                                });
-                  } else {
-                      window.cdekWidget.updateLocation(window.cdek.city);
-                      $.get(
-                        '/index.php?route=extension/shipping/cdek_official/map')
-                       .done(data => {
-                           $('#cdek_official_office_error').hide();
-                           window.cdekWidget.updateOfficesRaw(data);
-                       }).fail(xhr => {
-                          const error = JSON.parse(xhr.responseText);
-                          console.debug('[CDEKDelivery] ' + error.message);
-                          $('#cdek_official_office_error')
-                            .text(error.message)
-                            .show();
-                          window.cdekWidget.close();
-                      });
-                  }
-                  window.cdekWidget.open();
-              });
-          }));
+        if (!object.nextAll('.cdek_btn').length) {
+            object.after($('<button class="cdek_btn">Выбрать ПВЗ</button>').on(
+              'click',
+              () => {
+                  updateGlobalData().done(() => {
+                      if (window.cdekWidget === undefined) {
+                          window.cdekWidget = new window.CDEKWidget({
+                                                                        apiKey: window.cdek.apikey,
+                                                                        defaultLocation: window.cdek.city,
+                                                                        popup: true,
+                                                                        canChoose: true,
+                                                                        hideDeliveryOptions: {
+                                                                            office: false,
+                                                                            door: true,
+                                                                        },
+                                                                        servicePath: '/index.php?route=extension/shipping/cdek_official/map',
+                                                                        onChoose: function(type,
+                                                                          tariff,
+                                                                          address) {
+                                                                            $.post(
+                                                                              '/index.php?route=extension/shipping/cdek_official/cacheOfficeCode',
+                                                                              {
+                                                                                  office_code: address.code,
+                                                                                  office_address: address.address,
+                                                                              })
+                                                                             .done(
+                                                                               updateGlobalData);
+                                                                            $('.cdek_office_info')
+                                                                              .remove();
+                                                                            $('button.cdek_btn')
+                                                                              .before(
+                                                                                $('<div class="cdek_office_info"></div>')
+                                                                                  .html(
+                                                                                    `[${address.code}] ${address.address}`));
+                                                                        },
+                                                                    });
+                      } else {
+                          window.cdekWidget.updateLocation(window.cdek.city);
+                          $.get(
+                            '/index.php?route=extension/shipping/cdek_official/map')
+                           .done(data => {
+                               $('#cdek_official_office_error').hide();
+                               window.cdekWidget.updateOfficesRaw(data);
+                           }).fail(xhr => {
+                              const error = JSON.parse(xhr.responseText);
+                              console.debug('[CDEKDelivery] ' + error.message);
+                              $('#cdek_official_office_error')
+                                .text(error.message)
+                                .show();
+                              window.cdekWidget.close();
+                          });
+                      }
+                      window.cdekWidget.open();
+                  });
+              }));
+        }
 
         if (!Object.prototype.hasOwnProperty.call(window, 'cdek') ||
           !Object.prototype.hasOwnProperty.call(window.cdek, 'office_code') ||
