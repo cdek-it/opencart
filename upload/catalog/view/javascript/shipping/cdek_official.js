@@ -52,13 +52,6 @@ $(() => {
                                                                               })
                                                                              .done(
                                                                                updateGlobalData);
-                                                                            $('.cdek_office_info')
-                                                                              .remove();
-                                                                            $('button.cdek_btn')
-                                                                              .before(
-                                                                                $('<div class="cdek_office_info"></div>')
-                                                                                  .html(
-                                                                                    `[${address.code}] ${address.address}`));
                                                                         },
                                                                     });
                       } else {
