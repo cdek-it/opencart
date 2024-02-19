@@ -2,6 +2,7 @@
 
 namespace CDEK\Models;
 
+use CDEK\Helpers\LogHelper;
 use CDEK\RegistrySingleton;
 use DB;
 
@@ -29,7 +30,10 @@ class OrderMetaRepository
         $table       = DB_PREFIX . self::TABLE_NAME;
         $tableExists = $db->query("SHOW TABLES LIKE '$table'")->num_rows > 0;
 
+        LogHelper::write('updating table');
+
         if (!$tableExists) {
+            LogHelper::write('creating table');
             $db->query(sprintf('CREATE TABLE %s (
                                             %s 
                                             PRIMARY KEY (`id`),
@@ -49,6 +53,7 @@ class OrderMetaRepository
         $missingColumns = array_diff(array_keys(self::COLUMNS), $existingColumns);
 
         foreach ($missingColumns as $column) {
+            LogHelper::write('adding column ' . $column);
             $db->query(sprintf('ALTER TABLE %s ADD COLUMN %s %s',
                                $table,
                                $column,
@@ -58,10 +63,13 @@ class OrderMetaRepository
         $redundantColumns = array_diff($existingColumns, array_keys(self::COLUMNS));
 
         foreach ($redundantColumns as $column) {
+            LogHelper::write('dropping column ' . $column);
             $db->query(sprintf('ALTER TABLE %s DROP COLUMN %s',
                                $table,
                                $column));
         }
+
+        LogHelper::write('finished db modifications');
     }
 
     public static function insertCdekUuid(int $orderId, string $orderUuid): void

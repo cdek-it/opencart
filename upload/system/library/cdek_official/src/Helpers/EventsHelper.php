@@ -54,6 +54,8 @@ class EventsHelper
                 }
             }
         }
+
+        LogHelper::write('events created');
     }
 
     public static function deleteEvents(): void
