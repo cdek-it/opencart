@@ -168,3 +168,6 @@ $_['cdek_official_map_address_error']
 $_['cdek_official_office_receiver_label']                = 'Код офиса получателя';
 $_['cdek_official_office_receiver_error']
                                                          = 'Ошибка: Заказ создан некорректно. Код пвз не найден в базе СДЭК. Обратитесь в поддержку плагина';
+
+$_['cdek_dimensions__length_unit'] = 'Выберите сантиметры';
+$_['cdek_dimensions__weight_unit'] = 'Выберите граммы';

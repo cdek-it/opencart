@@ -1,6 +1,6 @@
 <?php
 
-namespace CDEK\Models;
+namespace CDEK\Models\Settings;
 
 use CDEK\Contracts\ValidatableSettingsContract;
 use Exception;
@@ -12,6 +12,9 @@ class SettingsDimensions extends ValidatableSettingsContract
     public int $dimensionsWidth = 0;
     public int $dimensionsHeight = 0;
     public int $dimensionsWeight = 0;
+
+    public string $weightClass = '2';
+    public string $lengthClass = '1';
 
     /**
      * @throws Exception
@@ -49,15 +52,5 @@ class SettingsDimensions extends ValidatableSettingsContract
         if (!is_numeric($this->dimensionsWeight)) {
             throw new RuntimeException('cdek_error_dimensions_weight_invalid');
         }
-    }
-
-    public function getParams()
-    {
-        return [
-            'length' => $this->dimensionsLength,
-            'width'  => $this->dimensionsWidth,
-            'height' => $this->dimensionsHeight,
-            'weight' => $this->dimensionsWeight,
-        ];
     }
 }

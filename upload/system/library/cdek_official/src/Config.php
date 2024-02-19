@@ -9,6 +9,4 @@ class Config
     public const DELIVERY_NAME = 'cdek_official';
     public const API_URL      = 'https://api.cdek.ru/v2/';
     public const API_TEST_URL = 'https://api.edu.cdek.ru/v2/';
-
-    public const WEIGHT_CLASS_ID = 2;
 }

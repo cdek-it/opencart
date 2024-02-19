@@ -2,6 +2,7 @@
 
 namespace CDEK\Helpers;
 
+use Cart\Length;
 use Cart\Weight;
 use CDEK\Models\Tariffs;
 use CDEK\RegistrySingleton;
@@ -137,16 +138,28 @@ class DeliveryCalculator
 
     private static function getDimensions(array $product): array
     {
-        $settings = SettingsSingleton::getInstance();
-        $registry = RegistrySingleton::getInstance();
+        $settings    = SettingsSingleton::getInstance();
+        $registry    = RegistrySingleton::getInstance();
+        $lengthModel = new Length($registry);
+        $weightModel = new Weight($registry);
+
         return [
-            'height'   => ((int)$product['height']) ?: $settings->dimensionsSettings->dimensionsHeight,
-            'length'   => ((int)$product['length']) ?: $settings->dimensionsSettings->dimensionsLength,
-            'weight'   => ((int)((new Weight($registry))->convert($product['weight'],
-                                                                  $product['weight_class_id'],
-                                                                  '2')) / (int)$product['quantity']) ?:
-                $settings->dimensionsSettings->dimensionsWeight,
-            'width'    => ((int)$product['width']) ?: $settings->dimensionsSettings->dimensionsWidth,
+            'height'   => $product['height'] ? $lengthModel->convert($product['height'],
+                                                                     $product['length_class_id'],
+                                                                     $settings->dimensionsSettings->lengthClass) :
+                $settings->dimensionsSettings->dimensionsHeight,
+            'length'   => $product['length'] ? $lengthModel->convert($product['length'],
+                                                                     $product['length_class_id'],
+                                                                     $settings->dimensionsSettings->lengthClass) :
+                $settings->dimensionsSettings->dimensionsLength,
+            'weight'   => ((int)($weightModel->convert($product['weight'],
+                                                       $product['weight_class_id'],
+                                                       $settings->dimensionsSettings->weightClass)) /
+                           (int)$product['quantity']) ?: $settings->dimensionsSettings->dimensionsWeight,
+            'width'    => $product['width'] ? $lengthModel->convert($product['width'],
+                                                                    $product['length_class_id'],
+                                                                    $settings->dimensionsSettings->lengthClass) :
+                $settings->dimensionsSettings->dimensionsWidth,
             'quantity' => (int)$product['quantity'],
         ];
     }
