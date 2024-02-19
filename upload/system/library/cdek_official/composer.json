@@ -9,5 +9,14 @@
     "psr-4": {
       "CDEK\\": "src"
     }
-  }
+  },
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://repo.cdek.ru/artifactory/api/composer/cdek-php"
+    },
+    {
+      "packagist.org": false
+    }
+  ]
 }
