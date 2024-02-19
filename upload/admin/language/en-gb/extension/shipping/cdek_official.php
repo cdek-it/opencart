@@ -173,3 +173,6 @@ $_['cdek_official_map_address_error']
 $_['cdek_official_office_receiver_label']                = 'Recipient office code';
 $_['cdek_official_office_receiver_error']
                                                          = 'Error: The order was created incorrectly. Office code is not found in the CDEK database. Contact plugin support';
+
+$_['cdek_dimensions__length_unit'] = 'Please select centimeters';
+$_['cdek_dimensions__weight_unit'] = 'Please select grams';

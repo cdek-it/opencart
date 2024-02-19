@@ -194,7 +194,7 @@ class CreateOrderAction
                 'amount'   => $item['quantity'],
                 'weight'   => $weightClass->convert($product['weight'],
                                                     $product['weight_class_id'],
-                                                    Config::WEIGHT_CLASS_ID) ?:
+                                                    $settings->dimensionsSettings->weightClass) ?:
                     $settings->dimensionsSettings->dimensionsWeight,
                 'payment'  => [
                     'value' => $order['payment_code'] === 'cod' ? $item['price'] : 0,

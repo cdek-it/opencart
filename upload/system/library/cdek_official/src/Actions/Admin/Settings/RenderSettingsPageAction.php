@@ -40,6 +40,8 @@ class RenderSettingsPageAction
         $document->addScript('//cdn.jsdelivr.net/npm/@cdek-it/widget@' . Config::MAP_VERSION);
 
         $loader->model('setting/setting');
+        $loader->model('localisation/length_class');
+        $loader->model('localisation/weight_class');
 
         /** @var Session $session */
         $session = $registry->get('session');
@@ -76,8 +78,9 @@ class RenderSettingsPageAction
             'tariffs' => Tariffs::getTariffList(),
             'currencies' => Currency::listCurrencies(),
             'auth_status' => CdekApi::checkAuth(),
+            'weight_classes' => $registry->get('model_localisation_weight_class')->getWeightClasses(),
+            'length_classes' => $registry->get('model_localisation_length_class')->getLengthClasses(),
         ];
-
         unset($session->data['success'], $session->data['error_warning']);
 
         $registry->get('response')->setOutput($loader->view('extension/shipping/cdek_official/settings',

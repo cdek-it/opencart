@@ -1,6 +1,6 @@
 <?php
 
-namespace CDEK\Models;
+namespace CDEK\Models\Settings;
 
 use CDEK\Contracts\ValidatableSettingsContract;
 use Exception;
