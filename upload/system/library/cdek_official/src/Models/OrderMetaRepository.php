@@ -20,7 +20,7 @@ class OrderMetaRepository
             'width'       => 'SMALLINT UNSIGNED NOT NULL',
             'height'      => 'SMALLINT UNSIGNED NOT NULL',
             'weight'      => 'MEDIUMINT UNSIGNED NOT NULL',
-            'deleted_at'  => 'TIMESTAMP(0) DEFAULT NULL',
+            'deleted_at'  => 'TIMESTAMP NULL DEFAULT NULL',
         ];
 
     public static function create(): void
