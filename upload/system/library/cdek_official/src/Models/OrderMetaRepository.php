@@ -25,51 +25,56 @@ class OrderMetaRepository
 
     public static function create(): void
     {
-        /** @var DB $db */
-        $db          = RegistrySingleton::getInstance()->get('db');
-        $table       = DB_PREFIX . self::TABLE_NAME;
-        $tableExists = $db->query("SHOW TABLES LIKE '$table'")->num_rows > 0;
+        try{
+            /** @var DB $db */
+            $db          = RegistrySingleton::getInstance()->get('db');
+            $table       = DB_PREFIX . self::TABLE_NAME;
+            $tableExists = $db->query("SHOW TABLES LIKE '$table'")->num_rows > 0;
 
-        LogHelper::write('updating table');
+            LogHelper::write('updating table');
 
-        if (!$tableExists) {
-            LogHelper::write('creating table');
-            $db->query(sprintf('CREATE TABLE %s (
+            if (!$tableExists) {
+                LogHelper::write('creating table');
+                $db->query(sprintf('CREATE TABLE %s (
                                             %s 
                                             PRIMARY KEY (`id`),
                                             UNIQUE KEY `order_id_unique` (`order_id`),
                                             FOREIGN KEY (`order_id`) REFERENCES %sorder(`order_id`) ON DELETE RESTRICT ON UPDATE CASCADE
                                             ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;',
-                               $table,
-                               array_reduce(array_keys(self::COLUMNS),
-                                   static fn($carry, $e) => $carry . "`$e`" . self::COLUMNS[$e] . ", ",
-                                            ''),
-                               DB_PREFIX));
+                                   $table,
+                                   array_reduce(array_keys(self::COLUMNS),
+                                       static fn($carry, $e) => $carry . "`$e`" . self::COLUMNS[$e] . ", ",
+                                                ''),
+                                   DB_PREFIX));
+            }
+
+            $existingColumns = array_map(static fn($el) => $el['Field'],
+                $db->query("SHOW COLUMNS FROM `$table`")->rows);
+
+            $missingColumns = array_diff(array_keys(self::COLUMNS), $existingColumns);
+
+            foreach ($missingColumns as $column) {
+                LogHelper::write('adding column ' . $column);
+                $db->query(sprintf('ALTER TABLE %s ADD COLUMN %s %s',
+                                   $table,
+                                   $column,
+                                   self::COLUMNS[$column]));
+            }
+
+            $redundantColumns = array_diff($existingColumns, array_keys(self::COLUMNS));
+
+            foreach ($redundantColumns as $column) {
+                LogHelper::write('dropping column ' . $column);
+                $db->query(sprintf('ALTER TABLE %s DROP COLUMN %s',
+                                   $table,
+                                   $column));
+            }
+
+            LogHelper::write('finished db modifications');
+        }catch (\Exception $e) {
+            LogHelper::write('error while updating table: ' . $e->getMessage());
+            throw $e;
         }
-
-        $existingColumns = array_map(static fn($el) => $el['Field'],
-            $db->query("SHOW COLUMNS FROM `$table`")->rows);
-
-        $missingColumns = array_diff(array_keys(self::COLUMNS), $existingColumns);
-
-        foreach ($missingColumns as $column) {
-            LogHelper::write('adding column ' . $column);
-            $db->query(sprintf('ALTER TABLE %s ADD COLUMN %s %s',
-                               $table,
-                               $column,
-                               self::COLUMNS[$column]));
-        }
-
-        $redundantColumns = array_diff($existingColumns, array_keys(self::COLUMNS));
-
-        foreach ($redundantColumns as $column) {
-            LogHelper::write('dropping column ' . $column);
-            $db->query(sprintf('ALTER TABLE %s DROP COLUMN %s',
-                               $table,
-                               $column));
-        }
-
-        LogHelper::write('finished db modifications');
     }
 
     public static function insertCdekUuid(int $orderId, string $orderUuid): void
