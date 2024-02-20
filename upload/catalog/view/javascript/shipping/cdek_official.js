@@ -17,7 +17,7 @@ $(() => {
       {},
       data => {
           window.cdek = data;
-          if (!mapLoaded) {
+          if (!mapLoaded && !Object.prototype.hasOwnProperty.call(window, 'CDEKWidget')) {
               $.getScript(`//cdn.jsdelivr.net/npm/@cdek-it/widget@${data.map_version}`);
               mapLoaded = true;
           }
