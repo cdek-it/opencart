@@ -26,7 +26,8 @@ $(() => {
         const object = $(e.target);
 
         if (!object.nextAll('.cdek_btn').length) {
-            object.after($('<button class="cdek_btn">Выбрать ПВЗ</button>').on(
+            object.after($('<button class="cdek_btn" type="button">Выбрать' +
+                             ' ПВЗ</button>').on(
               'click',
               () => {
                   updateGlobalData().done(() => {
