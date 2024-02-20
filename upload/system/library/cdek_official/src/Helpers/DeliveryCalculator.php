@@ -36,8 +36,10 @@ class DeliveryCalculator
     private static function calculateQuote(array $deliveryAddress): array
     {
         $settings          = SettingsSingleton::getInstance();
-        $recipientLocation = CdekApi::getCityByParam(trim($deliveryAddress['city'] ?? ''),
-                                                     trim($deliveryAddress['postcode'] ?? ''));
+        $recipientLocation = CdekApi::getCityByParam(
+            trim($deliveryAddress['city'] ?? ''),
+            trim($deliveryAddress['postcode'] ?? ''),
+        );
         if (empty($recipientLocation[0]['code'])) {
             return [];
         }
@@ -57,6 +59,19 @@ class DeliveryCalculator
 
         if (!empty($settings->shippingSettings->shippingCityAddress)) {
             $locality = LocationHelper::getLocality($settings->shippingSettings->shippingCityAddress);
+            LogHelper::write('Calculator request: ' . json_encode([
+                                                                      'currency'      => $settings->shippingSettings->shippingCurrency,
+                                                                      'from_location' => [
+                                                                          'address'      => $locality['address'] ?? '',
+                                                                          'country_code' => $locality['country'] ?? '',
+                                                                          'postal_code'  => $locality['postal'] ?? '',
+                                                                          'city'         => $locality['city'] ?? '',
+                                                                      ],
+                                                                      'to_location'   => [
+                                                                          'code' => $recipientLocation[0]['code'],
+                                                                      ],
+                                                                      'packages'      => $recommendedDimensions,
+                                                                  ], JSON_THROW_ON_ERROR));
             $result   = CdekApi::calculate([
                                                'currency'      => $settings->shippingSettings->shippingCurrency,
                                                'from_location' => [
@@ -70,12 +85,14 @@ class DeliveryCalculator
                                                ],
                                                'packages'      => $recommendedDimensions,
                                            ]);
-            if (!empty($result) && isset($result['tariff_codes'])) {
+            if (!empty($result['tariff_codes'])) {
                 foreach ($result['tariff_codes'] as $tariff) {
                     try {
-                        if (!in_array((string)$tariff['tariff_code'],
-                                      $settings->shippingSettings->enabledTariffs,
-                                      true) || !Tariffs::isTariffFromDoor($tariff['tariff_code'])) {
+                        if (!in_array(
+                                (string)$tariff['tariff_code'],
+                                $settings->shippingSettings->enabledTariffs,
+                                true,
+                            ) || !Tariffs::isTariffFromDoor($tariff['tariff_code'])) {
                             continue;
                         }
                     } catch (Throwable $e) {
@@ -91,6 +108,18 @@ class DeliveryCalculator
 
         if (!empty($settings->shippingSettings->shippingPvz)) {
             $locality = LocationHelper::getLocality($settings->shippingSettings->shippingPvz);
+            LogHelper::write('Calculator request: ' . json_encode([
+                                                                      'currency'      => $settings->shippingSettings->shippingCurrency,
+                                                                      'from_location' => [
+                                                                          'country_code' => $locality['country'] ?? '',
+                                                                          'postal_code'  => $locality['postal'] ?? '',
+                                                                          'city'         => $locality['city'] ?? '',
+                                                                      ],
+                                                                      'to_location'   => [
+                                                                          'code' => $recipientLocation[0]['code'],
+                                                                      ],
+                                                                      'packages'      => $recommendedDimensions,
+                                                                  ], JSON_THROW_ON_ERROR));
             $result   = CdekApi::calculate([
                                                'currency'      => $settings->shippingSettings->shippingCurrency,
                                                'from_location' => [
@@ -103,19 +132,24 @@ class DeliveryCalculator
                                                ],
                                                'packages'      => $recommendedDimensions,
                                            ]);
-            foreach ($result['tariff_codes'] as $tariff) {
-                try {
-                    if (!in_array((string)$tariff['tariff_code'], $settings->shippingSettings->enabledTariffs, true) ||
-                        !Tariffs::isTariffFromOffice($tariff['tariff_code'])) {
+            if (!empty($result['tariff_codes'])) {
+                foreach ($result['tariff_codes'] as $tariff) {
+                    try {
+                        if (!in_array(
+                                (string)$tariff['tariff_code'],
+                                $settings->shippingSettings->enabledTariffs,
+                                true,
+                            ) || !Tariffs::isTariffFromOffice($tariff['tariff_code'])) {
+                            continue;
+                        }
+                    } catch (Throwable $e) {
                         continue;
                     }
-                } catch (Throwable $e) {
-                    continue;
+
+                    $prefix = Tariffs::isTariffToDoor($tariff['tariff_code']) ? 'door' : 'office';
+
+                    $tariffCalculated["{$prefix}_{$tariff['tariff_code']}"] = self::formatQuoteData($tariff);
                 }
-
-                $prefix = Tariffs::isTariffToDoor($tariff['tariff_code']) ? 'door' : 'office';
-
-                $tariffCalculated["{$prefix}_{$tariff['tariff_code']}"] = self::formatQuoteData($tariff);
             }
         }
 
@@ -144,22 +178,26 @@ class DeliveryCalculator
         $weightModel = new Weight($registry);
 
         return [
-            'height'   => $product['height'] ? $lengthModel->convert($product['height'],
-                                                                     $product['length_class_id'],
-                                                                     $settings->dimensionsSettings->lengthClass) :
-                $settings->dimensionsSettings->dimensionsHeight,
-            'length'   => $product['length'] ? $lengthModel->convert($product['length'],
-                                                                     $product['length_class_id'],
-                                                                     $settings->dimensionsSettings->lengthClass) :
-                $settings->dimensionsSettings->dimensionsLength,
-            'weight'   => ((int)($weightModel->convert($product['weight'],
-                                                       $product['weight_class_id'],
-                                                       $settings->dimensionsSettings->weightClass)) /
-                           (int)$product['quantity']) ?: $settings->dimensionsSettings->dimensionsWeight,
-            'width'    => $product['width'] ? $lengthModel->convert($product['width'],
-                                                                    $product['length_class_id'],
-                                                                    $settings->dimensionsSettings->lengthClass) :
-                $settings->dimensionsSettings->dimensionsWidth,
+            'height'   => $product['height'] ? $lengthModel->convert(
+                $product['height'],
+                $product['length_class_id'],
+                $settings->dimensionsSettings->lengthClass,
+            ) : $settings->dimensionsSettings->dimensionsHeight,
+            'length'   => $product['length'] ? $lengthModel->convert(
+                $product['length'],
+                $product['length_class_id'],
+                $settings->dimensionsSettings->lengthClass,
+            ) : $settings->dimensionsSettings->dimensionsLength,
+            'weight'   => ((int)($weightModel->convert(
+                    $product['weight'],
+                    $product['weight_class_id'],
+                    $settings->dimensionsSettings->weightClass,
+                )) / (int)$product['quantity']) ?: $settings->dimensionsSettings->dimensionsWeight,
+            'width'    => $product['width'] ? $lengthModel->convert(
+                $product['width'],
+                $product['length_class_id'],
+                $settings->dimensionsSettings->lengthClass,
+            ) : $settings->dimensionsSettings->dimensionsWidth,
             'quantity' => (int)$product['quantity'],
         ];
     }
@@ -229,8 +267,10 @@ class DeliveryCalculator
             'title'        => $registry->get('language')->get('text_title') . ': ' . $title,
             'cost'         => $total,
             'tax_class_id' => $tariff['tariff_code'],
-            'text'         => $registry->get('currency')->format($total,
-                                                                 $registry->get('session')->data['currency']),
+            'text'         => $registry->get('currency')->format(
+                $total,
+                $registry->get('session')->data['currency'],
+            ),
         ];
     }
 
