@@ -180,12 +180,12 @@ class DeliveryCalculator
         $weightModel = new Weight($registry);
 
         return [
-            'height'   => $product['height'] ? $lengthModel->convert(
+            'height'   => $product['height'] ? (int)$lengthModel->convert(
                 $product['height'],
                 $product['length_class_id'],
                 $settings->dimensionsSettings->lengthClass,
             ) : $settings->dimensionsSettings->dimensionsHeight,
-            'length'   => $product['length'] ? $lengthModel->convert(
+            'length'   => $product['length'] ? (int)$lengthModel->convert(
                 $product['length'],
                 $product['length_class_id'],
                 $settings->dimensionsSettings->lengthClass,
@@ -195,7 +195,7 @@ class DeliveryCalculator
                     $product['weight_class_id'],
                     $settings->dimensionsSettings->weightClass,
                 )) / (int)$product['quantity']) ?: $settings->dimensionsSettings->dimensionsWeight,
-            'width'    => $product['width'] ? $lengthModel->convert(
+            'width'    => $product['width'] ? (int)$lengthModel->convert(
                 $product['width'],
                 $product['length_class_id'],
                 $settings->dimensionsSettings->lengthClass,
