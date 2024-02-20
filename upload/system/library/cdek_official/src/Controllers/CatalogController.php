@@ -56,6 +56,5 @@ class CatalogController extends ControllerContract
     final public function addCheckoutHeaderScript(string &$route, array &$data): void
     {
         $data['scripts'][] = 'catalog/view/javascript/shipping/cdek_official.js';
-        $data['scripts'][] = '//cdn.jsdelivr.net/npm/@cdek-it/widget@' . Config::MAP_VERSION;
     }
 }
