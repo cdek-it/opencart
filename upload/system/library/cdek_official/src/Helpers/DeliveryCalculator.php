@@ -85,6 +85,7 @@ class DeliveryCalculator
                                                ],
                                                'packages'      => $recommendedDimensions,
                                            ]);
+            LogHelper::write('Calculator response: ' . json_encode($result, JSON_THROW_ON_ERROR));
             if (!empty($result['tariff_codes'])) {
                 foreach ($result['tariff_codes'] as $tariff) {
                     try {
@@ -132,6 +133,7 @@ class DeliveryCalculator
                                                ],
                                                'packages'      => $recommendedDimensions,
                                            ]);
+            LogHelper::write('Calculator response: ' . json_encode($result, JSON_THROW_ON_ERROR));
             if (!empty($result['tariff_codes'])) {
                 foreach ($result['tariff_codes'] as $tariff) {
                     try {
