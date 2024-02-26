@@ -51,8 +51,7 @@ class SaveSettingsAction
         } catch (Exception $exception) {
             LogHelper::write('Validation failed: ' .
                              $language->get($exception->getMessage()));
-            $session->data['error_warning'] = $language->get('error_permission') .
-                                              $language->get($exception->getMessage());
+            $session->data['error_warning'] = $language->get($exception->getMessage());
         }
 
         $response->redirect($redirectUrl);
