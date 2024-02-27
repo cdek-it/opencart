@@ -42,7 +42,7 @@ class CdekApi
 
     public static function testModeActive(): bool
     {
-        return SettingsSingleton::getInstance()->authSettings->authTestMode === 'on';
+        return SettingsSingleton::getInstance()->authSettings->authTestMode;
     }
 
     private static function getAuthData(): array
