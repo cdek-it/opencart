@@ -19,16 +19,15 @@ abstract class ValidatableSettingsContract
     final public function __unserialize(array $post): void
     {
         $reflect = new ReflectionClass(static::class);
-        foreach ($post as $key => $property) {
-            if (strpos($key, self::PARAM_PREFIX) !== 0) {
+        foreach ($reflect->getProperties(ReflectionProperty::IS_PUBLIC) as $property) {
+            $propertyName = $property->getName();
+            $postProperty = self::PARAM_PREFIX . $propertyName;
+            if (!isset($post[$postProperty])) {
                 continue;
             }
-            $propertyName = substr($key, strlen(self::PARAM_PREFIX));
-            if (!$reflect->hasProperty($propertyName)) {
-                continue;
-            }
-            $this->$propertyName = ($property === '' && $reflect->getProperty($propertyName)->getType()->allowsNull()) ?
-                null : $property;
+            $this->$propertyName
+                = ($post[$postProperty] === '' && $property->getType()->allowsNull()) ?
+                null : $post[$postProperty];
         }
     }
 

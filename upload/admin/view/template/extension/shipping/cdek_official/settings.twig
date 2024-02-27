@@ -181,11 +181,11 @@
                                     </div>
                                     <label
                                             class="col-sm-2 control-label"
-                                            for="cdek_official_mapLangCode">{{ cdek_map_lang }}</label>
+                                            for="cdek_official__mapLangCode">{{ cdek_map_lang }}</label>
                                     <div class="col-sm-4">
                                         <select
-                                                class="form-control" id="cdek_official_mapLangCode"
-                                                name="cdek_official_mapLangCode">
+                                                class="form-control" id="cdek_official__mapLangCode"
+                                                name="cdek_official__mapLangCode">
                                             <option
                                                     value="rus" {% if cdek_official__mapLangCode is same as('rus') %}
                                                 selected="selected" {% endif %}>
@@ -207,7 +207,8 @@
                                     <div class="col-sm-2"></div>
                                     <div class="col-sm-2">
                                         <p style="margin: 0;">{{ cdek_auth__status }}
-                                            : {% if cdek_official__authTestMode is same as('on') %} {{ cdek_auth__test_mode_label }}
+                                            : {% if cdek_official__authTestMode %} {{
+                                            cdek_auth__test_mode_label }}
                                             {% elseif auth_status %} {{ cdek_auth__status_connected }} {% else %} {{ cdek_auth__status_unconnected }} {% endif %}</p>
                                     </div>
                                     <div class="col-sm-6">
@@ -216,8 +217,9 @@
                                                     type="checkbox"
                                                     name="cdek_official__authTestMode"
                                                     id="cdek_official__authTestMode"
-                                                    value="on"
-                                                    {% if cdek_official__authTestMode is same as('on') %} checked {% endif %}
+                                                    value="1"
+                                                    {% if cdek_official__authTestMode %} checked {%
+                                                        endif %}
                                                     class="form-control" />
                                             <p style="margin: 10px;">{{ cdek_auth__test_mode }}</p>
                                         </div>

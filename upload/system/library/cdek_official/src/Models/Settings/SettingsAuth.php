@@ -12,14 +12,14 @@ class SettingsAuth extends ValidatableSettingsContract
     public string $authSecret = '';
     public string $apiKey = '';
     public string $mapLangCode = 'rus';
-    public string $authTestMode = 'off';
+    public bool $authTestMode = false;
 
     /**
      * @throws Exception
      */
     final public function validate(): void
     {
-        if ($this->authTestMode === 'on') {
+        if ($this->authTestMode) {
             return;
         }
 
