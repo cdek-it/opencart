@@ -19,6 +19,16 @@ $(() => {
           window.cdek = data;
           if (!mapLoaded && !Object.prototype.hasOwnProperty.call(window, 'CDEKWidget')) {
               $.getScript(`//cdn.jsdelivr.net/npm/@cdek-it/widget@${data.map_version}`);
+              $('<style data-cdek>' +
+                  '.cdek_btn{' +
+                    'background:rgb(26, 178, 72);' +
+                    'color:rgb(255, 255, 255);' +
+                    'border:none;' +
+                    'padding:5px;' +
+                    'width:100px;' +
+                    'border-radius:5px;' +
+                  '}' +
+                  '</style>').appendTo(document.head);
               mapLoaded = true;
           }
       });
