@@ -41,7 +41,11 @@ class SettingsSeller extends ValidatableSettingsContract
 
         $phoneNumUtil = PhoneNumberUtil::getInstance();
 
-        if (!$phoneNumUtil->isValidNumber($phoneNumUtil->parse($this->shippingSellerPhone))) {
+        try {
+            if (!$phoneNumUtil->isValidNumber($phoneNumUtil->parse($this->shippingSellerPhone))) {
+                throw new RuntimeException('cdek_error_shipping_seller_phone_invalid_format');
+            }
+        } catch (Exception $e) {
             throw new RuntimeException('cdek_error_shipping_seller_phone_invalid_format');
         }
 
