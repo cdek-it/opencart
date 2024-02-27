@@ -49,8 +49,8 @@ class CdekApi
     {
         return self::testModeActive() ? [
             'grant_type'    => 'client_credentials',
-            'client_id'     => 'EMscd6r9JnFiQ3bLoyjJY6eM78JrJceI',
-            'client_secret' => 'PjLZkKBHEiLK3YsjtNrt3TGNG0ahs3kG',
+            'client_id'     => Config::TEST_ACCOUNT,
+            'client_secret' => Config::TEST_SECRET,
         ] : [
             'grant_type'    => 'client_credentials',
             'client_id'     => SettingsSingleton::getInstance()->authSettings->authId,
