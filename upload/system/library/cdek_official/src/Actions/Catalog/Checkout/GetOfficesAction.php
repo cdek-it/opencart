@@ -30,7 +30,10 @@ class GetOfficesAction
         $param = $registry->get('request')->get;
 
         try {
-            $param['city_code'] = CdekApi::getCity($session->data['shipping_address']['city'])[0]['code'];
+            $param['city_code'] = CdekApi::getCityByParam(
+                $session->data['shipping_address']['city'],
+                $session->data['shipping_address']['postcode'] ?? '',
+            )[0]['code'];
             $response->setOutput(CdekApi::getOffices($param));
         } catch (Throwable $e) {
             $response->addHeader('HTTP/1.1 500 Internal Server Error');

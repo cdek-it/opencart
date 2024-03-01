@@ -69,17 +69,6 @@ class CdekApi
     /**
      * @throws JsonException
      */
-    public static function getCity(string $city): array
-    {
-        return HttpClient::sendCdekRequest(self::getApiUrl(self::REGION_PATH),
-                                           'GET',
-                                           self::getToken(),
-                                           ['city' => $city, 'size' => 5]);
-    }
-
-    /**
-     * @throws JsonException
-     */
     public static function getOffices(array $param): string
     {
         return HttpClient::sendCdekRequest(self::getApiUrl(self::PVZ_PATH),
