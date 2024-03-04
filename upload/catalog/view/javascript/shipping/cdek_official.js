@@ -27,6 +27,7 @@ $(() => {
                     'padding:5px;' +
                     'width:100px;' +
                     'border-radius:5px;' +
+                    'margin:0 5px;' +
                   '}' +
                   '</style>').appendTo(document.head);
               mapLoaded = true;
