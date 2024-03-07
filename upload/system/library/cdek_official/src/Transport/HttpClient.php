@@ -2,6 +2,7 @@
 
 namespace CDEK\Transport;
 
+use CDEK\RegistrySingleton;
 use JsonException;
 
 class HttpClient
@@ -32,9 +33,7 @@ class HttpClient
         }
 
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, strtoupper($method));
+
         if (strtoupper($method) === 'POST') {
             curl_setopt($ch, CURLOPT_POST, true);
             if (is_array($data)) {
@@ -45,11 +44,32 @@ class HttpClient
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
             }
         }
-        $headers[] = 'User-agent: oc/2.0';
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        $headers[] = 'X-App-Name: opencart';
+        curl_setopt_array($ch, array(
+            CURLOPT_USERAGENT => 'oc/2.0',
+            CURLOPT_HTTPHEADER => $headers,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HEADER => true,
+            CURLOPT_URL => $url,
+            CURLOPT_CUSTOMREQUEST => strtoupper($method),
+        ));
         $response = curl_exec($ch);
         curl_close($ch);
 
-        return $raw ? $response : json_decode($response, true, 512, JSON_THROW_ON_ERROR);
+        $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $headers = substr($response, 0, $headerSize);
+        $result = substr($response, $headerSize);
+        $addedHeaders = array_filter(explode("\r\n", $headers), static fn ($line) =>
+            !empty($line) && stripos($line, 'X-') !== false
+        );
+
+        if(count($addedHeaders)){
+            $response = RegistrySingleton::getInstance()->get('response');
+            foreach($addedHeaders as $header){
+                $response->addHeader($header);
+            }
+        }
+
+        return $raw ? $result : json_decode($result, true, 512, JSON_THROW_ON_ERROR);
     }
 }

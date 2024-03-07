@@ -29,9 +29,11 @@ class CdekApi
      */
     private static function getToken(): ?string
     {
-        $response = HttpClient::sendRequest(self::getApiUrl(self::TOKEN_PATH),
-                                            'POST',
-                                            http_build_query(self::getAuthData()));
+        $response = HttpClient::sendRequest(
+            self::getApiUrl(self::TOKEN_PATH),
+            'POST',
+            http_build_query(self::getAuthData()),
+        );
         return $response['access_token'] ?? null;
     }
 
@@ -71,11 +73,13 @@ class CdekApi
      */
     public static function getOffices(array $param): string
     {
-        return HttpClient::sendCdekRequest(self::getApiUrl(self::PVZ_PATH),
-                                           'GET',
-                                           self::getToken(),
-                                           $param,
-                                           true);
+        return HttpClient::sendCdekRequest(
+            self::getApiUrl(self::PVZ_PATH),
+            'GET',
+            self::getToken(),
+            $param,
+            true,
+        );
     }
 
     /**
@@ -91,21 +95,25 @@ class CdekApi
      */
     public static function createOrder(array $requestData): array
     {
-        return HttpClient::sendCdekRequest(self::getApiUrl(self::ORDERS_PATH),
-                                           'POST',
-                                           self::getToken(),
-                                           $requestData);
+        return HttpClient::sendCdekRequest(
+            self::getApiUrl(self::ORDERS_PATH),
+            'POST',
+            self::getToken(),
+            $requestData,
+        );
     }
 
     /**
      * @throws JsonException
      */
-    public static function getCityByParam(string $city, string $postcode): array
+    public static function getCityByParam(string $city, string $postcode, array $additionalParams = []): array
     {
-        return HttpClient::sendCdekRequest(self::getApiUrl(self::REGION_PATH),
-                                           'GET',
-                                           self::getToken(),
-                                           ['city' => $city, 'postal_code' => $postcode]);
+        return HttpClient::sendCdekRequest(
+            self::getApiUrl(self::REGION_PATH),
+            'GET',
+            self::getToken(),
+            array_merge(['city' => $city, 'postal_code' => $postcode], $additionalParams),
+        );
     }
 
     /**
@@ -113,9 +121,11 @@ class CdekApi
      */
     public static function deleteOrder(string $uuid): array
     {
-        return HttpClient::sendCdekRequest(self::getApiUrl(self::ORDERS_PATH . $uuid),
-                                           'DELETE',
-                                           self::getToken());
+        return HttpClient::sendCdekRequest(
+            self::getApiUrl(self::ORDERS_PATH . $uuid),
+            'DELETE',
+            self::getToken(),
+        );
     }
 
     /**
@@ -123,25 +133,29 @@ class CdekApi
      */
     public static function getWaybill(string $orderUuid): ?string
     {
-        $requestBill = HttpClient::sendCdekRequest(self::getApiUrl(self::WAYBILL_PATH),
-                                                   'POST',
-                                                   self::getToken(),
-                                                   [
-                                                       'orders'     => [
-                                                           'order_uuid' => $orderUuid,
-                                                       ],
-                                                       'copy_count' => 2,
-                                                   ]);
+        $requestBill = HttpClient::sendCdekRequest(
+            self::getApiUrl(self::WAYBILL_PATH),
+            'POST',
+            self::getToken(),
+            [
+                'orders'     => [
+                    'order_uuid' => $orderUuid,
+                ],
+                'copy_count' => 2,
+            ],
+        );
         LogHelper::write('RequestBill: ' . json_encode($requestBill, JSON_THROW_ON_ERROR));
 
         sleep(5);
 
-        $result = HttpClient::sendCdekRequest(self::getApiUrl(self::WAYBILL_PATH . $requestBill['entity']['uuid']),
-                                              'GET',
-                                              self::getToken());
+        $result = HttpClient::sendCdekRequest(
+            self::getApiUrl(self::WAYBILL_PATH . $requestBill['entity']['uuid']),
+            'GET',
+            self::getToken(),
+        );
         LogHelper::write('Result: ' . json_encode($result, JSON_THROW_ON_ERROR));
 
-        if(empty($result['entity']['url'])){
+        if (empty($result['entity']['url'])) {
             return null;
         }
 
