@@ -54,9 +54,9 @@ class HttpClient
             CURLOPT_CUSTOMREQUEST => strtoupper($method),
         ));
         $response = curl_exec($ch);
-        curl_close($ch);
 
         $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        curl_close($ch);
         $headers = substr($response, 0, $headerSize);
         $result = substr($response, $headerSize);
         $addedHeaders = array_filter(explode("\r\n", $headers), static fn ($line) =>
