@@ -108,6 +108,9 @@ class CdekApi
      */
     public static function getCityByParam(string $city, string $postcode, array $additionalParams = []): array
     {
+        if($postcode === '109000') {
+            $postcode = '101000';
+        }
         return HttpClient::sendCdekRequest(
             self::getApiUrl(self::REGION_PATH),
             'GET',
