@@ -35,10 +35,17 @@ class DeliveryCalculator
 
     private static function calculateQuote(array $deliveryAddress): array
     {
-        $settings          = SettingsSingleton::getInstance();
+        $settings = SettingsSingleton::getInstance();
+        $city     = trim($deliveryAddress['city'] ?? '');
+        $postcode = trim($deliveryAddress['postcode'] ?? '');
+
+        if (empty($city) && empty($postcode)) {
+            return [];
+        }
+
         $recipientLocation = CdekApi::getCityByParam(
-            trim($deliveryAddress['city'] ?? ''),
-            trim($deliveryAddress['postcode'] ?? ''),
+            $city,
+            $postcode,
         );
         if (empty($recipientLocation[0]['code'])) {
             return [];
@@ -59,32 +66,39 @@ class DeliveryCalculator
 
         if (!empty($settings->shippingSettings->shippingCityAddress)) {
             $locality = LocationHelper::getLocality($settings->shippingSettings->shippingCityAddress);
-            LogHelper::write('Calculator request: ' . json_encode([
-                                                                      'currency'      => $settings->shippingSettings->shippingCurrency,
-                                                                      'from_location' => [
-                                                                          'address'      => $locality['address'] ?? '',
-                                                                          'country_code' => $locality['country'] ?? '',
-                                                                          'postal_code'  => $locality['postal'] ?? '',
-                                                                          'city'         => $locality['city'] ?? '',
-                                                                      ],
-                                                                      'to_location'   => [
-                                                                          'code' => $recipientLocation[0]['code'],
-                                                                      ],
-                                                                      'packages'      => $recommendedDimensions,
-                                                                  ], JSON_THROW_ON_ERROR));
-            $result   = CdekApi::calculate([
-                                               'currency'      => $settings->shippingSettings->shippingCurrency,
-                                               'from_location' => [
-                                                   'address'      => $locality['address'] ?? '',
-                                                   'country_code' => $locality['country'] ?? '',
-                                                   'postal_code'  => $locality['postal'] ?? '',
-                                                   'city'         => $locality['city'] ?? '',
-                                               ],
-                                               'to_location'   => [
-                                                   'code' => $recipientLocation[0]['code'],
-                                               ],
-                                               'packages'      => $recommendedDimensions,
-                                           ]);
+            LogHelper::write(
+                'Calculator request: ' . json_encode(
+                    [
+                        'currency'      => $settings->shippingSettings->shippingCurrency,
+                        'from_location' => [
+                            'address'      => $locality['address'] ?? '',
+                            'country_code' => $locality['country'] ?? '',
+                            'postal_code'  => $locality['postal'] ?? '',
+                            'city'         => $locality['city'] ?? '',
+                        ],
+                        'to_location'   => [
+                            'code' => $recipientLocation[0]['code'],
+                        ],
+                        'packages'      => $recommendedDimensions,
+                    ],
+                    JSON_THROW_ON_ERROR,
+                ),
+            );
+            $result = CdekApi::calculate(
+                [
+                    'currency'      => $settings->shippingSettings->shippingCurrency,
+                    'from_location' => [
+                        'address'      => $locality['address'] ?? '',
+                        'country_code' => $locality['country'] ?? '',
+                        'postal_code'  => $locality['postal'] ?? '',
+                        'city'         => $locality['city'] ?? '',
+                    ],
+                    'to_location'   => [
+                        'code' => $recipientLocation[0]['code'],
+                    ],
+                    'packages'      => $recommendedDimensions,
+                ],
+            );
             LogHelper::write('Calculator response: ' . json_encode($result, JSON_THROW_ON_ERROR));
             if (!empty($result['tariff_codes'])) {
                 foreach ($result['tariff_codes'] as $tariff) {
@@ -109,30 +123,37 @@ class DeliveryCalculator
 
         if (!empty($settings->shippingSettings->shippingPvz)) {
             $locality = LocationHelper::getLocality($settings->shippingSettings->shippingPvz);
-            LogHelper::write('Calculator request: ' . json_encode([
-                                                                      'currency'      => $settings->shippingSettings->shippingCurrency,
-                                                                      'from_location' => [
-                                                                          'country_code' => $locality['country'] ?? '',
-                                                                          'postal_code'  => $locality['postal'] ?? '',
-                                                                          'city'         => $locality['city'] ?? '',
-                                                                      ],
-                                                                      'to_location'   => [
-                                                                          'code' => $recipientLocation[0]['code'],
-                                                                      ],
-                                                                      'packages'      => $recommendedDimensions,
-                                                                  ], JSON_THROW_ON_ERROR));
-            $result   = CdekApi::calculate([
-                                               'currency'      => $settings->shippingSettings->shippingCurrency,
-                                               'from_location' => [
-                                                   'country_code' => $locality['country'] ?? '',
-                                                   'postal_code'  => $locality['postal'] ?? '',
-                                                   'city'         => $locality['city'] ?? '',
-                                               ],
-                                               'to_location'   => [
-                                                   'code' => $recipientLocation[0]['code'],
-                                               ],
-                                               'packages'      => $recommendedDimensions,
-                                           ]);
+            LogHelper::write(
+                'Calculator request: ' . json_encode(
+                    [
+                        'currency'      => $settings->shippingSettings->shippingCurrency,
+                        'from_location' => [
+                            'country_code' => $locality['country'] ?? '',
+                            'postal_code'  => $locality['postal'] ?? '',
+                            'city'         => $locality['city'] ?? '',
+                        ],
+                        'to_location'   => [
+                            'code' => $recipientLocation[0]['code'],
+                        ],
+                        'packages'      => $recommendedDimensions,
+                    ],
+                    JSON_THROW_ON_ERROR,
+                ),
+            );
+            $result = CdekApi::calculate(
+                [
+                    'currency'      => $settings->shippingSettings->shippingCurrency,
+                    'from_location' => [
+                        'country_code' => $locality['country'] ?? '',
+                        'postal_code'  => $locality['postal'] ?? '',
+                        'city'         => $locality['city'] ?? '',
+                    ],
+                    'to_location'   => [
+                        'code' => $recipientLocation[0]['code'],
+                    ],
+                    'packages'      => $recommendedDimensions,
+                ],
+            );
             LogHelper::write('Calculator response: ' . json_encode($result, JSON_THROW_ON_ERROR));
             if (!empty($result['tariff_codes'])) {
                 foreach ($result['tariff_codes'] as $tariff) {
