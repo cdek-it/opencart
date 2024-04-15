@@ -56,12 +56,12 @@ $(() => {
                                                                           office: false,
                                                                           door: true,
                                                                       },
-                                                                      servicePath: '/index.php?route=extension/shipping/cdek_official/map',
+                                                                      servicePath: 'index.php?route=extension/shipping/cdek_official/map',
                                                                       onChoose: function(type,
                                                                         tariff,
                                                                         address) {
                                                                           $.post(
-                                                                            '/index.php?route=extension/shipping/cdek_official/cacheOfficeCode',
+                                                                            'index.php?route=extension/shipping/cdek_official/cacheOfficeCode',
                                                                             {
                                                                                 office_code: address.code,
                                                                                 office_address: address.address,
@@ -73,7 +73,7 @@ $(() => {
                     } else {
                         window.cdekWidget.updateLocation(window.cdek.city);
                         $.get(
-                          '/index.php?route=extension/shipping/cdek_official/map')
+                          'index.php?route=extension/shipping/cdek_official/map')
                          .done(data => {
                              $('#cdek_official_office_error').hide();
                              window.cdekWidget.updateOfficesRaw(data);
