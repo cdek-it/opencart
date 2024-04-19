@@ -27,6 +27,12 @@ class EventsHelper
             'catalog/view/common/header/before'                       => [
                 'cdek_official_header_before' => 'extension/shipping/cdek_official/addCheckoutHeaderScript',
             ],
+            'catalog/controller/checkout/uni_checkout/validate/before' => [
+                'cdek_official_validate_office_code_uni' => 'extension/shipping/cdek_official/validateOfficeCode',
+            ],
+            'catalog/controller/checkout/uni_checkout/validate/after'  => [
+                'cdek_official_checkout_success_uni' => 'extension/shipping/cdek_official/saveOfficeCode',
+            ],
         ];
 
     private const OBSOLETE_EVENTS
