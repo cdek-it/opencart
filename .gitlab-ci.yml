@@ -45,7 +45,7 @@ build_custom:
       - upload
       - install.xml
   before_script:
-    - php -r "copy('http://getcomposer.org/download/2.7.7/composer.phar', 'composer-setup.php');"
+    - php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
     - php composer-setup.php
     - php -r "unlink('composer-setup.php');"
     - mv composer.phar /usr/local/bin/composer
