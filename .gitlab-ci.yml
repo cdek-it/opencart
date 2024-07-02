@@ -8,7 +8,7 @@ stages:
 
 variables:
   ARTIFACTORY_REPO: "https://repo.cdek.ru/artifactory/erp-cms"
-
+  DOCKER_IMAGE: "docker-web.cdek.ru/phnodenx-dev-rocky9-8.1:latest"
 
 build_tag:
   image: php:7.4-cli-alpine
@@ -35,7 +35,7 @@ build_tag:
 
 build_custom:
   when: manual
-  image: php:7.4-cli-alpine
+  image: ${DOCKER_IMAGE}
   stage: build
   tags:
     - docker
@@ -45,10 +45,6 @@ build_custom:
       - upload
       - install.xml
   before_script:
-    - php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-    - php composer-setup.php
-    - php -r "unlink('composer-setup.php');"
-    - mv composer.phar /usr/local/bin/composer
     - export RELEASE_VERSION="${CI_COMMIT_REF_NAME}#${CI_COMMIT_SHORT_SHA}"
   script:
     - sed -i "s/\(<version>\)\( *\).*/\1\2${RELEASE_VERSION}<\/version>/" install.xml
