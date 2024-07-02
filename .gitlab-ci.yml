@@ -50,6 +50,8 @@ build_custom:
     #- php -r "unlink('composer-setup.php');"
     #- mv composer.phar /usr/local/bin/composer
     - export RELEASE_VERSION="${CI_COMMIT_REF_NAME}#${CI_COMMIT_SHORT_SHA}"
+    - export COREPACK_NPM_REGISTRY="https://repo.cdek.ru/repository/cdek-npm"
+    - sed -i 's/dl-cdn.alpinelinux.org/repo.cdek.ru\/repository/g' /etc/apk/repositories
     - apk add nodejs-current yarn composer
     - corepack enable
     - corepack install -g --cache-only .yarn/corepack.tgz
