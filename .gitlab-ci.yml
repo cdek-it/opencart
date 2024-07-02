@@ -50,6 +50,9 @@ build_custom:
     #- php -r "unlink('composer-setup.php');"
     #- mv composer.phar /usr/local/bin/composer
     - export RELEASE_VERSION="${CI_COMMIT_REF_NAME}#${CI_COMMIT_SHORT_SHA}"
+    - apk add nodejs-current yarn composer
+    - corepack enable
+    - corepack install -g --cache-only .yarn/corepack.tgz
   script:
     - sed -i "s/\(<version>\)\( *\).*/\1\2${RELEASE_VERSION}<\/version>/" install.xml
     - cd upload/system/library/cdek_official
