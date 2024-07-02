@@ -8,7 +8,7 @@ stages:
 
 variables:
   ARTIFACTORY_REPO: "https://repo.cdek.ru/artifactory/erp-cms"
-  DOCKER_IMAGE: "docker-proxy.cdek.ru/php:8.2-alpine"
+  DOCKER_IMAGE: "docker-web.cdek.ru/phnodenx-dev-rocky9-8.2:latest"
 
 build_tag:
   image: php:7.4-cli-alpine
@@ -50,15 +50,11 @@ build_custom:
     #- php -r "unlink('composer-setup.php');"
     #- mv composer.phar /usr/local/bin/composer
     - export RELEASE_VERSION="${CI_COMMIT_REF_NAME}#${CI_COMMIT_SHORT_SHA}"
-    - export COREPACK_NPM_REGISTRY="https://repo.cdek.ru/repository/cdek-npm"
-    - sed -i 's/dl-cdn.alpinelinux.org/repo.cdek.ru\/repository/g' /etc/apk/repositories
-    - apk add nodejs-current yarn composer
-    - corepack enable
-    - corepack install -g --cache-only .yarn/corepack.tgz
   script:
     - sed -i "s/\(<version>\)\( *\).*/\1\2${RELEASE_VERSION}<\/version>/" install.xml
     - cd upload/system/library/cdek_official
     - composer i -a --no-dev
+
 upload:
   stage: upload
   tags:
