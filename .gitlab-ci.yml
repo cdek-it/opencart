@@ -8,7 +8,7 @@ stages:
 
 variables:
   ARTIFACTORY_REPO: "https://repo.cdek.ru/artifactory/erp-cms"
-  DOCKER_IMAGE: "repo.cdek.ru/repository/docker-proxy/v2/library/php/manifests/7.4-fpm-alpin"
+  DOCKER_IMAGE: "docker-web.cdek.ru/7.4-fpm-alpine"
 
 build_tag:
   image: php:7.4-cli-alpine
