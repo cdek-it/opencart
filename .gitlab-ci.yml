@@ -8,7 +8,7 @@ stages:
 
 variables:
   ARTIFACTORY_REPO: "https://repo.cdek.ru/artifactory/erp-cms"
-  DOCKER_IMAGE: "docker-web.cdek.ru/phnodenx-dev-rocky9-7.4:latest"
+  DOCKER_IMAGE: "docker-proxy.cdek.ru/php:8.2-alpine"
 
 build_tag:
   image: php:7.4-cli-alpine
@@ -35,7 +35,7 @@ build_tag:
 
 build_custom:
   when: manual
-  image: php:7.4-cli-alpine
+  image: ${DOCKER_IMAGE}
   stage: build
   tags:
     - docker
@@ -54,8 +54,7 @@ build_custom:
   script:
     - sed -i "s/\(<version>\)\( *\).*/\1\2${RELEASE_VERSION}<\/version>/" install.xml
     - cd upload/system/library/cdek_official
-    - composer i -a
-
+    - composer i -a --no-dev
 upload:
   stage: upload
   tags:
