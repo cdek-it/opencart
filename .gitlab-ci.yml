@@ -35,7 +35,7 @@ build_tag:
 
 build_custom:
   when: manual
-  image: ${DOCKER_IMAGE}
+  image: php:7.4-fpm-alpine
   stage: build
   tags:
     - docker
