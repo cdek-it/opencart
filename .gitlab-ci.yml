@@ -10,6 +10,9 @@ stages:
 
 variables:
   ARTIFACTORY_REPO: "https://repo.cdek.ru/artifactory/erp-cms"
+  HTTP_PROXY: "http://runner-proxy.cdek.ru:9000"
+  HTTPS_PROXY: "http://runner-proxy.cdek.ru:9000"
+  NO_PROXY: "172.16.0.0/16,10.0.0.0/8,192.168.0.0/16,docker,127.0.0.0/8"
 
 build_tag:
   image: docker-proxy.cdek.ru/php:7.4-cli-alpine
@@ -19,8 +22,10 @@ build_tag:
   only:
     - tags
   before_script:
-    - sed -i 's/dl-cdn.alpinelinux.org/repo.cdek.ru\/repository/g' /etc/apk/repositories
-    - apk add composer
+    - php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+    - php composer-setup.php
+    - php -r "unlink('composer-setup.php');"
+    - mv composer.phar /usr/local/bin/composer
     - export RELEASE_VERSION=$(echo "${CI_COMMIT_TAG}" | sed 's/v//')
   script:
     - sed -i "s/\(<version>\)\( *\).*/\1\2${RELEASE_VERSION}<\/version>/" install.xml
@@ -34,7 +39,7 @@ build_tag:
 
 build_custom:
   when: manual
-  image: docker-proxy.cdek.ru/php:7.4-cli-alpine
+  image: !reference [build_tag, image]
   stage: build
   tags:
     - docker
