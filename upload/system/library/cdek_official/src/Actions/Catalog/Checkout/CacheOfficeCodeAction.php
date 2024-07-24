@@ -3,6 +3,9 @@
 namespace CDEK\Actions\Catalog\Checkout;
 
 use CDEK\RegistrySingleton;
+use Request;
+use Response;
+use Session;
 
 class CacheOfficeCodeAction
 {
@@ -10,11 +13,22 @@ class CacheOfficeCodeAction
     {
         $registry = RegistrySingleton::getInstance();
 
-        $registry->get('session')->data['cdek_office_code'] = $registry->get('request')->post['office_code'];
-        $registry->get('session')->data['cdek_office_address'] = $registry->get('request')->post['office_address'];
+        $session = $registry->get('session');
 
-        /** @var \Response $response */
+        assert($session instanceof Session);
+
+        $request = $registry->get('request');
+
+        assert($request instanceof Request);
+
+        $session->data['cdek_office_code']    = $request->post['office_code'];
+        $session->data['cdek_office_address'] = $request->post['office_address'];
+
+        (new SaveOrderMetaAction)($request->post['office_code']);
+
         $response = $registry->get('response');
+
+        assert($response instanceof Response);
 
         $response->setOutput('Ok');
     }

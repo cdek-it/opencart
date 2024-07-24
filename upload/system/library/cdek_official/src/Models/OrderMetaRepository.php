@@ -5,6 +5,7 @@ namespace CDEK\Models;
 use CDEK\Helpers\LogHelper;
 use CDEK\RegistrySingleton;
 use DB;
+use Exception;
 
 class OrderMetaRepository
 {
@@ -25,9 +26,11 @@ class OrderMetaRepository
 
     public static function create(): void
     {
-        try{
-            /** @var DB $db */
-            $db          = RegistrySingleton::getInstance()->get('db');
+        try {
+            $db = RegistrySingleton::getInstance()->get('db');
+
+            assert($db instanceof DB);
+
             $table       = DB_PREFIX . self::TABLE_NAME;
             $tableExists = $db->query("SHOW TABLES LIKE '$table'")->num_rows > 0;
 
@@ -35,43 +38,59 @@ class OrderMetaRepository
 
             if (!$tableExists) {
                 LogHelper::write('creating table');
-                $db->query(sprintf('CREATE TABLE %s (
+                $db->query(
+                    sprintf(
+                        'CREATE TABLE %s (
                                             %s 
                                             PRIMARY KEY (`id`),
                                             UNIQUE KEY `order_id_unique` (`order_id`),
                                             FOREIGN KEY (`order_id`) REFERENCES %sorder(`order_id`) ON DELETE RESTRICT ON UPDATE CASCADE
                                             ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;',
-                                   $table,
-                                   array_reduce(array_keys(self::COLUMNS),
-                                       static fn($carry, $e) => $carry . "`$e`" . self::COLUMNS[$e] . ", ",
-                                                ''),
-                                   DB_PREFIX));
+                        $table,
+                        array_reduce(
+                            array_keys(self::COLUMNS),
+                            static fn($carry, $e) => $carry . "`$e`" . self::COLUMNS[$e] . ", ",
+                            '',
+                        ),
+                        DB_PREFIX,
+                    ),
+                );
             }
 
-            $existingColumns = array_map(static fn($el) => $el['Field'],
-                $db->query("SHOW COLUMNS FROM `$table`")->rows);
+            $existingColumns = array_map(
+                static fn($el) => $el['Field'],
+                $db->query("SHOW COLUMNS FROM `$table`")->rows,
+            );
 
             $missingColumns = array_diff(array_keys(self::COLUMNS), $existingColumns);
 
             foreach ($missingColumns as $column) {
                 LogHelper::write('adding column ' . $column);
-                $db->query(sprintf('ALTER TABLE %s ADD COLUMN %s %s',
-                                   $table,
-                                   $column,
-                                   self::COLUMNS[$column]));
+                $db->query(
+                    sprintf(
+                        'ALTER TABLE %s ADD COLUMN %s %s',
+                        $table,
+                        $column,
+                        self::COLUMNS[$column],
+                    ),
+                );
             }
 
             $redundantColumns = array_diff($existingColumns, array_keys(self::COLUMNS));
 
             foreach ($redundantColumns as $column) {
                 LogHelper::write('dropping column ' . $column);
-                $db->query(sprintf('ALTER TABLE %s DROP COLUMN %s',
-                                   $table,
-                                   $column));
+                $db->query(
+                    sprintf(
+                        'ALTER TABLE %s DROP COLUMN %s',
+                        $table,
+                        $column,
+                    ),
+                );
             }
 
             LogHelper::write('finished db modifications');
-        }catch (\Exception $e) {
+        } catch (Exception $e) {
             LogHelper::write('error while updating table: ' . $e->getMessage());
             throw $e;
         }
@@ -79,52 +98,90 @@ class OrderMetaRepository
 
     public static function insertCdekUuid(int $orderId, string $orderUuid): void
     {
-        /** @var DB $db */
         $db = RegistrySingleton::getInstance()->get('db');
-        $db->query(sprintf('UPDATE %s SET cdek_uuid="%s", deleted_at=null WHERE `order_id` = %u',
-                           DB_PREFIX . self::TABLE_NAME,
-                           $orderUuid,
-                           $orderId));
+
+        assert($db instanceof DB);
+
+        $db->query(
+            sprintf(
+                'UPDATE %s SET cdek_uuid="%s", deleted_at=null WHERE `order_id` = %u',
+                DB_PREFIX . self::TABLE_NAME,
+                $orderUuid,
+                $orderId,
+            ),
+        );
     }
 
     public static function insertCdekTrack(int $orderId, string $track): void
     {
-        /** @var DB $db */
         $db = RegistrySingleton::getInstance()->get('db');
-        $db->query(sprintf('UPDATE %s SET cdek_number="%s" WHERE `order_id` = %u',
-                           DB_PREFIX . self::TABLE_NAME,
-                           $track,
-                           $orderId));
+
+        assert($db instanceof DB);
+
+        $db->query(
+            sprintf(
+                'UPDATE %s SET cdek_number="%s" WHERE `order_id` = %u',
+                DB_PREFIX . self::TABLE_NAME,
+                $track,
+                $orderId,
+            ),
+        );
+    }
+
+    public static function insertOfficeCode(int $orderId, string $officeCode): void
+    {
+        $db = RegistrySingleton::getInstance()->get('db');
+
+        assert($db instanceof DB);
+
+        $db->query(
+            sprintf(
+                'UPDATE %s SET pvz_code="%s" WHERE `order_id` = %u',
+                DB_PREFIX . self::TABLE_NAME,
+                $db->escape($officeCode),
+                $orderId,
+            ),
+        );
     }
 
     public static function insertInitialData(
         int $orderId,
-        string $officeCode,
         int $height,
         int $width,
         int $length,
         int $weight
     ): void {
-        /** @var DB $db */
         $db = RegistrySingleton::getInstance()->get('db');
-        $db->query(sprintf("INSERT INTO %s 
-                                        (order_id, pvz_code, height, width, length, weight) 
-                                        VALUES (%u, '%s', %u, %u, %u, %u) 
+
+        assert($db instanceof DB);
+
+        $db->query(
+            sprintf(
+                "INSERT INTO %s 
+                                        (order_id, height, width, length, weight) 
+                                        VALUES (%u, %u, %u, %u, %u) 
                                         ON DUPLICATE KEY UPDATE
-                                        pvz_code = VALUES(pvz_code)",
-                           DB_PREFIX . self::TABLE_NAME,
-                           $orderId,
-                           $db->escape($officeCode),
-                           $height,
-                           $width,
-                           $length,
-                           $weight));
+                                        height = VALUES(height),
+                                        width = VALUES(width),
+                                        length = VALUES(length),
+                                        weight = VALUES(weight)
+                                        ",
+                DB_PREFIX . self::TABLE_NAME,
+                $orderId,
+                $height,
+                $width,
+                $length,
+                $weight,
+            ),
+        );
     }
 
     public static function getOrder(int $orderId): ?array
     {
-        /** @var DB $db */
-        $db    = RegistrySingleton::getInstance()->get('db');
+        $db = RegistrySingleton::getInstance()->get('db');
+
+        assert($db instanceof DB);
+
         $table = DB_PREFIX . self::TABLE_NAME;
         $query = $db->query("SELECT * FROM `$table` WHERE `order_id` = $orderId");
 
@@ -133,8 +190,10 @@ class OrderMetaRepository
 
     public static function deleteOrder(int $orderId)
     {
-        /** @var DB $db */
-        $db    = RegistrySingleton::getInstance()->get('db');
+        $db = RegistrySingleton::getInstance()->get('db');
+
+        assert($db instanceof DB);
+
         $table = DB_PREFIX . self::TABLE_NAME;
         $db->query(sprintf("UPDATE %s SET deleted_at=now() WHERE order_id='%s'", $table, $orderId));
     }
