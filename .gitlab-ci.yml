@@ -8,12 +8,6 @@ stages:
   - upload
   - deploy
 
-variables:
-  ARTIFACTORY_REPO: "https://repo.cdek.ru/artifactory/erp-cms"
-  HTTP_PROXY: "http://runner-proxy.cdek.ru:9000"
-  HTTPS_PROXY: "http://runner-proxy.cdek.ru:9000"
-  NO_PROXY: "172.16.0.0/16,10.0.0.0/8,192.168.0.0/16,docker,127.0.0.0/8"
-
 build_tag:
   image: docker-proxy.cdek.ru/php:7.4-cli-alpine
   stage: build
