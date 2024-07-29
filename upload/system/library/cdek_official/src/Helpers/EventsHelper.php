@@ -33,6 +33,9 @@ class EventsHelper
             'catalog/controller/checkout/uni_checkout/validate/after'  => [
                 'cdek_official_checkout_success_uni' => 'extension/shipping/cdek_official/saveOfficeCode',
             ],
+            'catalog/controller/checkout/simplecheckout/after'  => [
+                'cdek_official_checkout_success_simple' => 'extension/shipping/cdek_official/saveOfficeCode',
+            ],
         ];
 
     private const OBSOLETE_EVENTS
@@ -50,8 +53,9 @@ class EventsHelper
 
         LogHelper::write('create events');
         $registry->get('load')->model('setting/event');
-        /** @var ModelSettingEvent $eventModel */
         $eventModel = $registry->get('model_setting_event');
+
+        assert($eventModel instanceof ModelSettingEvent);
 
         foreach (self::EVENTS as $trigger => $actions) {
             foreach ($actions as $actionName => $action) {
@@ -70,8 +74,9 @@ class EventsHelper
 
         LogHelper::write('delete events');
         $registry->get('load')->model('setting/event');
-        /** @var ModelSettingEvent $eventModel */
         $eventModel = $registry->get('model_setting_event');
+
+        assert($eventModel instanceof ModelSettingEvent);
 
         foreach (self::EVENTS as $actions) {
             foreach (array_keys($actions) as $event) {
