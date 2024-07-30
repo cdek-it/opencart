@@ -28,7 +28,6 @@ build_tag:
 
 build_custom:
   when: manual
-  image: !reference [build_tag, image]
   stage: build
   tags:
     - docker
