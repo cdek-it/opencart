@@ -58,7 +58,7 @@ upload:
     - export ARCHIVE_VERSION=$(echo "${RELEASE_VERSION}" | sed 's/\./_/g')
   script:
     - zip -r cdek.zip upload install.xml
-    - curl -u "${NEXUS_LOGIN}":"${NEXUS_PASS}" --upload-file cdek.zip "${ARTIFACTORY_REPO}/$CI_PROJECT_NAME/$CI_COMMIT_BRANCH/wordpress_${ARCHIVE_VERSION}.zip"
+    - curl -u "${NEXUS_LOGIN}":"${NEXUS_PASS}" --upload-file cdek.zip "${ARTIFACTORY_REPO}/$CI_PROJECT_NAME/$CI_COMMIT_BRANCH/opencart_cdek_${ARCHIVE_VERSION}.ocmod.zip"
 
 github:
   image: docker-proxy.cdek.ru/bitnami/git:latest
