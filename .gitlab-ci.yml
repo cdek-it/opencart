@@ -1,6 +1,6 @@
 ---
 image:
-  name: docker-web.cdek.ru/phnodenx-dev-rocky8-7.4:7.4.33_16.20.2-20240730_1931-linux-amd64
+  name: docker-web.cdek.ru/phnodenx-dev-rocky8-7.4:latest
   entrypoint: ['']
 
 stages:
