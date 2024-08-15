@@ -5,4 +5,20 @@
     <version>dev</version>
     <author>CDEK IT</author>
     <link>https://www.cdek.ru/ru/integration</link>
+    <file path="catalog/controller/checkout/simplecheckout_shipping.php">
+        <operation>
+            <search>
+                <![CDATA[private function validator($shippingMethod) {]]>
+            </search>
+            <add position="after">
+                <![CDATA[        $explodedShippingMethod = explode('.', $shippingMethod);
+
+        if (($explodedShippingMethod[0] === 'cdek_official') && empty($this->session->data['cdek_office_code']) &&
+            explode('_', $explodedShippingMethod[1])[0] === 'office') {
+             $this->load->language('extension/shipping/cdek_official');
+             return $this->language->get('cdek_pvz_not_found');
+        }]]>
+            </add>
+        </operation>
+    </file>
 </modification>
