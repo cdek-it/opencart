@@ -9,6 +9,6 @@ class Config
     public const DELIVERY_NAME = 'cdek_official';
     public const API_URL      = 'https://api.cdek.ru/v2/';
     public const API_TEST_URL = 'https://api.edu.cdek.ru/v2/';
-    public const TEST_ACCOUNT = 'EMscd6r9JnFiQ3bLoyjJY6eM78JrJceI';
-    public const TEST_SECRET = 'PjLZkKBHEiLK3YsjtNrt3TGNG0ahs3kG';
+    public const TEST_ACCOUNT = 'wqGwiQx0gg8mLtiEKsUinjVSICCjtTEP';
+    public const TEST_SECRET = 'RmAmgvSgSl1yirlz9QupbzOJVqhCxcP5';
 }
