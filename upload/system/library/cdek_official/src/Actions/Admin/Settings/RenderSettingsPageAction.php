@@ -54,7 +54,7 @@ class RenderSettingsPageAction
 
             'action'      => $url->link('extension/shipping/cdek_official/store', "user_token={$session->data['user_token']}", true),
             'map_service' => $url->link("extension/shipping/cdek_official/map&user_token={$session->data['user_token']}", '', true),
-            'cancel'      => $url->link('extension/shipping', "user_token={$session->data['user_token']}", true),
+            'cancel'      => $url->link('marketplace/extension', "user_token={$session->data['user_token']}", true),
 
             'header'      => $loader->controller('common/header'),
             'column_left' => $loader->controller('common/column_left'),
