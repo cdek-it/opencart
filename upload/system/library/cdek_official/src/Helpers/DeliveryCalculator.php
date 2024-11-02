@@ -254,8 +254,8 @@ class DeliveryCalculator
             }
 
             $lengthList[] = $packageProduct[0];
-            $heightList[] = $packageProduct[1];
-            $widthList[]  = $packageProduct[2];
+            $widthList[]  = $packageProduct[1];
+            $heightList[] = $packageProduct[2];
         }
 
         sort($defaultPackages);
