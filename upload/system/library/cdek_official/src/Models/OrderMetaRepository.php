@@ -27,9 +27,8 @@ class OrderMetaRepository
     public static function create(): void
     {
         try {
+            /** @var DB $db */
             $db = RegistrySingleton::getInstance()->get('db');
-
-            assert($db instanceof DB);
 
             $table       = DB_PREFIX . self::TABLE_NAME;
             $tableExists = $db->query("SHOW TABLES LIKE '$table'")->num_rows > 0;
@@ -40,11 +39,11 @@ class OrderMetaRepository
                 LogHelper::write('creating table');
                 $db->query(
                     sprintf(
-                        'CREATE TABLE %s (
+                        'CREATE TABLE `%s` (
                                             %s 
                                             PRIMARY KEY (`id`),
                                             UNIQUE KEY `order_id_unique` (`order_id`),
-                                            FOREIGN KEY (`order_id`) REFERENCES %sorder(`order_id`) ON DELETE RESTRICT ON UPDATE CASCADE
+                                            FOREIGN KEY (`order_id`) REFERENCES `%sorder`(`order_id`) ON DELETE RESTRICT ON UPDATE CASCADE
                                             ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;',
                         $table,
                         array_reduce(
@@ -68,7 +67,7 @@ class OrderMetaRepository
                 LogHelper::write('adding column ' . $column);
                 $db->query(
                     sprintf(
-                        'ALTER TABLE %s ADD COLUMN %s %s',
+                        'ALTER TABLE `%s` ADD COLUMN `%s` %s',
                         $table,
                         $column,
                         self::COLUMNS[$column],
@@ -98,13 +97,12 @@ class OrderMetaRepository
 
     public static function insertCdekUuid(int $orderId, string $orderUuid): void
     {
+        /** @var DB $db */
         $db = RegistrySingleton::getInstance()->get('db');
-
-        assert($db instanceof DB);
 
         $db->query(
             sprintf(
-                'UPDATE %s SET cdek_uuid="%s", deleted_at=null WHERE `order_id` = %u',
+                'UPDATE `%s` SET `cdek_uuid`="%s", `deleted_at`=null WHERE `order_id` = %u',
                 DB_PREFIX . self::TABLE_NAME,
                 $orderUuid,
                 $orderId,
@@ -114,13 +112,12 @@ class OrderMetaRepository
 
     public static function insertCdekTrack(int $orderId, string $track): void
     {
+        /** @var DB $db */
         $db = RegistrySingleton::getInstance()->get('db');
-
-        assert($db instanceof DB);
 
         $db->query(
             sprintf(
-                'UPDATE %s SET cdek_number="%s" WHERE `order_id` = %u',
+                'UPDATE `%s` SET `cdek_number`="%s" WHERE `order_id` = %u',
                 DB_PREFIX . self::TABLE_NAME,
                 $track,
                 $orderId,
@@ -130,13 +127,12 @@ class OrderMetaRepository
 
     public static function insertOfficeCode(int $orderId, string $officeCode): void
     {
+        /** @var DB $db */
         $db = RegistrySingleton::getInstance()->get('db');
-
-        assert($db instanceof DB);
 
         $db->query(
             sprintf(
-                'UPDATE %s SET pvz_code="%s" WHERE `order_id` = %u',
+                'UPDATE `%s` SET `pvz_code`="%s" WHERE `order_id` = %u',
                 DB_PREFIX . self::TABLE_NAME,
                 $db->escape($officeCode),
                 $orderId,
@@ -151,20 +147,19 @@ class OrderMetaRepository
         int $length,
         int $weight
     ): void {
+        /** @var DB $db */
         $db = RegistrySingleton::getInstance()->get('db');
-
-        assert($db instanceof DB);
 
         $db->query(
             sprintf(
-                "INSERT INTO %s 
-                                        (order_id, height, width, length, weight) 
+                "INSERT INTO `%s` 
+                                        (`order_id`, `height`, `width`, `length`, `weight`) 
                                         VALUES (%u, %u, %u, %u, %u) 
                                         ON DUPLICATE KEY UPDATE
-                                        height = VALUES(height),
-                                        width = VALUES(width),
-                                        length = VALUES(length),
-                                        weight = VALUES(weight)
+                                        `height` = VALUES(`height`),
+                                        `width` = VALUES(`width`),
+                                        `length` = VALUES(`length`),
+                                        `weight` = VALUES(`weight`)
                                         ",
                 DB_PREFIX . self::TABLE_NAME,
                 $orderId,
@@ -178,9 +173,8 @@ class OrderMetaRepository
 
     public static function getOrder(int $orderId): ?array
     {
+        /** @var DB $db */
         $db = RegistrySingleton::getInstance()->get('db');
-
-        assert($db instanceof DB);
 
         $table = DB_PREFIX . self::TABLE_NAME;
         $query = $db->query("SELECT * FROM `$table` WHERE `order_id` = $orderId");
@@ -190,11 +184,10 @@ class OrderMetaRepository
 
     public static function deleteOrder(int $orderId)
     {
+        /** @var DB $db */
         $db = RegistrySingleton::getInstance()->get('db');
 
-        assert($db instanceof DB);
-
         $table = DB_PREFIX . self::TABLE_NAME;
-        $db->query(sprintf("UPDATE %s SET deleted_at=now() WHERE order_id='%s'", $table, $orderId));
+        $db->query(sprintf("UPDATE `%s` SET `deleted_at`=now() WHERE `order_id`='%s'", $table, $orderId));
     }
 }

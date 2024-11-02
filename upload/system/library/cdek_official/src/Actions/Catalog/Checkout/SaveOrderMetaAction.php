@@ -4,7 +4,6 @@ namespace CDEK\Actions\Catalog\Checkout;
 
 use CDEK\Models\OrderMetaRepository;
 use CDEK\RegistrySingleton;
-use Request;
 use Session;
 use Throwable;
 
@@ -14,13 +13,8 @@ class SaveOrderMetaAction
     {
         $registry = RegistrySingleton::getInstance();
 
+        /** @var Session $session */
         $session = $registry->get('session');
-
-        assert($session instanceof Session);
-
-        $request = $registry->get('request');
-
-        assert($request instanceof Request);
 
         if (empty($session->data['cdek_weight']) || empty($session->data['order_id'])) {
             return;

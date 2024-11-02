@@ -53,9 +53,8 @@ class EventsHelper
 
         LogHelper::write('create events');
         $registry->get('load')->model('setting/event');
+        /** @var ModelSettingEvent $eventModel */
         $eventModel = $registry->get('model_setting_event');
-
-        assert($eventModel instanceof ModelSettingEvent);
 
         foreach (self::EVENTS as $trigger => $actions) {
             foreach ($actions as $actionName => $action) {
@@ -74,9 +73,8 @@ class EventsHelper
 
         LogHelper::write('delete events');
         $registry->get('load')->model('setting/event');
+        /** @var ModelSettingEvent $eventModel */
         $eventModel = $registry->get('model_setting_event');
-
-        assert($eventModel instanceof ModelSettingEvent);
 
         foreach (self::EVENTS as $actions) {
             foreach (array_keys($actions) as $event) {
