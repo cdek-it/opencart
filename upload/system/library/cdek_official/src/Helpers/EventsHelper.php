@@ -27,6 +27,9 @@ class EventsHelper
             'catalog/view/common/header/before'                       => [
                 'cdek_official_header_before' => 'extension/shipping/cdek_official/addCheckoutHeaderScript',
             ],
+            'catalog/view/plaza/page_section/header_mobile/before'    => [
+                'cdek_official_plaza_header_mobile_before' => 'extension/shipping/cdek_official/addCheckoutHeaderScript',
+            ],
             'catalog/controller/checkout/uni_checkout/validate/before' => [
                 'cdek_official_validate_office_code_uni' => 'extension/shipping/cdek_official/validateOfficeCode',
             ],
