@@ -516,8 +516,31 @@
                                 </div>
                             </div>
                         </fieldset>
+                        <fieldset>
+                            <legend>{{ cdek_logger }}</legend>
+                            <div class="form-group">
+                                <div class="col-sm-10">
+                                    <div class="row" style="padding-bottom: 10px">
+                                        <div class="col-sm-12">
+                                            <div class="col-sm-6">
+                                                <div class="row" style="display: flex; align-items: center;">
+                                                    <input
+                                                            type="checkbox"
+                                                            name="cdek_official__LogMode"
+                                                            id="cdek_official__LogMode"
+                                                            value="1"
+                                                            {% if cdek_official__logMode %} checked {%
+                                                                endif %}
+                                                            class="form-control" />
+                                                    <label for="cdek_official__LogMode" style="margin: 10px;">{{ cdek_official_log_mode }}</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
                     </div>
-
 
                     <div class="pull-right">
                         <button

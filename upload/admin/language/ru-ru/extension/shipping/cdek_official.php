@@ -171,3 +171,6 @@ $_['cdek_official_office_receiver_error']
 
 $_['cdek_dimensions__length_unit'] = 'Выберите сантиметры';
 $_['cdek_dimensions__weight_unit'] = 'Выберите граммы';
+$_['cdek_logger'] = 'Логирование';
+$_['cdek_official_log_mode'] = 'Включить режим логирования';
+$_['cdek_error_log_mode_invalid'] = 'Не удалось изменить режим логирования';
