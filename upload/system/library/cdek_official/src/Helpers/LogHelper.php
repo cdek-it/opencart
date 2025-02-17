@@ -12,7 +12,7 @@ class LogHelper
         $registry = RegistrySingleton::getInstance();
         $settings = SettingsSingleton::getInstance();
 
-        if($settings->loggerSettings->logMode === 1) {
+        if($settings->loggerSettings->logMode) {
             $registry->get('log')->write("[CDEK] $text");
         }
     }

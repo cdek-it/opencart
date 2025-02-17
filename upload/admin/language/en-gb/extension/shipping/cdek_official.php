@@ -178,4 +178,3 @@ $_['cdek_dimensions__length_unit'] = 'Please select centimeters';
 $_['cdek_dimensions__weight_unit'] = 'Please select grams';
 $_['cdek_logger'] = 'Logger';
 $_['cdek_official_log_mode'] = 'Turn on log mode';
-$_['cdek_error_log_mode_invalid'] = 'Log mode must be a boolean value';
