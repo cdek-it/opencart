@@ -13,7 +13,7 @@
   "repositories": [
     {
       "type": "composer",
-      "url": "https://repo.cdek.ru/repository/cdek-php"
+      "url": "https://repo.cdek.ru/repository/php-public"
     },
     {
       "packagist.org": false
