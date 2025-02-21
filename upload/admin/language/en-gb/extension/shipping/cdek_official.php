@@ -176,3 +176,5 @@ $_['cdek_official_office_receiver_error']
 
 $_['cdek_dimensions__length_unit'] = 'Please select centimeters';
 $_['cdek_dimensions__weight_unit'] = 'Please select grams';
+$_['cdek_logger'] = 'Logger';
+$_['cdek_official_log_mode'] = 'Turn on log mode';
