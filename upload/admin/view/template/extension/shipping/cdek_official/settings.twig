@@ -329,7 +329,7 @@
                                                 {% for currency in currencies %}
                                                     <option
                                                             value="{{ currency.code }}"
-                                                            {% if currency.code == cdek_official__shippingCurrency %} selected="selected" {% endif %}
+                                                            {% if currency.code is same as(cdek_official__shippingCurrency) %} selected="selected" {% endif %}
                                                     >{{ currency.key }}</option>
                                                 {% endfor %}
                                             </select>
