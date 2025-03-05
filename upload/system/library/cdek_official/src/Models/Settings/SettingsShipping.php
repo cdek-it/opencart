@@ -9,7 +9,7 @@ use RuntimeException;
 class SettingsShipping extends ValidatableSettingsContract
 {
     public array $enabledTariffs = [];
-    public string $shippingCurrency = 'RUB';
+    public int $shippingCurrency = 1;
     public int $shippingExtraDays = 0;
     public string $shippingCityAddress = '';
     public string $shippingPvz = '';
