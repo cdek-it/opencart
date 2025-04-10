@@ -2,7 +2,9 @@
 
 namespace CDEK\Contracts;
 
-abstract class ExceptionContract extends \Exception
+use Exception;
+
+abstract class ExceptionContract extends Exception
 {
     protected string $key = 'cdek_error';
     protected int $status = 500;
