@@ -7,12 +7,13 @@ use CDEK\Exceptions\UnparsableAnswerException;
 use CDEK\Models\OrderMetaRepository;
 use CDEK\RegistrySingleton;
 use CDEK\Transport\CdekApi;
+use Response;
 use JsonException;
 
 class GetWaybillAction
 {
     /**
-     * @throws \JsonException
+     * @throws JsonException
      */
     final public function __invoke(int $orderId): void
     {
