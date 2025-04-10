@@ -10,6 +10,7 @@ use CDEK\Models\Tariffs;
 use CDEK\RegistrySingleton;
 use CDEK\SettingsSingleton;
 use CDEK\Transport\CdekApi;
+use JsonException;
 use Throwable;
 
 class DeliveryCalculator
@@ -139,7 +140,9 @@ class DeliveryCalculator
         if (!empty($settings->shippingSettings->shippingPvz)) {
             try {
                 $locality = LocationHelper::getLocality($settings->shippingSettings->shippingPvz);
-            } catch (\JsonException $e) {
+            } catch (JsonException $e) {
+                LogHelper::write('Issue with calculator get location: ' . $e->getMessage());
+                return $tariffCalculated;
             }
 
             LogHelper::write(
