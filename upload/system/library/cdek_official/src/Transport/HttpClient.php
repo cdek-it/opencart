@@ -2,13 +2,22 @@
 
 namespace CDEK\Transport;
 
+use CDEK\Exceptions\HttpServerException;
+use CDEK\Exceptions\UnparsableAnswerException;
 use CDEK\RegistrySingleton;
 use JsonException;
 
 class HttpClient
 {
     /**
-     * @throws JsonException
+     * @param string $url
+     * @param string $method
+     * @param string $token
+     * @param null $data
+     * @param bool $raw
+     * @return array|string
+     * @throws HttpServerException
+     * @throws UnparsableAnswerException
      */
     public static function sendCdekRequest(string $url, string $method, string $token, $data = null, bool $raw = false)
     {
@@ -16,9 +25,14 @@ class HttpClient
     }
 
     /**
-     * @param array|string $data
+     * @param string $url
+     * @param string $method
+     * @param null $data
+     * @param array $headers
+     * @param bool $raw
      * @return array|string
-     * @throws JsonException
+     * @throws HttpServerException
+     * @throws UnparsableAnswerException
      */
     public static function sendRequest(
         string $url,
@@ -56,7 +70,20 @@ class HttpClient
         $response = curl_exec($ch);
 
         $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
+
+        if(self::isServerError($httpCode)){
+            throw new HttpServerException(
+                [
+                    'message' => 'Server request error',
+                    'code' => $httpCode,
+                    'url' => $url,
+                    'method' => $method,
+                ]
+            );
+        }
+
         $headers = substr($response, 0, $headerSize);
         $result = substr($response, $headerSize);
         $addedHeaders = array_filter(explode("\r\n", $headers), static fn ($line) =>
@@ -70,6 +97,19 @@ class HttpClient
             }
         }
 
-        return $raw ? $result : json_decode($result, true, 512, JSON_THROW_ON_ERROR);
+        try {
+            return $raw ? $result : json_decode($result, true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            throw new UnparsableAnswerException(
+                'CDEK API response is not valid JSON',
+                $url,
+                $method
+            );
+        }
+    }
+
+    private static function isServerError(int $httpCode): bool
+    {
+        return $httpCode >= 500 && $httpCode < 600;
     }
 }

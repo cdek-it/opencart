@@ -4,11 +4,13 @@ namespace CDEK\Actions\Admin\Settings;
 
 use CDEK\RegistrySingleton;
 use CDEK\Transport\CdekApi;
+use JsonException;
+use Throwable;
 
 class GetOfficesAction
 {
     /**
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function __invoke(): void
     {
@@ -16,6 +18,14 @@ class GetOfficesAction
         $param                 = $registry->get('request')->get;
         $param['city_code']    = null;
         $param['is_reception'] = true;
-        $registry->get('response')->setOutput(CdekApi::getOffices($param));
+        $response = $registry->get('response');
+
+        try {
+            $response->setOutput(CdekApi::getOffices($param));
+        } catch (Throwable $e) {
+            $response->addHeader('HTTP/1.1 500 Internal Server Error');
+            $response->setOutput('[]');
+        }
+
     }
 }

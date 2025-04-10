@@ -3,6 +3,8 @@
 namespace CDEK\Actions\Admin\Order;
 
 use CDEK\Config;
+use CDEK\Exceptions\HttpServerException;
+use CDEK\Exceptions\UnparsableAnswerException;
 use CDEK\Models\OrderMetaRepository;
 use CDEK\RegistrySingleton;
 use CDEK\Transport\CdekApi;
@@ -41,7 +43,15 @@ class GetOrderInfoTabAction
         unset($session->data['errors']);
 
         if (!empty($meta['cdek_uuid']) && empty($meta['cdek_number']) && empty($meta['deleted_at'])) {
-            $order = CdekApi::getOrderByUuid($meta['cdek_uuid']);
+            try {
+                $order = CdekApi::getOrderByUuid($meta['cdek_uuid']);
+            } catch (UnparsableAnswerException|HttpServerException $e) {
+                $order['requests'][0]['errors'] = [
+                    [
+                        'message' => $e->getMessage(),
+                    ],
+                ];
+            }
 
             if (!empty($order['requests'][0]['errors'])) {
                 foreach ($order['requests'][0]['errors'] as $error) {
