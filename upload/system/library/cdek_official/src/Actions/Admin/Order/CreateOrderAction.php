@@ -5,7 +5,6 @@ namespace CDEK\Actions\Admin\Order;
 use Cart\Weight;
 use CDEK\Config;
 use CDEK\Exceptions\HttpServerException;
-use CDEK\Exceptions\UnparsableAnswerException;
 use CDEK\Exceptions\ValidationException;
 use CDEK\Helpers\LocationHelper;
 use CDEK\Helpers\LogHelper;
@@ -48,7 +47,7 @@ class CreateOrderAction
 
         try {
             $result = CdekApi::createOrder($request);
-        } catch (UnparsableAnswerException|HttpServerException $e) {
+        } catch (HttpServerException|JsonException $e) {
             $result['requests'][0]['errors'] = [
                 [
                     'message' => $e->getMessage(),

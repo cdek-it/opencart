@@ -3,10 +3,10 @@
 namespace CDEK\Actions\Admin\Order;
 
 use CDEK\Exceptions\HttpServerException;
-use CDEK\Exceptions\UnparsableAnswerException;
 use CDEK\Models\OrderMetaRepository;
 use CDEK\RegistrySingleton;
 use CDEK\Transport\CdekApi;
+use JsonException;
 use Exception;
 
 class DeleteOrderAction
@@ -21,7 +21,7 @@ class DeleteOrderAction
 
         try {
             CdekApi::deleteOrder($meta['cdek_uuid']);
-        } catch (UnparsableAnswerException|HttpServerException $e) {
+        } catch (JsonException|HttpServerException $e) {
             $registry = RegistrySingleton::getInstance();
 
             $registry->get('session')->data['errors'][] = $e->getMessage();

@@ -3,7 +3,6 @@
 namespace CDEK\Transport;
 
 use CDEK\Exceptions\HttpServerException;
-use CDEK\Exceptions\UnparsableAnswerException;
 use CDEK\RegistrySingleton;
 use JsonException;
 
@@ -17,7 +16,7 @@ class HttpClient
      * @param bool $raw
      * @return array|string
      * @throws HttpServerException
-     * @throws UnparsableAnswerException
+     * @throws JsonException
      */
     public static function sendCdekRequest(string $url, string $method, string $token, $data = null, bool $raw = false)
     {
@@ -32,7 +31,7 @@ class HttpClient
      * @param bool $raw
      * @return array|string
      * @throws HttpServerException
-     * @throws UnparsableAnswerException
+     * @throws JsonException
      */
     public static function sendRequest(
         string $url,
@@ -97,15 +96,7 @@ class HttpClient
             }
         }
 
-        try {
-            return $raw ? $result : json_decode($result, true, 512, JSON_THROW_ON_ERROR);
-        } catch (JsonException $e) {
-            throw new UnparsableAnswerException(
-                'CDEK API response is not valid JSON',
-                $url,
-                $method
-            );
-        }
+        return $raw ? $result : json_decode($result, true, 512, JSON_THROW_ON_ERROR);
     }
 
     private static function isServerError(int $httpCode): bool

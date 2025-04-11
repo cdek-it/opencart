@@ -23,7 +23,7 @@ class GetOfficesAction
         try {
             $response->setOutput(CdekApi::getOffices($param));
         } catch (Throwable $e) {
-            $response->addHeader('HTTP/1.1 500 Internal Server Error');
+            $response->addHeader('HTTP/1.1 503 External Server Error');
             $response->setOutput('[]');
         }
 

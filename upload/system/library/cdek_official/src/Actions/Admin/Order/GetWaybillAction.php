@@ -3,7 +3,6 @@
 namespace CDEK\Actions\Admin\Order;
 
 use CDEK\Exceptions\HttpServerException;
-use CDEK\Exceptions\UnparsableAnswerException;
 use CDEK\Models\OrderMetaRepository;
 use CDEK\RegistrySingleton;
 use CDEK\Transport\CdekApi;
@@ -29,9 +28,9 @@ class GetWaybillAction
 
         try {
             $waybill = CdekApi::getWaybill($meta['cdek_uuid']);
-        } catch (UnparsableAnswerException|HttpServerException $e) {
-            $response->addHeader('HTTP/1.1 500 Internal Server Error');
-            $response->setOutput('Internal Server Error');
+        } catch (JsonException|HttpServerException $e) {
+            $response->addHeader('HTTP/1.1 503 External Server Error');
+            $response->setOutput('External Server Error');
             return;
         }
 

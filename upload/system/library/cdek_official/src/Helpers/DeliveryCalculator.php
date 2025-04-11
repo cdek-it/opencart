@@ -5,7 +5,6 @@ namespace CDEK\Helpers;
 use Cart\Length;
 use Cart\Weight;
 use CDEK\Exceptions\HttpServerException;
-use CDEK\Exceptions\UnparsableAnswerException;
 use CDEK\Models\Tariffs;
 use CDEK\RegistrySingleton;
 use CDEK\SettingsSingleton;
@@ -51,7 +50,7 @@ class DeliveryCalculator
                 $city,
                 $postcode,
             );
-        } catch (UnparsableAnswerException|HttpServerException $e) {
+        } catch (JsonException|HttpServerException $e) {
             return [];
         }
 
@@ -109,9 +108,9 @@ class DeliveryCalculator
                         'packages' => $recommendedDimensions,
                     ],
                 );
-            } catch (UnparsableAnswerException|HttpServerException $e) {
+            } catch (JsonException|HttpServerException $e) {
                 LogHelper::write('Calculator shipping city address error: ' . $e->getMessage());
-                return $tariffCalculated;
+                return [];
             }
 
             LogHelper::write('Calculator response: ' . json_encode($result, JSON_THROW_ON_ERROR));
@@ -178,9 +177,9 @@ class DeliveryCalculator
                         'packages' => $recommendedDimensions,
                     ],
                 );
-            } catch (UnparsableAnswerException|HttpServerException $e) {
+            } catch (JsonException|HttpServerException $e) {
                 LogHelper::write('Calculator shipping pvz error: ' . $e->getMessage());
-                return $tariffCalculated;
+                return [];
             }
 
             LogHelper::write('Calculator response: ' . json_encode($result, JSON_THROW_ON_ERROR));

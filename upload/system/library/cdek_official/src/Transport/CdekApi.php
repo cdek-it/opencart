@@ -4,7 +4,6 @@ namespace CDEK\Transport;
 
 use CDEK\Config;
 use CDEK\Exceptions\HttpServerException;
-use CDEK\Exceptions\UnparsableAnswerException;
 use CDEK\Helpers\LogHelper;
 use CDEK\SettingsSingleton;
 use JsonException;
@@ -20,7 +19,7 @@ class CdekApi
 
     /**
      * @throws HttpServerException
-     * @throws UnparsableAnswerException
+     * @throws JsonException
      */
     final public static function checkAuth(): bool
     {
@@ -30,7 +29,7 @@ class CdekApi
 
     /**
      * @throws HttpServerException
-     * @throws UnparsableAnswerException
+     * @throws JsonException
      */
     private static function getToken(): ?string
     {
@@ -67,7 +66,7 @@ class CdekApi
 
     /**
      * @throws HttpServerException
-     * @throws UnparsableAnswerException
+     * @throws JsonException
      */
     public static function getOrderByUuid(string $uuid): array
     {
@@ -76,7 +75,7 @@ class CdekApi
 
     /**
      * @throws HttpServerException
-     * @throws UnparsableAnswerException
+     * @throws JsonException
      */
     public static function getOffices(array $param): string
     {
@@ -92,7 +91,7 @@ class CdekApi
 
     /**
      * @throws HttpServerException
-     * @throws UnparsableAnswerException
+     * @throws JsonException
      */
     public static function calculate(array $data): array
     {
@@ -101,7 +100,7 @@ class CdekApi
 
     /**
      * @throws HttpServerException
-     * @throws UnparsableAnswerException
+     * @throws JsonException
      */
     public static function createOrder(array $requestData): array
     {
@@ -115,7 +114,7 @@ class CdekApi
 
     /**
      * @throws HttpServerException
-     * @throws UnparsableAnswerException
+     * @throws JsonException
      */
     public static function getCityByParam(string $city, string $postcode, array $additionalParams = []): array
     {
@@ -132,7 +131,7 @@ class CdekApi
 
     /**
      * @throws HttpServerException
-     * @throws UnparsableAnswerException
+     * @throws JsonException
      */
     public static function deleteOrder(string $uuid): array
     {
@@ -145,7 +144,7 @@ class CdekApi
 
     /**
      * @throws HttpServerException
-     * @throws UnparsableAnswerException
+     * @throws JsonException
      */
     public static function getWaybill(string $orderUuid): ?string
     {
@@ -160,15 +159,8 @@ class CdekApi
                 'copy_count' => 2,
             ],
         );
-        try {
-            LogHelper::write('RequestBill: ' . json_encode($requestBill, JSON_THROW_ON_ERROR));
-        } catch (JsonException $e) {
-            throw new UnparsableAnswerException(
-                'CDEK API response is not valid JSON',
-                self::getApiUrl(self::WAYBILL_PATH),
-                'POST'
-            );
-        }
+
+        LogHelper::write('RequestBill: ' . json_encode($requestBill, JSON_THROW_ON_ERROR));
 
         sleep(5);
 
@@ -177,15 +169,8 @@ class CdekApi
             'GET',
             self::getToken(),
         );
-        try {
-            LogHelper::write('Result: ' . json_encode($result, JSON_THROW_ON_ERROR));
-        } catch (JsonException $e) {
-            throw new UnparsableAnswerException(
-                'CDEK API response is not valid JSON',
-                self::getApiUrl(self::WAYBILL_PATH . $requestBill['entity']['uuid']),
-                'POST'
-            );
-        }
+
+        LogHelper::write('Result: ' . json_encode($result, JSON_THROW_ON_ERROR));
 
         if (empty($result['entity']['url'])) {
             return null;
