@@ -42,11 +42,10 @@ class CreateOrderAction
             return;
         }
 
-        $request = self::buildRequestData($orderId, $width, $height, $length);
-
-        LogHelper::write("Sending requests to CDEK for order $orderId: " . json_encode($request, JSON_THROW_ON_ERROR));
-
         try {
+            $request = self::buildRequestData($orderId, $width, $height, $length);
+            LogHelper::write("Sending requests to CDEK for order $orderId: " . json_encode($request, JSON_THROW_ON_ERROR));
+
             $result = CdekApi::createOrder($request);
         } catch ( HttpServerException | DecodeException $e ) {
             $result['requests'][0]['errors'] = [
@@ -92,6 +91,9 @@ class CreateOrderAction
         }
     }
 
+    /**
+     * @throws DecodeException
+     */
     private static function buildRequestData(int $orderId, int $width, int $height, int $length): array
     {
         $registry = RegistrySingleton::getInstance();

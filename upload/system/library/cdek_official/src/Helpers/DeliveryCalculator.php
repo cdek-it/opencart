@@ -76,7 +76,12 @@ class DeliveryCalculator
         $session->data['cdek_width']  = $recommendedDimensions['width'];
 
         if (!empty($settings->shippingSettings->shippingCityAddress)) {
-            $locality = LocationHelper::getLocality($settings->shippingSettings->shippingCityAddress);
+            try {
+                $locality = LocationHelper::getLocality($settings->shippingSettings->shippingCityAddress);
+            } catch (DecodeException $e) {
+                LogHelper::write($e->getMessage());
+            }
+
             LogHelper::write(
                 'Calculator request: ' . json_encode(
                     [
@@ -143,8 +148,8 @@ class DeliveryCalculator
         if (!empty($settings->shippingSettings->shippingPvz)) {
             try {
                 $locality = LocationHelper::getLocality($settings->shippingSettings->shippingPvz);
-            } catch (JsonException $e) {
-                LogHelper::write('Issue with calculator get location: ' . $e->getMessage());
+            } catch (DecodeException $e) {
+                LogHelper::write($e->getMessage());
                 return [];
             }
 
