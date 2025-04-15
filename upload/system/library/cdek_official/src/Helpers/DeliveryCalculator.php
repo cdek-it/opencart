@@ -4,6 +4,7 @@ namespace CDEK\Helpers;
 
 use Cart\Length;
 use Cart\Weight;
+use CDEK\Exceptions\DecodeException;
 use CDEK\Exceptions\HttpServerException;
 use CDEK\Models\Tariffs;
 use CDEK\RegistrySingleton;
@@ -35,6 +36,9 @@ class DeliveryCalculator
         ];
     }
 
+    /**
+     * @throws JsonException
+     */
     private static function calculateQuote(array $deliveryAddress): array
     {
         $settings = SettingsSingleton::getInstance();
@@ -50,7 +54,7 @@ class DeliveryCalculator
                 $city,
                 $postcode,
             );
-        } catch (JsonException|HttpServerException $e) {
+        } catch ( DecodeException | HttpServerException  $e) {
             return [];
         }
 
@@ -108,7 +112,7 @@ class DeliveryCalculator
                         'packages' => $recommendedDimensions,
                     ],
                 );
-            } catch (JsonException|HttpServerException $e) {
+            } catch ( DecodeException | HttpServerException  $e) {
                 LogHelper::write('Calculator shipping city address error: ' . $e->getMessage());
                 return [];
             }
@@ -141,7 +145,7 @@ class DeliveryCalculator
                 $locality = LocationHelper::getLocality($settings->shippingSettings->shippingPvz);
             } catch (JsonException $e) {
                 LogHelper::write('Issue with calculator get location: ' . $e->getMessage());
-                return $tariffCalculated;
+                return [];
             }
 
             LogHelper::write(
@@ -177,7 +181,7 @@ class DeliveryCalculator
                         'packages' => $recommendedDimensions,
                     ],
                 );
-            } catch (JsonException|HttpServerException $e) {
+            } catch ( DecodeException | HttpServerException  $e) {
                 LogHelper::write('Calculator shipping pvz error: ' . $e->getMessage());
                 return [];
             }

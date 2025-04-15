@@ -4,14 +4,10 @@ namespace CDEK\Actions\Admin\Settings;
 
 use CDEK\RegistrySingleton;
 use CDEK\Transport\CdekApi;
-use JsonException;
 use Throwable;
 
 class GetOfficesAction
 {
-    /**
-     * @throws JsonException
-     */
     public function __invoke(): void
     {
         $registry = RegistrySingleton::getInstance();
@@ -23,7 +19,7 @@ class GetOfficesAction
         try {
             $response->setOutput(CdekApi::getOffices($param));
         } catch (Throwable $e) {
-            $response->addHeader('HTTP/1.1 503 External Server Error');
+            $response->addHeader('HTTP/1.1 503 Service Unavailable');
             $response->setOutput('[]');
         }
 

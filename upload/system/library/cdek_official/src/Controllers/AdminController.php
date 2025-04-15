@@ -14,7 +14,6 @@ use CDEK\Actions\Admin\Settings\RenderSettingsPageAction;
 use CDEK\Actions\Admin\Settings\SaveSettingsAction;
 use CDEK\Contracts\ControllerContract;
 use Exception;
-use JsonException;
 use Request;
 
 class AdminController extends ControllerContract
@@ -38,9 +37,6 @@ class AdminController extends ControllerContract
         (new SaveSettingsAction)();
     }
 
-    /**
-     * @throws JsonException
-     */
     final public function map(): void
     {
         (new GetOfficesAction)();
@@ -59,6 +55,9 @@ class AdminController extends ControllerContract
                                 $request->post['length']);
     }
 
+    /**
+     * @throws Exception
+     */
     final public function delete(): void
     {
         (new DeleteOrderAction)($this->registry->get('request')->get['order_id']);
@@ -66,7 +65,6 @@ class AdminController extends ControllerContract
 
     /**
      * @noinspection PhpUnused
-     * @throws JsonException
      */
     final public function waybill(): void
     {

@@ -2,6 +2,7 @@
 
 namespace CDEK\Transport;
 
+use CDEK\Exceptions\DecodeException;
 use CDEK\Exceptions\HttpServerException;
 use CDEK\RegistrySingleton;
 use JsonException;
@@ -16,7 +17,7 @@ class HttpClient
      * @param bool $raw
      * @return array|string
      * @throws HttpServerException
-     * @throws JsonException
+     * @throws DecodeException
      */
     public static function sendCdekRequest(string $url, string $method, string $token, $data = null, bool $raw = false)
     {
@@ -31,7 +32,7 @@ class HttpClient
      * @param bool $raw
      * @return array|string
      * @throws HttpServerException
-     * @throws JsonException
+     * @throws DecodeException
      */
     public static function sendRequest(
         string $url,
@@ -96,7 +97,13 @@ class HttpClient
             }
         }
 
-        return $raw ? $result : json_decode($result, true, 512, JSON_THROW_ON_ERROR);
+        try {
+            return $raw ? $result : json_decode($result, true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            throw new DecodeException(
+                'Error decoding JSON response',
+            );
+        }
     }
 
     private static function isServerError(int $httpCode): bool

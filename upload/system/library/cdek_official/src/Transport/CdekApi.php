@@ -6,7 +6,7 @@ use CDEK\Config;
 use CDEK\Exceptions\HttpServerException;
 use CDEK\Helpers\LogHelper;
 use CDEK\SettingsSingleton;
-use JsonException;
+use CDEK\Exceptions\DecodeException;
 
 class CdekApi
 {
@@ -19,7 +19,7 @@ class CdekApi
 
     /**
      * @throws HttpServerException
-     * @throws JsonException
+     * @throws DecodeException
      */
     final public static function checkAuth(): bool
     {
@@ -29,7 +29,7 @@ class CdekApi
 
     /**
      * @throws HttpServerException
-     * @throws JsonException
+     * @throws DecodeException
      */
     private static function getToken(): ?string
     {
@@ -66,7 +66,7 @@ class CdekApi
 
     /**
      * @throws HttpServerException
-     * @throws JsonException
+     * @throws DecodeException
      */
     public static function getOrderByUuid(string $uuid): array
     {
@@ -75,7 +75,7 @@ class CdekApi
 
     /**
      * @throws HttpServerException
-     * @throws JsonException
+     * @throws DecodeException
      */
     public static function getOffices(array $param): string
     {
@@ -91,7 +91,7 @@ class CdekApi
 
     /**
      * @throws HttpServerException
-     * @throws JsonException
+     * @throws DecodeException
      */
     public static function calculate(array $data): array
     {
@@ -100,7 +100,7 @@ class CdekApi
 
     /**
      * @throws HttpServerException
-     * @throws JsonException
+     * @throws DecodeException
      */
     public static function createOrder(array $requestData): array
     {
@@ -114,7 +114,7 @@ class CdekApi
 
     /**
      * @throws HttpServerException
-     * @throws JsonException
+     * @throws DecodeException
      */
     public static function getCityByParam(string $city, string $postcode, array $additionalParams = []): array
     {
@@ -131,7 +131,7 @@ class CdekApi
 
     /**
      * @throws HttpServerException
-     * @throws JsonException
+     * @throws DecodeException
      */
     public static function deleteOrder(string $uuid): array
     {
@@ -144,7 +144,7 @@ class CdekApi
 
     /**
      * @throws HttpServerException
-     * @throws JsonException
+     * @throws DecodeException
      */
     public static function getWaybill(string $orderUuid): ?string
     {

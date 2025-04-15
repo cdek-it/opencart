@@ -4,6 +4,7 @@ namespace CDEK\Actions\Admin\Order;
 
 use Cart\Weight;
 use CDEK\Config;
+use CDEK\Exceptions\DecodeException;
 use CDEK\Exceptions\HttpServerException;
 use CDEK\Exceptions\ValidationException;
 use CDEK\Helpers\LocationHelper;
@@ -47,7 +48,7 @@ class CreateOrderAction
 
         try {
             $result = CdekApi::createOrder($request);
-        } catch (HttpServerException|JsonException $e) {
+        } catch ( HttpServerException | DecodeException $e ) {
             $result['requests'][0]['errors'] = [
                 [
                     'message' => $e->getMessage(),
