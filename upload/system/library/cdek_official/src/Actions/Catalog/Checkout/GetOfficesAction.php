@@ -4,12 +4,16 @@ namespace CDEK\Actions\Catalog\Checkout;
 
 use CDEK\RegistrySingleton;
 use CDEK\Transport\CdekApi;
+use JsonException;
 use Response;
 use Session;
 use Throwable;
 
 class GetOfficesAction
 {
+    /**
+     * @throws JsonException
+     */
     public function __invoke(): void
     {
         $registry = RegistrySingleton::getInstance();
@@ -36,7 +40,7 @@ class GetOfficesAction
             )[0]['code'];
             $response->setOutput(CdekApi::getOffices($param));
         } catch (Throwable $e) {
-            $response->addHeader('HTTP/1.1 500 Internal Server Error');
+            $response->addHeader('HTTP/1.1 503 Service Unavailable');
             $response->setOutput(json_encode(['message' => $e->getMessage()], JSON_THROW_ON_ERROR));
         }
     }

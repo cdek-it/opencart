@@ -4,6 +4,8 @@ namespace CDEK\Actions\Admin\Order;
 
 use Cart\Weight;
 use CDEK\Config;
+use CDEK\Exceptions\DecodeException;
+use CDEK\Exceptions\HttpServerException;
 use CDEK\Exceptions\ValidationException;
 use CDEK\Helpers\LocationHelper;
 use CDEK\Helpers\LogHelper;
@@ -40,11 +42,18 @@ class CreateOrderAction
             return;
         }
 
-        $request = self::buildRequestData($orderId, $width, $height, $length);
+        try {
+            $request = self::buildRequestData($orderId, $width, $height, $length);
+            LogHelper::write("Sending requests to CDEK for order $orderId: " . json_encode($request, JSON_THROW_ON_ERROR));
 
-        LogHelper::write("Sending requests to CDEK for order $orderId: " . json_encode($request, JSON_THROW_ON_ERROR));
-
-        $result = CdekApi::createOrder($request);
+            $result = CdekApi::createOrder($request);
+        } catch ( HttpServerException | DecodeException $e ) {
+            $result['requests'][0]['errors'] = [
+                [
+                    'message' => $e->getMessage(),
+                ],
+            ];
+        }
 
         if (self::doOrderHasCreationErrors($result)) {
             $response->setOutput((new GetOrderInfoTabAction)($orderId)['content']);
@@ -82,6 +91,9 @@ class CreateOrderAction
         }
     }
 
+    /**
+     * @throws DecodeException
+     */
     private static function buildRequestData(int $orderId, int $width, int $height, int $length): array
     {
         $registry = RegistrySingleton::getInstance();

@@ -7,7 +7,6 @@ use CDEK\Actions\Catalog\Checkout\GetOfficesAction;
 use CDEK\Actions\Catalog\Checkout\CacheOfficeCodeAction;
 use CDEK\Actions\Catalog\Checkout\SaveOrderMetaAction;
 use CDEK\Actions\Catalog\Checkout\ValidateOfficeCodeAction;
-use CDEK\Config;
 use CDEK\Contracts\ControllerContract;
 use JsonException;
 

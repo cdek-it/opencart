@@ -4,10 +4,13 @@ namespace CDEK\Helpers;
 
 use Cart\Length;
 use Cart\Weight;
+use CDEK\Exceptions\DecodeException;
+use CDEK\Exceptions\HttpServerException;
 use CDEK\Models\Tariffs;
 use CDEK\RegistrySingleton;
 use CDEK\SettingsSingleton;
 use CDEK\Transport\CdekApi;
+use JsonException;
 use Throwable;
 
 class DeliveryCalculator
@@ -33,6 +36,9 @@ class DeliveryCalculator
         ];
     }
 
+    /**
+     * @throws JsonException
+     */
     private static function calculateQuote(array $deliveryAddress): array
     {
         $settings = SettingsSingleton::getInstance();
@@ -43,10 +49,15 @@ class DeliveryCalculator
             return [];
         }
 
-        $recipientLocation = CdekApi::getCityByParam(
-            $city,
-            $postcode,
-        );
+        try {
+            $recipientLocation = CdekApi::getCityByParam(
+                $city,
+                $postcode,
+            );
+        } catch ( DecodeException | HttpServerException  $e) {
+            return [];
+        }
+
         if (empty($recipientLocation[0]['code'])) {
             return [];
         }
@@ -65,7 +76,12 @@ class DeliveryCalculator
         $session->data['cdek_width']  = $recommendedDimensions['width'];
 
         if (!empty($settings->shippingSettings->shippingCityAddress)) {
-            $locality = LocationHelper::getLocality($settings->shippingSettings->shippingCityAddress);
+            try {
+                $locality = LocationHelper::getLocality($settings->shippingSettings->shippingCityAddress);
+            } catch (DecodeException $e) {
+                LogHelper::write($e->getMessage());
+            }
+
             LogHelper::write(
                 'Calculator request: ' . json_encode(
                     [
@@ -84,22 +100,30 @@ class DeliveryCalculator
                     JSON_THROW_ON_ERROR,
                 ),
             );
-            $result = CdekApi::calculate(
-                [
-                    'currency'      => $settings->shippingSettings->shippingCurrency,
-                    'from_location' => [
-                        'address'      => $locality['address'] ?? '',
-                        'country_code' => $locality['country'] ?? '',
-                        'postal_code'  => $locality['postal'] ?? '',
-                        'city'         => $locality['city'] ?? '',
+
+            try {
+                $result = CdekApi::calculate(
+                    [
+                        'currency' => $settings->shippingSettings->shippingCurrency,
+                        'from_location' => [
+                            'address' => $locality['address'] ?? '',
+                            'country_code' => $locality['country'] ?? '',
+                            'postal_code' => $locality['postal'] ?? '',
+                            'city' => $locality['city'] ?? '',
+                        ],
+                        'to_location' => [
+                            'code' => $recipientLocation[0]['code'],
+                        ],
+                        'packages' => $recommendedDimensions,
                     ],
-                    'to_location'   => [
-                        'code' => $recipientLocation[0]['code'],
-                    ],
-                    'packages'      => $recommendedDimensions,
-                ],
-            );
+                );
+            } catch ( DecodeException | HttpServerException  $e) {
+                LogHelper::write('Calculator shipping city address error: ' . $e->getMessage());
+                return [];
+            }
+
             LogHelper::write('Calculator response: ' . json_encode($result, JSON_THROW_ON_ERROR));
+
             if (!empty($result['tariff_codes'])) {
                 foreach ($result['tariff_codes'] as $tariff) {
                     try {
@@ -122,7 +146,13 @@ class DeliveryCalculator
         }
 
         if (!empty($settings->shippingSettings->shippingPvz)) {
-            $locality = LocationHelper::getLocality($settings->shippingSettings->shippingPvz);
+            try {
+                $locality = LocationHelper::getLocality($settings->shippingSettings->shippingPvz);
+            } catch (DecodeException $e) {
+                LogHelper::write($e->getMessage());
+                return [];
+            }
+
             LogHelper::write(
                 'Calculator request: ' . json_encode(
                     [
@@ -140,21 +170,29 @@ class DeliveryCalculator
                     JSON_THROW_ON_ERROR,
                 ),
             );
-            $result = CdekApi::calculate(
-                [
-                    'currency'      => $settings->shippingSettings->shippingCurrency,
-                    'from_location' => [
-                        'country_code' => $locality['country'] ?? '',
-                        'postal_code'  => $locality['postal'] ?? '',
-                        'city'         => $locality['city'] ?? '',
+
+            try {
+                $result = CdekApi::calculate(
+                    [
+                        'currency' => $settings->shippingSettings->shippingCurrency,
+                        'from_location' => [
+                            'country_code' => $locality['country'] ?? '',
+                            'postal_code' => $locality['postal'] ?? '',
+                            'city' => $locality['city'] ?? '',
+                        ],
+                        'to_location' => [
+                            'code' => $recipientLocation[0]['code'],
+                        ],
+                        'packages' => $recommendedDimensions,
                     ],
-                    'to_location'   => [
-                        'code' => $recipientLocation[0]['code'],
-                    ],
-                    'packages'      => $recommendedDimensions,
-                ],
-            );
+                );
+            } catch ( DecodeException | HttpServerException  $e) {
+                LogHelper::write('Calculator shipping pvz error: ' . $e->getMessage());
+                return [];
+            }
+
             LogHelper::write('Calculator response: ' . json_encode($result, JSON_THROW_ON_ERROR));
+
             if (!empty($result['tariff_codes'])) {
                 foreach ($result['tariff_codes'] as $tariff) {
                     try {

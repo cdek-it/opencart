@@ -3,9 +3,10 @@
 namespace CDEK\Transport;
 
 use CDEK\Config;
+use CDEK\Exceptions\HttpServerException;
 use CDEK\Helpers\LogHelper;
 use CDEK\SettingsSingleton;
-use JsonException;
+use CDEK\Exceptions\DecodeException;
 
 class CdekApi
 {
@@ -17,15 +18,18 @@ class CdekApi
     private const WAYBILL_PATH = 'print/orders/';
 
     /**
-     * @throws JsonException
+     * @throws HttpServerException
+     * @throws DecodeException
      */
     final public static function checkAuth(): bool
     {
         return (bool)self::getToken();
     }
 
+
     /**
-     * @throws JsonException
+     * @throws HttpServerException
+     * @throws DecodeException
      */
     private static function getToken(): ?string
     {
@@ -61,7 +65,8 @@ class CdekApi
     }
 
     /**
-     * @throws JsonException
+     * @throws HttpServerException
+     * @throws DecodeException
      */
     public static function getOrderByUuid(string $uuid): array
     {
@@ -69,7 +74,8 @@ class CdekApi
     }
 
     /**
-     * @throws JsonException
+     * @throws HttpServerException
+     * @throws DecodeException
      */
     public static function getOffices(array $param): string
     {
@@ -82,8 +88,10 @@ class CdekApi
         );
     }
 
+
     /**
-     * @throws JsonException
+     * @throws HttpServerException
+     * @throws DecodeException
      */
     public static function calculate(array $data): array
     {
@@ -91,7 +99,8 @@ class CdekApi
     }
 
     /**
-     * @throws JsonException
+     * @throws HttpServerException
+     * @throws DecodeException
      */
     public static function createOrder(array $requestData): array
     {
@@ -104,7 +113,8 @@ class CdekApi
     }
 
     /**
-     * @throws JsonException
+     * @throws HttpServerException
+     * @throws DecodeException
      */
     public static function getCityByParam(string $city, string $postcode, array $additionalParams = []): array
     {
@@ -120,7 +130,8 @@ class CdekApi
     }
 
     /**
-     * @throws JsonException
+     * @throws HttpServerException
+     * @throws DecodeException
      */
     public static function deleteOrder(string $uuid): array
     {
@@ -132,7 +143,8 @@ class CdekApi
     }
 
     /**
-     * @throws JsonException
+     * @throws HttpServerException
+     * @throws DecodeException
      */
     public static function getWaybill(string $orderUuid): ?string
     {
@@ -147,6 +159,7 @@ class CdekApi
                 'copy_count' => 2,
             ],
         );
+
         LogHelper::write('RequestBill: ' . json_encode($requestBill, JSON_THROW_ON_ERROR));
 
         sleep(5);
@@ -156,6 +169,7 @@ class CdekApi
             'GET',
             self::getToken(),
         );
+
         LogHelper::write('Result: ' . json_encode($result, JSON_THROW_ON_ERROR));
 
         if (empty($result['entity']['url'])) {
