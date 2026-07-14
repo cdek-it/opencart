@@ -47,6 +47,24 @@ class HttpClient
         }
 
         $ch = curl_init();
+        if ($ch === false) {
+            throw new HttpServerException(
+                [
+                    'message' => 'Failed to initialize cURL',
+                    'code' => 0,
+                    'url' => $url,
+                    'method' => $method,
+                ]
+            );
+        }
+
+        $shareHandle = curl_share_init_persistent(
+            [
+                CURL_LOCK_DATA_DNS,
+                CURL_LOCK_DATA_CONNECT,
+                CURL_LOCK_DATA_SSL_SESSION,
+            ]
+        );
 
         if (strtoupper($method) === 'POST') {
             curl_setopt($ch, CURLOPT_POST, true);
@@ -66,26 +84,39 @@ class HttpClient
             CURLOPT_HEADER => true,
             CURLOPT_URL => $url,
             CURLOPT_CUSTOMREQUEST => strtoupper($method),
+            CURLOPT_SHARE => $shareHandle,
         ));
         $response = curl_exec($ch);
 
-        $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        if(self::isServerError($httpCode)){
+        if ($response === false) {
             throw new HttpServerException(
                 [
-                    'message' => 'Server request error',
-                    'code' => $httpCode,
+                    'message' => curl_error($ch) ?: 'cURL request failed',
+                    'code' => curl_errno($ch),
                     'url' => $url,
                     'method' => $method,
                 ]
             );
         }
 
+        $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
         $headers = substr($response, 0, $headerSize);
         $result = substr($response, $headerSize);
+
+        if (self::isHttpError($httpCode)) {
+            throw new HttpServerException(
+                [
+                    'message' => 'HTTP request failed',
+                    'code' => $httpCode,
+                    'url' => $url,
+                    'method' => $method,
+                    'response' => substr($result, 0, 1000),
+                ]
+            );
+        }
+
         $addedHeaders = array_filter(explode("\r\n", $headers), static fn ($line) =>
             !empty($line) && stripos($line, 'X-') !== false
         );
@@ -101,13 +132,15 @@ class HttpClient
             return $raw ? $result : json_decode($result, true, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException $e) {
             throw new DecodeException(
-                'Error decoding JSON response',
+                "Error decoding JSON response (HTTP $httpCode)",
+                0,
+                $e,
             );
         }
     }
 
-    private static function isServerError(int $httpCode): bool
+    private static function isHttpError(int $httpCode): bool
     {
-        return $httpCode >= 500 && $httpCode < 600;
+        return $httpCode >= 400;
     }
 }

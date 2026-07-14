@@ -99,6 +99,7 @@ $_['cdek_shipping__tariff_plug']                         = 'Name tariff plug';
 $_['cdek_shipping__many_packages']                       = 'Many packages';
 $_['cdek_shipping__many_packages_on']                    = 'On many packages';
 $_['cdek_shipping__extra_days']                          = 'Extra days';
+$_['cdek_shipping__sort_order']                          = 'Sort order';
 $_['cdek_shipping__city']                                = 'City';
 $_['cdek_shipping__city_address']                        = 'Address';
 $_['cdek_shipping__pvz']                                 = 'Pickup point';

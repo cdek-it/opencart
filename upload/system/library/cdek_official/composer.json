@@ -1,22 +1,13 @@
 {
-  "name": "cdek/opencart_delivery_module",
+  "name": "cdek/opencart_delivery_module_php8.5",
   "type": "library",
   "require": {
-    "php": "^7.4",
-    "giggsey/libphonenumber-for-php": "^8.13"
+    "php": "^8.5",
+    "giggsey/libphonenumber-for-php": "9.0.34"
   },
   "autoload": {
     "psr-4": {
       "CDEK\\": "src"
     }
-  },
-  "repositories": [
-    {
-      "type": "composer",
-      "url": "https://repo.cdek.ru/repository/php-public"
-    },
-    {
-      "packagist.org": false
-    }
-  ]
+  }
 }

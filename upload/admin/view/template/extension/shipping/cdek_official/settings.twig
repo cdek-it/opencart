@@ -339,6 +339,24 @@
                             </div>
                             <div class="form-group">
                                 <div class="col-sm-10">
+                                    <div class="row vertical-center" style="padding-bottom: 10px;">
+                                        <label
+                                                class="col-sm-2 control-label"
+                                                for="shipping_cdek_official_sort_order">{{ cdek_shipping__sort_order }}</label>
+                                        <div class="col-sm-4">
+                                            <input
+                                                    type="number"
+                                                    name="shipping_cdek_official_sort_order"
+                                                    id="shipping_cdek_official_sort_order"
+                                                    value="{{ shipping_cdek_official_sort_order }}"
+                                                    class="form-control"
+                                                    placeholder="{{ cdek_shipping__sort_order }}" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-10">
                                     <div class="row cdek_official_map_info_container">
                                         <div class="col-sm-2"></div>
                                         <div class="col-sm-4 cdek_official_map_info_block_office cdek_official_map_info_block">
@@ -528,13 +546,13 @@
                                                 <div class="row" style="display: flex; align-items: center;">
                                                     <input
                                                             type="checkbox"
-                                                            name="cdek_official__LogMode"
-                                                            id="cdek_official__LogMode"
+                                                            name="cdek_official__logMode"
+                                                            id="cdek_official__logMode"
                                                             value="1"
                                                             {% if cdek_official__logMode %} checked {%
                                                                 endif %}
                                                             class="form-control" />
-                                                    <label for="cdek_official__LogMode" style="margin: 10px;">{{ cdek_official_log_mode }}</label>
+                                                    <label for="cdek_official__logMode" style="margin: 10px;">{{ cdek_official_log_mode }}</label>
                                                 </div>
                                             </div>
                                         </div>

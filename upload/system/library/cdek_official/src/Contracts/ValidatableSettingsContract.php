@@ -9,7 +9,7 @@ abstract class ValidatableSettingsContract
 {
     private const PARAM_PREFIX = 'cdek_official__';
 
-    public function __construct(array $data = null)
+    public function __construct(?array $data = null)
     {
         if ($data) {
             $this->__unserialize($data);

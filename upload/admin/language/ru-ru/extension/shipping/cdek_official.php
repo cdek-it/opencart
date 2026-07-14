@@ -99,6 +99,7 @@ $_['cdek_shipping__tariff_plug']                         = 'Название т�
 $_['cdek_shipping__many_packages']                       = 'Много упаковок';
 $_['cdek_shipping__many_packages_on']                    = 'На много упаковок';
 $_['cdek_shipping__extra_days']                          = 'Дополнительные дни';
+$_['cdek_shipping__sort_order']                          = 'Порядок сортировки';
 $_['cdek_shipping__city']                                = 'Город';
 $_['cdek_shipping__city_address']                        = 'Адрес';
 $_['cdek_shipping__pvz']                                 = 'Пункт отправки';

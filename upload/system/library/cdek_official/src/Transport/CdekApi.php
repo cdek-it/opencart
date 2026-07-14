@@ -10,7 +10,7 @@ use CDEK\Exceptions\DecodeException;
 
 class CdekApi
 {
-    private const TOKEN_PATH   = 'oauth/token?parameters';
+    private const TOKEN_PATH   = 'oauth/token';
     private const REGION_PATH  = 'location/cities';
     private const ORDERS_PATH  = 'orders/';
     private const PVZ_PATH     = 'deliverypoints';
@@ -31,14 +31,25 @@ class CdekApi
      * @throws HttpServerException
      * @throws DecodeException
      */
-    private static function getToken(): ?string
+    private static function getToken(): string
     {
         $response = HttpClient::sendRequest(
             self::getApiUrl(self::TOKEN_PATH),
             'POST',
             http_build_query(self::getAuthData()),
         );
-        return $response['access_token'] ?? null;
+
+        $token = $response['access_token'] ?? null;
+        if (!$token) {
+            throw new HttpServerException([
+                'message' => 'CDEK authorization failed: access token is missing',
+                'code' => 0,
+                'url' => self::TOKEN_PATH,
+                'method' => 'POST',
+            ]);
+        }
+
+        return $response['access_token'];
     }
 
     private static function getApiUrl(string $path): string

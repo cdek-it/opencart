@@ -13,12 +13,21 @@ class ValidateOfficeCodeAction
     final public function __invoke(): ?bool
     {
         $registry = RegistrySingleton::getInstance();
+        $shippingMethodCode = $registry->get('request')->post['shipping_method'] ?? null;
 
-        $shippingMethod = explode('.', $registry->get('request')->post['shipping_method']);
+        if (!is_string($shippingMethodCode) || $shippingMethodCode === '') {
+            return null;
+        }
+
+        $shippingMethod = explode('.', $shippingMethodCode, 2);
+
+        if (count($shippingMethod) !== 2) {
+            return null;
+        }
 
         if (($shippingMethod[0] !== 'cdek_official') ||
             !empty($registry->get('session')->data['cdek_office_code']) ||
-            explode('_', $shippingMethod[1])[0] === 'door') {
+            explode('_', $shippingMethod[1], 2)[0] === 'door') {
             return null;
         }
 

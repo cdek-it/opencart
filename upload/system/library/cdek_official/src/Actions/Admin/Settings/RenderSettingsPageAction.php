@@ -3,6 +3,9 @@
 namespace CDEK\Actions\Admin\Settings;
 
 use CDEK\Config;
+use CDEK\Exceptions\DecodeException;
+use CDEK\Exceptions\HttpServerException;
+use CDEK\Helpers\LogHelper;
 use CDEK\Models\Currency;
 use CDEK\Models\Tariffs;
 use CDEK\RegistrySingleton;
@@ -46,7 +49,20 @@ class RenderSettingsPageAction
         /** @var Session $session */
         $session = $registry->get('session');
 
-        $settings = SettingsSingleton::getInstance()->__serialize();
+        $settingsInstance = SettingsSingleton::getInstance();
+        $settings = $settingsInstance->__serialize();
+        $authStatus = false;
+
+        if ($settingsInstance->authSettings->authTestMode ||
+            ($settingsInstance->authSettings->authId !== '' &&
+             $settingsInstance->authSettings->authSecret !== '')) {
+            try {
+                $authStatus = CdekApi::checkAuth();
+            } catch (DecodeException | HttpServerException $exception) {
+                LogHelper::write('Authorization check failed: ' . $exception->getMessage());
+                $session->data['error_warning'] = $language->get('cdek_error_auth_unconnected');
+            }
+        }
 
         $data = [
             'success'       => $session->data['success'] ?? '',
@@ -77,7 +93,9 @@ class RenderSettingsPageAction
 
             'tariffs' => Tariffs::getTariffList(),
             'currencies' => Currency::listCurrencies(),
-            'auth_status' => CdekApi::checkAuth(),
+            'auth_status' => $authStatus,
+            'shipping_cdek_official_sort_order' =>
+                (int)$registry->get('config')->get('shipping_cdek_official_sort_order'),
             'weight_classes' => $registry->get('model_localisation_weight_class')->getWeightClasses(),
             'length_classes' => $registry->get('model_localisation_length_class')->getLengthClasses(),
         ];
