@@ -3,6 +3,9 @@
 namespace CDEK\Actions\Admin\Settings;
 
 use CDEK\Config;
+use CDEK\Exceptions\DecodeException;
+use CDEK\Exceptions\HttpServerException;
+use CDEK\Helpers\LogHelper;
 use CDEK\Models\Currency;
 use CDEK\Models\Tariffs;
 use CDEK\RegistrySingleton;
@@ -48,6 +51,13 @@ class RenderSettingsPageAction
 
         $settings = SettingsSingleton::getInstance()->__serialize();
 
+        try {
+            $authStatus = CdekApi::checkAuth();
+        } catch (HttpServerException|DecodeException $e) {
+            LogHelper::write('auth check failed: ' . $e->getMessage());
+            $authStatus = false;
+        }
+
         $data = [
             'success'       => $session->data['success'] ?? '',
             'error_warning' => $session->data['error_warning'] ?? '',
@@ -77,7 +87,7 @@ class RenderSettingsPageAction
 
             'tariffs' => Tariffs::getTariffList(),
             'currencies' => Currency::listCurrencies(),
-            'auth_status' => CdekApi::checkAuth(),
+            'auth_status' => $authStatus,
             'weight_classes' => $registry->get('model_localisation_weight_class')->getWeightClasses(),
             'length_classes' => $registry->get('model_localisation_length_class')->getLengthClasses(),
         ];
