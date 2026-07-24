@@ -1,18 +1,55 @@
-version: '3.9'
+name: oc_cdek-delivery
 
 services:
-  app:
-    build: .
-    volumes:
-      - ./upload:/var/www/html
+  opencart:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
     ports:
-      - 8080:80
+      - "${APP_PORT:-8080}:80"
+    environment:
+      APP_PORT: ${APP_PORT:-8080}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-opencart}
+      MYSQL_USER: ${MYSQL_USER:-opencart}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-opencart}
+      OC_ADMIN_USERNAME: ${OC_ADMIN_USERNAME:-admin}
+      OC_ADMIN_PASSWORD: ${OC_ADMIN_PASSWORD:-admin}
+      OC_ADMIN_EMAIL: ${OC_ADMIN_EMAIL:-admin@example.local}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - oc_storage:/var/www/oc-storage
+      - ./docker/db:/docker-entrypoint-db-dump:ro
+      # Исходники плагина CDEK, примонтированные файл-за-файлом поверх образа
+      # ядра, чтобы правки на хосте (и брейкпоинты Xdebug) попадали в реальные
+      # файлы, а не в копию внутри образа.
+      - ./upload/system/library/cdek_official:/var/www/html/system/library/cdek_official
+      - ./upload/admin/controller/extension/shipping/cdek_official.php:/var/www/html/admin/controller/extension/shipping/cdek_official.php
+      - ./upload/admin/language/en-gb/extension/shipping/cdek_official.php:/var/www/html/admin/language/en-gb/extension/shipping/cdek_official.php
+      - ./upload/admin/language/ru-ru/extension/shipping/cdek_official.php:/var/www/html/admin/language/ru-ru/extension/shipping/cdek_official.php
+      - ./upload/admin/view/image/cdel_official:/var/www/html/admin/view/image/cdel_official
+      - ./upload/admin/view/javascript/cdek_official:/var/www/html/admin/view/javascript/cdek_official
+      - ./upload/admin/view/stylesheet/cdek_official:/var/www/html/admin/view/stylesheet/cdek_official
+      - ./upload/admin/view/template/extension/shipping/cdek_official:/var/www/html/admin/view/template/extension/shipping/cdek_official
+      - ./upload/catalog/controller/extension/shipping/cdek_official.php:/var/www/html/catalog/controller/extension/shipping/cdek_official.php
+      - ./upload/catalog/language/en-gb/extension/shipping/cdek_official.php:/var/www/html/catalog/language/en-gb/extension/shipping/cdek_official.php
+      - ./upload/catalog/language/ru-ru/extension/shipping/cdek_official.php:/var/www/html/catalog/language/ru-ru/extension/shipping/cdek_official.php
+      - ./upload/catalog/model/extension/shipping/cdek_official.php:/var/www/html/catalog/model/extension/shipping/cdek_official.php
+      - ./upload/catalog/view/javascript/shipping/cdek_official.js:/var/www/html/catalog/view/javascript/shipping/cdek_official.js
+    depends_on:
+      - db
   db:
     image: mysql:5.7
     ports:
-      - 3306:3306
+      - "${DB_PORT:-3306}:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: 321
-      MYSQL_DATABASE: test
-      MYSQL_USER: test
-      MYSQL_PASSWORD: test
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-opencart}
+      MYSQL_USER: ${MYSQL_USER:-opencart}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-opencart}
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
+  oc_storage:

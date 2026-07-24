@@ -1,0 +1,25 @@
+version: '3'
+
+tasks:
+  oc-up:
+    desc: "Собрать свежий OpenCart 3 (PHP 8.4) и поднять локальное окружение"
+    cmds:
+      - test -f .env || cp .env.example .env
+      - docker compose up -d --build
+
+  oc-down:
+    desc: "Остановить локальное окружение OpenCart"
+    cmds:
+      - docker compose down
+
+  oc-clean:
+    desc: "Полностью удалить контейнеры, сети и volume'ы для чистого старта"
+    cmds:
+      - docker compose down -v
+
+  oc-dump-db:
+    desc: "Сохранить дамп текущей БД в docker/db/dump.sql (подхватится автоматически при следующем oc-up на пустом volume)"
+    cmds:
+      - mkdir -p docker/db
+      - docker compose exec -T db sh -c 'mysqldump --skip-ssl -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"' > docker/db/dump.sql
+      - echo "Saved to docker/db/dump.sql"
