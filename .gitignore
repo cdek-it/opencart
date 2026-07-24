@@ -1,3 +1,5 @@
 .idea/
 upload
 /composer.phar
+.env
+/docker/db/*.sql
