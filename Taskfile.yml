@@ -1,6 +1,13 @@
 version: '3'
 
 tasks:
+  build-dev:
+    desc: "Сборка плагина → CDEKDelivery.zip"
+    cmds:
+      - rm -f CDEKDelivery.zip
+      - zip -r CDEKDelivery.zip upload install.xml
+      - echo "Saved to CDEKDelivery.zip"
+
   oc-up:
     desc: "Собрать свежий OpenCart 3 (PHP 8.4) и поднять локальное окружение"
     cmds:
