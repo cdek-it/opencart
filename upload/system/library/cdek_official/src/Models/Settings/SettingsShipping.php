@@ -24,7 +24,7 @@ class SettingsShipping extends ValidatableSettingsContract
         }
     }
 
-    public function __construct(array $data = null)
+    public function __construct(?array $data = null)
     {
         if($data !== null){
             $this->setTariffs($data);
