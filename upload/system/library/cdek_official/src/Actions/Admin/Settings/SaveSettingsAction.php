@@ -40,6 +40,12 @@ class SaveSettingsAction
         /** @var \Language $language */
         $language = $registry->get('language');
 
+        try {
+            $wasAuthenticated = CdekApi::checkAuth();
+        } catch (HttpServerException|DecodeException $e) {
+            $wasAuthenticated = false;
+        }
+
         $settings = SettingsSingleton::getInstance($_POST);
 
         try {
@@ -57,7 +63,16 @@ class SaveSettingsAction
 
         try {
             $settings->save();
-            $settings->validate();
+            $settings->authSettings->validate();
+
+            if ($wasAuthenticated) {
+                $settings->sellerSettings->validate();
+                $settings->shippingSettings->validate();
+                $settings->dimensionsSettings->validate();
+                $settings->priceSettings->validate();
+                $settings->loggerSettings->validate();
+            }
+
             $session->data['success'] = $language->get('text_success');
         } catch (Exception $exception) {
             LogHelper::write('Validation failed: ' .
