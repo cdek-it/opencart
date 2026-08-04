@@ -3,6 +3,8 @@
 namespace CDEK\Actions\Admin\Settings;
 
 use CDEK\Config;
+use CDEK\Exceptions\DecodeException;
+use CDEK\Exceptions\HttpServerException;
 use CDEK\Helpers\LogHelper;
 use CDEK\RegistrySingleton;
 use CDEK\SettingsSingleton;
@@ -30,14 +32,8 @@ class SaveSettingsAction
             return;
         }
 
+        $registry->get('load')->language('extension/shipping/cdek_official');
         $registry->get('load')->model('setting/setting');
-
-        $settings     = SettingsSingleton::getInstance($_POST);
-
-        if (!CdekApi::checkAuth()){
-            $response->redirect($redirectUrl);
-            return;
-        }
 
         /** @var \Session $session */
         $session = $registry->get('session');
@@ -45,8 +41,38 @@ class SaveSettingsAction
         $language = $registry->get('language');
 
         try {
+            $wasAuthenticated = CdekApi::checkAuth();
+        } catch (HttpServerException|DecodeException $e) {
+            $wasAuthenticated = false;
+        }
+
+        $settings = SettingsSingleton::getInstance($_POST);
+
+        try {
+            $authenticated = CdekApi::checkAuth();
+        } catch (HttpServerException|DecodeException $e) {
+            LogHelper::write('auth check failed: ' . $e->getMessage());
+            $authenticated = false;
+        }
+
+        if (!$authenticated) {
+            $session->data['error_warning'] = $language->get('cdek_error_auth_unconnected');
+            $response->redirect($redirectUrl);
+            return;
+        }
+
+        try {
             $settings->save();
-            $settings->validate();
+            $settings->authSettings->validate();
+
+            if ($wasAuthenticated) {
+                $settings->sellerSettings->validate();
+                $settings->shippingSettings->validate();
+                $settings->dimensionsSettings->validate();
+                $settings->priceSettings->validate();
+                $settings->loggerSettings->validate();
+            }
+
             $session->data['success'] = $language->get('text_success');
         } catch (Exception $exception) {
             LogHelper::write('Validation failed: ' .
