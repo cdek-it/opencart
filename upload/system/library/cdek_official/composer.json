@@ -2,7 +2,7 @@
   "name": "cdek/opencart_delivery_module",
   "type": "library",
   "require": {
-    "php": "^7.4",
+    "php": "^7.4|^8.0",
     "giggsey/libphonenumber-for-php": "^8.13"
   },
   "autoload": {
