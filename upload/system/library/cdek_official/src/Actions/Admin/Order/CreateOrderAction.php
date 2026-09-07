@@ -162,7 +162,7 @@ class CreateOrderAction
             $params['from_location'] = [
                 'postal_code'  => $address['postal'] ?? null,
                 'city'         => $address['city'],
-                'address'      => $address['city'],
+                'address'      => $address['address'] ?? $address['city'],
                 'country_code' => $address['country'] ?? 'RU',
             ];
         }
