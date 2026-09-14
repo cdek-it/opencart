@@ -154,7 +154,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © 2025 ООО "СДЭК ДИДЖИТАЛ"`,
+      copyright: `Copyright © 2026 ООО "СДЭК ДИДЖИТАЛ"`,
     },
     prism: {
       theme: prismThemes.github,
