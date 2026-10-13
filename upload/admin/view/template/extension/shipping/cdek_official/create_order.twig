@@ -47,6 +47,12 @@
                         type="number" value="{{ meta.height }}" class="form-control" id="cdek_order_height"
                         name="cdek_order_height" required>
             </div>
+            <div class="form-group">
+                <label for="cdek_order_weight">{{ cdek_dimensions__weight }}:</label>
+                <input
+                        type="number" min="1" value="{{ meta.weight }}" class="form-control" id="cdek_order_weight"
+                        name="cdek_order_weight" required>
+            </div>
             <button type="submit" class="btn btn-primary">{{ cdek_auth__btn_submit }}</button>
         </form>
     </div>

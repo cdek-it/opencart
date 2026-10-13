@@ -38,6 +38,9 @@ class GetOrderInfoTabAction
         $orderInfo = $registry->get('model_sale_order')->getOrder($orderId);
         $meta      = OrderMetaRepository::getOrder($orderId);
 
+        $meta           = $meta ?? [];
+        $meta['weight'] = (int)($meta['weight'] ?? 0) ?: CreateOrderAction::calculateOrderWeight($orderInfo);
+
         $errors = $session->data['errors'] ?? [];
 
         unset($session->data['errors']);
