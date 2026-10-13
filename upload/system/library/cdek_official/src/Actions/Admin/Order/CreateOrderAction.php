@@ -42,6 +42,8 @@ class CreateOrderAction
             return;
         }
 
+        OrderMetaRepository::insertInitialData($orderId, $height, $width, $length, $weight);
+
         try {
             $request = self::buildRequestData($orderId, $width, $height, $length, $weight);
             LogHelper::write("Sending requests to CDEK for order $orderId: " . json_encode($request, JSON_THROW_ON_ERROR));
