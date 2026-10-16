@@ -192,6 +192,27 @@ class CreateOrderAction
             static fn($sum, $item) => $sum + $item['weight'] * $item['amount'], 0);
     }
 
+    /**
+     * @param array<int|string> $productIds
+     * @return array<int, array{shipping: string, weight: string, weight_class_id: string}>
+     */
+    private static function getProductsData(array $productIds): array
+    {
+        $productIds = array_values(array_unique(array_map('intval', $productIds)));
+
+        if (empty($productIds)) {
+            return [];
+        }
+
+        $rows = RegistrySingleton::getInstance()->get('db')->query(sprintf(
+            'SELECT product_id, shipping, weight, weight_class_id FROM `%sproduct` WHERE product_id IN (%s)',
+            DB_PREFIX,
+            implode(',', $productIds),
+        ))->rows;
+
+        return array_column($rows, null, 'product_id');
+    }
+
     private static function getItems(array $order): array
     {
         $registry = RegistrySingleton::getInstance();
@@ -200,17 +221,18 @@ class CreateOrderAction
         /** @var Loader $loader */
         $loader = $registry->get('load');
 
-        $loader->model('catalog/product');
         $loader->model('sale/order');
 
         $orderItems = $registry->get('model_sale_order')->getOrderProducts($order['order_id']);
 
+        $products = self::getProductsData(array_column($orderItems, 'product_id'));
+
         $weightClass = new Weight($registry);
 
-        return array_filter(array_map(static function ($item) use ($registry, $weightClass, $settings, $order) {
-            $product = $registry->get('model_catalog_product')->getProduct($item['product_id']);
+        return array_filter(array_map(static function ($item) use ($products, $weightClass, $settings, $order) {
+            $product = $products[$item['product_id']] ?? null;
 
-            if ($product['shipping'] === '0') {
+            if ($product === null || $product['shipping'] === '0') {
                 return [];
             }
 
