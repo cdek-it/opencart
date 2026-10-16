@@ -38,9 +38,6 @@ class GetOrderInfoTabAction
         $orderInfo = $registry->get('model_sale_order')->getOrder($orderId);
         $meta      = OrderMetaRepository::getOrder($orderId);
 
-        $meta           = $meta ?? [];
-        $meta['weight'] = (int)($meta['weight'] ?? 0) ?: CreateOrderAction::calculateOrderWeight($orderInfo);
-
         $errors = $session->data['errors'] ?? [];
 
         unset($session->data['errors']);
@@ -66,10 +63,17 @@ class GetOrderInfoTabAction
             }
         }
 
+        $isCdekOrder = explode('.', $orderInfo['shipping_code'])[0] === 'cdek_official';
+
+        if ($isCdekOrder) {
+            $meta           = $meta ?? [];
+            $meta['weight'] = (int)($meta['weight'] ?? 0) ?: CreateOrderAction::calculateOrderWeight($orderInfo);
+        }
+
         return [
             'code'    => Config::DELIVERY_NAME,
             'title'   => $language->get('heading_title'),
-            'content' => explode('.', $orderInfo['shipping_code'])[0] !== 'cdek_official' ?
+            'content' => !$isCdekOrder ?
                 $loader->view('extension/shipping/cdek_official/foreign_delivery') :
                 $loader->view('extension/shipping/cdek_official/create_order', [
                     'orderInfo' => $orderInfo,
