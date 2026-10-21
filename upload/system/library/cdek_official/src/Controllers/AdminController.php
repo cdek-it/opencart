@@ -52,7 +52,8 @@ class AdminController extends ControllerContract
         (new CreateOrderAction)($request->get['order_id'],
                                 $request->post['width'],
                                 $request->post['height'],
-                                $request->post['length']);
+                                $request->post['length'],
+                                (int)($request->post['weight'] ?? 0));
     }
 
     /**

@@ -25,7 +25,7 @@ class CreateOrderAction
     /**
      * @throws Exception
      */
-    public function __invoke(int $orderId, int $width, int $height, int $length): void
+    public function __invoke(int $orderId, int $width, int $height, int $length, int $weight = 0): void
     {
         $registry = RegistrySingleton::getInstance();
 
@@ -35,15 +35,17 @@ class CreateOrderAction
         $response = $registry->get('response');
 
         try {
-            self::validateCreateOrderRequest($orderId, $width, $height, $length);
+            self::validateCreateOrderRequest($orderId, $width, $height, $length, $weight);
         } catch (ValidationException $e) {
             $registry->get('session')->data['errors'] = [$e->getMessage()];
             $response->setOutput((new GetOrderInfoTabAction)($orderId)['content']);
             return;
         }
 
+        OrderMetaRepository::insertInitialData($orderId, $height, $width, $length, $weight);
+
         try {
-            $request = self::buildRequestData($orderId, $width, $height, $length);
+            $request = self::buildRequestData($orderId, $width, $height, $length, $weight);
             LogHelper::write("Sending requests to CDEK for order $orderId: " . json_encode($request, JSON_THROW_ON_ERROR));
 
             $result = CdekApi::createOrder($request);
@@ -70,7 +72,7 @@ class CreateOrderAction
         $response->setOutput((new GetOrderInfoTabAction)($orderId)['content']);
     }
 
-    private static function validateCreateOrderRequest(int $orderId, int $width, int $height, int $length): void
+    private static function validateCreateOrderRequest(int $orderId, int $width, int $height, int $length, int $weight): void
     {
         $language = RegistrySingleton::getInstance()->get('language');
 
@@ -86,6 +88,10 @@ class CreateOrderAction
             throw new ValidationException($language->get('cdek_error_dimensions_height_invalid'));
         }
 
+        if ($weight < 1) {
+            throw new ValidationException($language->get('cdek_error_dimensions_weight_invalid'));
+        }
+
         if (empty($orderId)) {
             throw new ValidationException($language->get('cdek_error_dimensions_order_id_empty'));
         }
@@ -94,10 +100,10 @@ class CreateOrderAction
     /**
      * @throws DecodeException
      */
-    private static function buildRequestData(int $orderId, int $width, int $height, int $length): array
+    private static function buildRequestData(int $orderId, int $width, int $height, int $length, int $weight): array
     {
         $registry = RegistrySingleton::getInstance();
-        $meta     = OrderMetaRepository::getOrder($orderId);
+        $meta     = OrderMetaRepository::getOrder($orderId) ?? [];
         $settings = SettingsSingleton::getInstance();
 
         /** @var Loader $loader */
@@ -117,7 +123,7 @@ class CreateOrderAction
                     'length'  => $length,
                     'width'   => $width,
                     'items'   => self::getItems($order),
-                    'weight'  => $meta['weight'],
+                    'weight'  => $weight,
                     'comment' => 'приложена опись',
                 ],
             ],
@@ -142,7 +148,7 @@ class CreateOrderAction
         ];
 
         if (Tariffs::isTariffToOffice($params['tariff_code'])) {
-            $params['delivery_point'] = $meta['pvz_code'];
+            $params['delivery_point'] = $meta['pvz_code'] ?? null;
         } else {
             $params['to_location'] = [
                 'city'         => $order['shipping_city'] ?? '',
@@ -177,6 +183,36 @@ class CreateOrderAction
         return $params;
     }
 
+    /**
+     * Суммарный вес отправляемых товаров заказа по актуальным данным товаров (в единицах веса из настроек).
+     */
+    public static function calculateOrderWeight(array $order): int
+    {
+        return (int)array_reduce(self::getItems($order),
+            static fn($sum, $item) => $sum + $item['weight'] * $item['amount'], 0);
+    }
+
+    /**
+     * @param array<int|string> $productIds
+     * @return array<int, array{shipping: string, weight: string, weight_class_id: string}>
+     */
+    private static function getProductsData(array $productIds): array
+    {
+        $productIds = array_values(array_unique(array_map('intval', $productIds)));
+
+        if (empty($productIds)) {
+            return [];
+        }
+
+        $rows = RegistrySingleton::getInstance()->get('db')->query(sprintf(
+            'SELECT product_id, shipping, weight, weight_class_id FROM `%sproduct` WHERE product_id IN (%s)',
+            DB_PREFIX,
+            implode(',', $productIds),
+        ))->rows;
+
+        return array_column($rows, null, 'product_id');
+    }
+
     private static function getItems(array $order): array
     {
         $registry = RegistrySingleton::getInstance();
@@ -185,17 +221,18 @@ class CreateOrderAction
         /** @var Loader $loader */
         $loader = $registry->get('load');
 
-        $loader->model('catalog/product');
         $loader->model('sale/order');
 
         $orderItems = $registry->get('model_sale_order')->getOrderProducts($order['order_id']);
 
+        $products = self::getProductsData(array_column($orderItems, 'product_id'));
+
         $weightClass = new Weight($registry);
 
-        return array_filter(array_map(static function ($item) use ($registry, $weightClass, $settings, $order) {
-            $product = $registry->get('model_catalog_product')->getProduct($item['product_id']);
+        return array_filter(array_map(static function ($item) use ($products, $weightClass, $settings, $order) {
+            $product = $products[$item['product_id']] ?? null;
 
-            if ($product['shipping'] === '0') {
+            if ($product === null || $product['shipping'] === '0') {
                 return [];
             }
 

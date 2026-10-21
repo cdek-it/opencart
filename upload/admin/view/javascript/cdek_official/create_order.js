@@ -13,6 +13,8 @@ $(() => {
                                                 .val(),
                                               height: $('#cdek_order_height')
                                                 .val(),
+                                              weight: $('#cdek_order_weight')
+                                                .val(),
                                           }, init);
         });
 
