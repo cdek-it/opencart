@@ -12,20 +12,22 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: guide
     steps:
       - uses: actions/checkout@v4
         with:
           lfs: true
 
-      - run: corepack enable
-
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: yarn
+          cache-dependency-path: guide/yarn.lock
 
       - name: Install dependencies
-        run: yarn install --immutable
+        run: yarn install --frozen-lockfile
 
       - name: Build production bundle
         env:
@@ -37,7 +39,7 @@ jobs:
         id: deployment
         uses: actions/upload-pages-artifact@v3
         with:
-          path: build
+          path: guide/build
 
   deploy:
     environment:
