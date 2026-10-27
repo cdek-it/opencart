@@ -1,0 +1,16 @@
+includes:
+    - phpstan-baseline.neon
+
+parameters:
+    level: 2
+    parallel:
+        maximumNumberOfProcesses: 1
+    paths:
+        - ../upload
+    excludePaths:
+        analyse:
+            - ../upload/system/library/cdek_official/vendor (?)
+            - ../upload/system/library/cdek_official/src/Contracts/ControllerContract.php
+            - ../upload/system/library/cdek_official/src/Contracts/ModelContract.php
+            - ../vendor (?)
+            - ../tests (?)

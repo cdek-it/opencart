@@ -1,10 +1,13 @@
 ---
 image:
-  name: docker-web.cdek.ru/phnodenx-dev-rocky8-7.4:latest
+  name: ${DOCKER_WEB_HOST}/phnodenx-dev-rocky8-7.4:latest
   entrypoint: ['']
 
 stages:
   - maintenance
+  - validate
+  - checks
+  - php-compat
   - sync
   - build
   - test
@@ -17,11 +20,150 @@ variables:
     options:
       - "none"
       - "migrate-tag-to-github"
+      - "release"
     description: "Выберите запуск job"
 
   MIGRATE_TAG:
     value: ""
     description: "Тег для переноса из GitLab в GitHub. Например: v4.2.5"
+
+  RELEASE_TAG:
+    value: ""
+    description: "Тег для публикации релиза (GitLab Release + миграция в GitHub + GitHub Release). Например: v4.2.5"
+
+.checks_rules: &checks_rules
+  - if: $SELECT_JOB == "migrate-tag-to-github"
+    when: never
+  - if: $SELECT_JOB == "release"
+    when: never
+  - if: $CI_COMMIT_TAG
+    when: always
+  - if: $CI_COMMIT_BRANCH
+    when: always
+
+validate:
+  stage: validate
+  tags:
+    - docker
+  rules: *checks_rules
+  variables:
+    COMPOSER_CACHE_DIR: "${CI_PROJECT_DIR}/.composer-cache"
+  cache:
+    key:
+      files:
+        - upload/system/library/cdek_official/composer.lock
+    paths:
+      - .composer-cache/
+  script:
+    - php -r '$d = new DOMDocument(); if (!$d->load("install.xml")) { exit(1); }'
+    - composer validate --no-check-publish
+    - cd upload/system/library/cdek_official
+    - composer validate --no-check-publish
+    - composer install --no-interaction --prefer-dist --no-dev
+    - composer audit --locked
+
+unit-tests:
+  image:
+    name: ${DOCKER_REGISTRY_HOST}/phnodenx-8.3:8.3-20261021_1625
+    entrypoint: ['']
+  stage: checks
+  tags:
+    - docker
+  rules: *checks_rules
+  variables:
+    COMPOSER_CACHE_DIR: "${CI_PROJECT_DIR}/.composer-cache"
+  cache:
+    key:
+      files:
+        - composer.lock
+    paths:
+      - .composer-cache/
+  script:
+    - composer install --no-interaction --prefer-dist
+    - |
+      if [ -n "${CI_COMMIT_TAG:-}" ] || [ "${CI_COMMIT_BRANCH:-}" = "$CI_DEFAULT_BRANCH" ]; then
+        apt-get update -qq
+        apt-get install -y -qq php8.3-pcov
+        vendor/bin/phpunit -c .ci/phpunit.xml --colors=never --log-junit junit-report.xml --coverage-clover=coverage.xml
+      else
+        vendor/bin/phpunit -c .ci/phpunit.xml --colors=never --log-junit junit-report.xml
+      fi
+  artifacts:
+    when: always
+    paths:
+      - junit-report.xml
+      - coverage.xml
+    reports:
+      junit: junit-report.xml
+
+lint:
+  image:
+    name: ${DOCKER_REGISTRY_HOST}/phnodenx-8.3:8.3-20261021_1625
+    entrypoint: ['']
+  stage: checks
+  tags:
+    - docker
+  rules: *checks_rules
+  variables:
+    GIT_DEPTH: "0"
+    COMPOSER_CACHE_DIR: "${CI_PROJECT_DIR}/.composer-cache"
+  cache:
+    key:
+      files:
+        - composer.lock
+    paths:
+      - .composer-cache/
+  before_script:
+    - apt-get update -qq
+    - apt-get install -y -qq git
+  script:
+    - composer install --no-interaction --prefer-dist
+    - bash .ci/bin/phpcs-diff.sh
+
+static-analysis:
+  image:
+    name: ${DOCKER_REGISTRY_HOST}/phnodenx-8.3:8.3-20261021_1625
+    entrypoint: ['']
+  stage: checks
+  tags:
+    - docker
+  rules: *checks_rules
+  variables:
+    COMPOSER_CACHE_DIR: "${CI_PROJECT_DIR}/.composer-cache"
+  cache:
+    key:
+      files:
+        - composer.lock
+        - upload/system/library/cdek_official/composer.lock
+    paths:
+      - .composer-cache/
+  script:
+    - composer install --no-interaction --prefer-dist
+    - sed -i -E "s#https://[^/]+/repository/php-public#https://${COMPOSER_MIRROR_HOST}/repository/php-public#g" upload/system/library/cdek_official/composer.lock
+    - composer install --no-interaction --prefer-dist --no-dev --working-dir=upload/system/library/cdek_official
+    - vendor/bin/phpstan analyse -c .ci/phpstan.neon --no-progress --memory-limit=1536M
+
+php-compat-lint:
+  image:
+    name: ${DOCKER_PROXY_HOST}/php:${PHP_VERSION}-alpine
+    entrypoint: ['']
+  stage: php-compat
+  tags:
+    - docker
+  rules: *checks_rules
+  parallel:
+    matrix:
+      - PHP_VERSION: ["7.4", "8.0", "8.1", "8.2", "8.3", "8.4"]
+  script:
+    - php -v
+    - |
+      out=$(find upload -path '*/vendor' -prune -o -name '*.php' -print0 \
+        | xargs -0 -n1 php -d display_errors=1 -d error_reporting=-1 -l 2>&1 \
+        | grep -v '^No syntax errors detected' || true)
+      if [ -n "$out" ]; then
+        echo "$out"
+        exit 1
+      fi
 
 build_tag:
   stage: build
@@ -34,16 +176,20 @@ build_tag:
   script:
     - sed -i "s/\(<version>\)\( *\).*/\1\2${RELEASE_VERSION}<\/version>/" install.xml
     - cd upload/system/library/cdek_official
-    - composer i -a
+    - composer i -a --no-dev
   artifacts:
     name: cdek-integration.ocmod
     paths:
       - upload
       - install.xml
 
-build_custom:
+build-custom:
   rules:
     - if: $SELECT_JOB == "migrate-tag-to-github"
+      when: never
+    - if: $SELECT_JOB == "release"
+      when: never
+    - if: $CI_COMMIT_TAG
       when: never
     - when: manual
   stage: build
@@ -56,10 +202,9 @@ build_custom:
       - install.xml
   before_script:
     - !reference [build_tag, before_script]
-    - export RELEASE_VERSION="${CI_COMMIT_REF_NAME}#${CI_COMMIT_SHORT_SHA}"
+    - export RELEASE_VERSION="${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}"
   script:
     - !reference [build_tag, script]
-    - composer i -a --no-dev
 
 upload:
   stage: upload
@@ -75,15 +220,24 @@ upload:
     - export ARCHIVE_VERSION=$(echo "${RELEASE_VERSION}" | sed 's/\./_/g')
   script:
     - zip -r cdek.zip upload install.xml
-    - curl -u "${NEXUS_LOGIN}":"${NEXUS_PASS}" --upload-file cdek.zip "${ARTIFACTORY_REPO}/$CI_PROJECT_NAME/$CI_COMMIT_BRANCH/opencart_cdek_${ARCHIVE_VERSION}.ocmod.zip"
+    - |
+      HTTP_CODE=$(curl -sS -o nexus-response.txt -w "%{http_code}" -u "${NEXUS_LOGIN}":"${NEXUS_PASS}" \
+        --upload-file cdek.zip "${ARTIFACTORY_REPO}/${CI_PROJECT_NAME}/${CI_COMMIT_TAG}/opencart_cdek_${ARCHIVE_VERSION}.ocmod.zip")
+      cat nexus-response.txt
+      case "$HTTP_CODE" in
+        2??) echo "Uploaded opencart_cdek_${ARCHIVE_VERSION}.ocmod.zip (HTTP ${HTTP_CODE})" ;;
+        *) echo "ERROR: Nexus upload failed (HTTP ${HTTP_CODE})"; exit 1 ;;
+      esac
 
 github:
-  image: docker-proxy.cdek.ru/bitnami/git:latest
+  image: ${DOCKER_PROXY_HOST}/bitnami/git:latest
   stage: sync
   tags:
     - docker
   rules:
     - if: $SELECT_JOB == "migrate-tag-to-github"
+      when: never
+    - if: $SELECT_JOB == "release"
       when: never
     - if: $CI_COMMIT_REF_PROTECTED != "true"
       when: never
@@ -102,27 +256,118 @@ github:
     - git push
 
 release:
-  stage: deploy
+  image: ${DOCKER_PROXY_HOST}/alpine
+  stage: maintenance
   tags:
     - docker
-  needs:
-    - job: upload
-  only:
-    - tags
-  image: registry-gitlab.cdek.ru/gitlab-org/release-cli:latest
+  variables:
+    GIT_DEPTH: "0"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE != "web"'
+      when: never
+    - if: '$CI_COMMIT_TAG'
+      when: never
+    - if: '$CI_COMMIT_REF_PROTECTED != "true"'
+      when: never
+    - if: '$SELECT_JOB == "release"'
+      when: on_success
+    - when: never
   before_script:
-    - export RELEASE_VERSION=$(echo "${CI_COMMIT_TAG}" | sed 's/v//')
-    - export ARCHIVE_VERSION=$(echo "${RELEASE_VERSION}" | sed 's/\./_/g')
+    - set -eu
+    - sed -i "s|dl-cdn.alpinelinux.org|${APK_MIRROR_URL}|g" /etc/apk/repositories
+    - apk add --no-cache git curl jq
+    - test -n "${RELEASE_TAG:-}"
+    - echo "${RELEASE_TAG}" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.-]+)?$'
+    - export MIGRATE_TAG="${RELEASE_TAG}"
+    - !reference [migrate-tag-to-github, before_script]
   script:
+    - set -eu
+    - export RELEASE_VERSION=$(echo "${RELEASE_TAG}" | sed 's/v//')
+    - export ARCHIVE_VERSION=$(echo "${RELEASE_VERSION}" | sed 's/\./_/g')
+    - export ARCHIVE_NAME="opencart_cdek_${ARCHIVE_VERSION}.ocmod.zip"
+    - export ARCHIVE_URL="${ARTIFACTORY_REPO}/${CI_PROJECT_NAME}/${RELEASE_TAG}/${ARCHIVE_NAME}"
+
+    - echo "Checking tag ${RELEASE_TAG} exists in GitLab..."
+    - git ls-remote --exit-code --tags origin "refs/tags/${RELEASE_TAG}" >/dev/null
+    - git fetch origin "+refs/tags/${RELEASE_TAG}:refs/tags/${RELEASE_TAG}" "+refs/heads/${CI_DEFAULT_BRANCH}:refs/remotes/origin/${CI_DEFAULT_BRANCH}"
     - |
-      release-cli create --name $CI_COMMIT_TAG --tag-name $CI_COMMIT_TAG \
-        --assets-link "{\"name\":\"Архив\",\"filepath\":\"/archive\",
-      \"url\":\"${ARTIFACTORY_REPO}$CI_COMMIT_BRANCH/$CI_PROJECT_NAME/opencart_cdek_${ARCHIVE_VERSION}.ocmod.zip\", 
-      \"link_type\":\"package\"}" \
+      if ! git merge-base --is-ancestor "${RELEASE_TAG}^{commit}" "origin/${CI_DEFAULT_BRANCH}"; then
+        echo "ERROR: tag ${RELEASE_TAG} is not reachable from ${CI_DEFAULT_BRANCH}"
+        exit 1
+      fi
+
+    - |
+      echo "Checking artifact ${ARCHIVE_URL} in Nexus..."
+      if ! curl -sfI -u "${NEXUS_LOGIN}":"${NEXUS_PASS}" "${ARCHIVE_URL}" >/dev/null; then
+        echo "ERROR: artifact ${ARCHIVE_NAME} not found in Nexus. Wait for the tag pipeline upload job to finish."
+        exit 1
+      fi
+
+    - export RELEASE_DESCRIPTION="$(git for-each-ref "refs/tags/${RELEASE_TAG}" --format='%(contents)')"
+
+    - echo "Creating GitLab Release ${RELEASE_TAG}..."
+    - |
+      HTTP_CODE=$(curl -s -o gitlab-release.txt -w '%{http_code}' -X POST \
+        -H "JOB-TOKEN: ${CI_JOB_TOKEN}" -H "Content-Type: application/json" \
+        "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/releases" \
+        -d "$(jq -n --arg tag "${RELEASE_TAG}" --arg desc "${RELEASE_DESCRIPTION}" --arg url "${ARCHIVE_URL}" \
+              '{name: $tag, tag_name: $tag, description: $desc, assets: {links: [{name: "Архив", url: $url, link_type: "package"}]}}')")
+      cat gitlab-release.txt
+      case "$HTTP_CODE" in
+        201) echo "GitLab Release ${RELEASE_TAG} created" ;;
+        409) echo "GitLab Release ${RELEASE_TAG} already exists, skipping" ;;
+        *) echo "ERROR: failed to create GitLab Release (HTTP ${HTTP_CODE})"; exit 1 ;;
+      esac
+
+    - !reference [migrate-tag-to-github, script]
+
+    - |
+      GITHUB_OWNER_REPO=$(echo "${GITHUB_REPO}" | sed -E 's#^(git@|ssh://git@)?github\.com[:/]##; s#\.git$##')
+      GITHUB_API="https://api.github.com/repos/${GITHUB_OWNER_REPO}"
+
+      EXISTS_CODE=$(curl -s -o /dev/null -w '%{http_code}' \
+        -H "Authorization: Bearer ${GITHUB_AUTH_TOKEN}" \
+        -H "Accept: application/vnd.github+json" \
+        "${GITHUB_API}/releases/tags/${RELEASE_TAG}")
+      if [ "${EXISTS_CODE}" = "200" ]; then
+        echo "GitHub Release for ${RELEASE_TAG} already exists, skipping"
+        exit 0
+      fi
+
+      echo "Creating GitHub Release (draft) for ${GITHUB_OWNER_REPO}@${RELEASE_TAG}..."
+      CREATE_RESPONSE=$(curl -s -w '\n%{http_code}' -X POST \
+        -H "Authorization: Bearer ${GITHUB_AUTH_TOKEN}" \
+        -H "Accept: application/vnd.github+json" \
+        -H "X-GitHub-Api-Version: 2022-11-28" \
+        "${GITHUB_API}/releases" \
+        -d "$(jq -n --arg tag "${RELEASE_TAG}" --arg name "${RELEASE_TAG}" --arg body "${RELEASE_DESCRIPTION}" \
+              '{tag_name: $tag, name: $name, body: $body, draft: true}')")
+
+      HTTP_CODE=$(echo "${CREATE_RESPONSE}" | tail -n1)
+      CREATE_BODY=$(echo "${CREATE_RESPONSE}" | sed '$d')
+      if [ "${HTTP_CODE}" != "201" ]; then
+        echo "ERROR: failed to create GitHub Release (HTTP ${HTTP_CODE}): ${CREATE_BODY}"
+        exit 1
+      fi
+
+      RELEASE_ID=$(echo "${CREATE_BODY}" | jq -r '.id')
+      UPLOAD_URL=$(echo "${CREATE_BODY}" | jq -r '.upload_url' | sed 's/{?name,label}//')
+
+      echo "Downloading artifact from Nexus..."
+      curl -sf -u "${NEXUS_LOGIN}":"${NEXUS_PASS}" -o "${ARCHIVE_NAME}" "${ARCHIVE_URL}"
+
+      echo "Uploading asset to GitHub release ${RELEASE_ID}..."
+      curl -sf -X POST \
+        -H "Authorization: Bearer ${GITHUB_AUTH_TOKEN}" \
+        -H "Content-Type: application/zip" \
+        --data-binary @"${ARCHIVE_NAME}" \
+        "${UPLOAD_URL}?name=${ARCHIVE_NAME}"
+
+      echo "GitHub Release draft created: id=${RELEASE_ID}"
 
 sonarqube-check:
   image:
-    name: docker-proxy.cdek.ru/sonarsource/sonar-scanner-cli:latest
+    name: ${DOCKER_PROXY_HOST}/sonarsource/sonar-scanner-cli:latest
     entrypoint: [""]
   variables:
     SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
@@ -134,16 +379,21 @@ sonarqube-check:
   tags:
     - docker
   stage: test
+  needs:
+    - job: unit-tests
+      artifacts: true
   script:
-    - sonar-scanner
+    - sonar-scanner -Dproject.settings=.ci/sonar-project.properties -Dsonar.projectBaseDir=.
   allow_failure: true
   rules:
     - if: $SELECT_JOB == "migrate-tag-to-github"
       when: never
+    - if: $SELECT_JOB == "release"
+      when: never
     - if: $CI_COMMIT_BRANCH == "main"
 
 migrate-tag-to-github:
-  image: docker-proxy.cdek.ru/bitnami/git:latest
+  image: ${DOCKER_PROXY_HOST}/bitnami/git:latest
   stage: maintenance
   variables:
     GIT_DEPTH: "0"

@@ -1,0 +1,649 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Constant DIR_SYSTEM not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: ../upload/admin/controller/extension/shipping/cdek_official.php
+
+		-
+			message: '#^Constant DIR_SYSTEM not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: ../upload/catalog/controller/extension/shipping/cdek_official.php
+
+		-
+			message: '#^Constant DIR_SYSTEM not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: ../upload/catalog/model/extension/shipping/cdek_official.php
+
+		-
+			message: '#^Call to method get\(\) on an unknown class Registry\.$#'
+			identifier: class.notFound
+			count: 2
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Installer/InstallExtensionAction.php
+
+		-
+			message: '#^Call to method get\(\) on an unknown class Registry\.$#'
+			identifier: class.notFound
+			count: 2
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Installer/RemoveExtensionAction.php
+
+		-
+			message: '#^Call to method convert\(\) on an unknown class Cart\\Weight\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Order/CreateOrderAction.php
+
+		-
+			message: '#^Call to method get\(\) on an unknown class Registry\.$#'
+			identifier: class.notFound
+			count: 13
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Order/CreateOrderAction.php
+
+		-
+			message: '#^Call to method model\(\) on an unknown class Loader\.$#'
+			identifier: class.notFound
+			count: 3
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Order/CreateOrderAction.php
+
+		-
+			message: '#^Call to method setOutput\(\) on an unknown class Response\.$#'
+			identifier: class.notFound
+			count: 3
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Order/CreateOrderAction.php
+
+		-
+			message: '#^Constant DB_PREFIX not found\.$#'
+			identifier: constant.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Order/CreateOrderAction.php
+
+		-
+			message: '#^Instantiated class Cart\\Weight not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Order/CreateOrderAction.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$loader contains unknown class Loader\.$#'
+			identifier: class.notFound
+			count: 2
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Order/CreateOrderAction.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$response contains unknown class Response\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Order/CreateOrderAction.php
+
+		-
+			message: '#^Call to method get\(\) on an unknown class Registry\.$#'
+			identifier: class.notFound
+			count: 2
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Order/DeleteOrderAction.php
+
+		-
+			message: '#^Call to method addScript\(\) on an unknown class Document\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Order/GetOrderInfoScriptsAction.php
+
+		-
+			message: '#^Call to method addStyle\(\) on an unknown class Document\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Order/GetOrderInfoScriptsAction.php
+
+		-
+			message: '#^Call to method get\(\) on an unknown class Registry\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Order/GetOrderInfoScriptsAction.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$document contains unknown class Document\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Order/GetOrderInfoScriptsAction.php
+
+		-
+			message: '#^Access to property \$data on an unknown class Session\.$#'
+			identifier: class.notFound
+			count: 6
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Order/GetOrderInfoTabAction.php
+
+		-
+			message: '#^Call to method get\(\) on an unknown class Language\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Order/GetOrderInfoTabAction.php
+
+		-
+			message: '#^Call to method get\(\) on an unknown class Registry\.$#'
+			identifier: class.notFound
+			count: 5
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Order/GetOrderInfoTabAction.php
+
+		-
+			message: '#^Call to method language\(\) on an unknown class Loader\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Order/GetOrderInfoTabAction.php
+
+		-
+			message: '#^Call to method link\(\) on an unknown class Url\.$#'
+			identifier: class.notFound
+			count: 3
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Order/GetOrderInfoTabAction.php
+
+		-
+			message: '#^Call to method model\(\) on an unknown class Loader\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Order/GetOrderInfoTabAction.php
+
+		-
+			message: '#^Call to method view\(\) on an unknown class Loader\.$#'
+			identifier: class.notFound
+			count: 2
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Order/GetOrderInfoTabAction.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$language contains unknown class Language\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Order/GetOrderInfoTabAction.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$loader contains unknown class Loader\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Order/GetOrderInfoTabAction.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$session contains unknown class Session\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Order/GetOrderInfoTabAction.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$url contains unknown class Url\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Order/GetOrderInfoTabAction.php
+
+		-
+			message: '#^Call to method addHeader\(\) on an unknown class Response\.$#'
+			identifier: class.notFound
+			count: 4
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Order/GetWaybillAction.php
+
+		-
+			message: '#^Call to method get\(\) on an unknown class Registry\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Order/GetWaybillAction.php
+
+		-
+			message: '#^Call to method setOutput\(\) on an unknown class Response\.$#'
+			identifier: class.notFound
+			count: 4
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Order/GetWaybillAction.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$response contains unknown class Response\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Order/GetWaybillAction.php
+
+		-
+			message: '#^Call to method get\(\) on an unknown class Registry\.$#'
+			identifier: class.notFound
+			count: 2
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Settings/GetOfficesAction.php
+
+		-
+			message: '#^Access to property \$data on an unknown class Session\.$#'
+			identifier: class.notFound
+			count: 12
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Settings/RenderSettingsPageAction.php
+
+		-
+			message: '#^Call to method addScript\(\) on an unknown class Document\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Settings/RenderSettingsPageAction.php
+
+		-
+			message: '#^Call to method addStyle\(\) on an unknown class Document\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Settings/RenderSettingsPageAction.php
+
+		-
+			message: '#^Call to method controller\(\) on an unknown class Loader\.$#'
+			identifier: class.notFound
+			count: 3
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Settings/RenderSettingsPageAction.php
+
+		-
+			message: '#^Call to method get\(\) on an unknown class Language\.$#'
+			identifier: class.notFound
+			count: 4
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Settings/RenderSettingsPageAction.php
+
+		-
+			message: '#^Call to method get\(\) on an unknown class Registry\.$#'
+			identifier: class.notFound
+			count: 8
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Settings/RenderSettingsPageAction.php
+
+		-
+			message: '#^Call to method language\(\) on an unknown class Loader\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Settings/RenderSettingsPageAction.php
+
+		-
+			message: '#^Call to method link\(\) on an unknown class Url\.$#'
+			identifier: class.notFound
+			count: 6
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Settings/RenderSettingsPageAction.php
+
+		-
+			message: '#^Call to method model\(\) on an unknown class Loader\.$#'
+			identifier: class.notFound
+			count: 3
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Settings/RenderSettingsPageAction.php
+
+		-
+			message: '#^Call to method setTitle\(\) on an unknown class Document\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Settings/RenderSettingsPageAction.php
+
+		-
+			message: '#^Call to method view\(\) on an unknown class Loader\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Settings/RenderSettingsPageAction.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$document contains unknown class Document\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Settings/RenderSettingsPageAction.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$language contains unknown class Language\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Settings/RenderSettingsPageAction.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$loader contains unknown class Loader\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Settings/RenderSettingsPageAction.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$session contains unknown class Session\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Settings/RenderSettingsPageAction.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$url contains unknown class Url\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Settings/RenderSettingsPageAction.php
+
+		-
+			message: '#^Access to property \$data on an unknown class Session\.$#'
+			identifier: class.notFound
+			count: 6
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Settings/SaveSettingsAction.php
+
+		-
+			message: '#^Call to method get\(\) on an unknown class Language\.$#'
+			identifier: class.notFound
+			count: 4
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Settings/SaveSettingsAction.php
+
+		-
+			message: '#^Call to method get\(\) on an unknown class Registry\.$#'
+			identifier: class.notFound
+			count: 7
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Settings/SaveSettingsAction.php
+
+		-
+			message: '#^Call to method redirect\(\) on an unknown class Response\.$#'
+			identifier: class.notFound
+			count: 3
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Settings/SaveSettingsAction.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$language contains unknown class Language\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Settings/SaveSettingsAction.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$response contains unknown class Response\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Settings/SaveSettingsAction.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$session contains unknown class Session\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Admin/Settings/SaveSettingsAction.php
+
+		-
+			message: '#^Access to property \$data on an unknown class Session\.$#'
+			identifier: class.notFound
+			count: 4
+			path: ../upload/system/library/cdek_official/src/Actions/Catalog/Checkout/CacheOfficeCodeAction.php
+
+		-
+			message: '#^Access to property \$post on an unknown class Request\.$#'
+			identifier: class.notFound
+			count: 3
+			path: ../upload/system/library/cdek_official/src/Actions/Catalog/Checkout/CacheOfficeCodeAction.php
+
+		-
+			message: '#^Call to method get\(\) on an unknown class Registry\.$#'
+			identifier: class.notFound
+			count: 3
+			path: ../upload/system/library/cdek_official/src/Actions/Catalog/Checkout/CacheOfficeCodeAction.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$request contains unknown class Request\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Catalog/Checkout/CacheOfficeCodeAction.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$session contains unknown class Session\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Catalog/Checkout/CacheOfficeCodeAction.php
+
+		-
+			message: '#^Access to property \$data on an unknown class Session\.$#'
+			identifier: class.notFound
+			count: 3
+			path: ../upload/system/library/cdek_official/src/Actions/Catalog/Checkout/GetFrontendParamsAction.php
+
+		-
+			message: '#^Call to method addHeader\(\) on an unknown class Response\.$#'
+			identifier: class.notFound
+			count: 2
+			path: ../upload/system/library/cdek_official/src/Actions/Catalog/Checkout/GetFrontendParamsAction.php
+
+		-
+			message: '#^Call to method get\(\) on an unknown class Registry\.$#'
+			identifier: class.notFound
+			count: 2
+			path: ../upload/system/library/cdek_official/src/Actions/Catalog/Checkout/GetFrontendParamsAction.php
+
+		-
+			message: '#^Call to method setOutput\(\) on an unknown class Response\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Catalog/Checkout/GetFrontendParamsAction.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$response contains unknown class Response\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Catalog/Checkout/GetFrontendParamsAction.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$session contains unknown class Session\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Catalog/Checkout/GetFrontendParamsAction.php
+
+		-
+			message: '#^Access to property \$data on an unknown class Session\.$#'
+			identifier: class.notFound
+			count: 3
+			path: ../upload/system/library/cdek_official/src/Actions/Catalog/Checkout/GetOfficesAction.php
+
+		-
+			message: '#^Call to method addHeader\(\) on an unknown class Response\.$#'
+			identifier: class.notFound
+			count: 3
+			path: ../upload/system/library/cdek_official/src/Actions/Catalog/Checkout/GetOfficesAction.php
+
+		-
+			message: '#^Call to method get\(\) on an unknown class Registry\.$#'
+			identifier: class.notFound
+			count: 3
+			path: ../upload/system/library/cdek_official/src/Actions/Catalog/Checkout/GetOfficesAction.php
+
+		-
+			message: '#^Call to method setOutput\(\) on an unknown class Response\.$#'
+			identifier: class.notFound
+			count: 3
+			path: ../upload/system/library/cdek_official/src/Actions/Catalog/Checkout/GetOfficesAction.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$response contains unknown class Response\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Catalog/Checkout/GetOfficesAction.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$session contains unknown class Session\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Catalog/Checkout/GetOfficesAction.php
+
+		-
+			message: '#^Access to property \$data on an unknown class Session\.$#'
+			identifier: class.notFound
+			count: 10
+			path: ../upload/system/library/cdek_official/src/Actions/Catalog/Checkout/SaveOrderMetaAction.php
+
+		-
+			message: '#^Call to method get\(\) on an unknown class Registry\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Catalog/Checkout/SaveOrderMetaAction.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$session contains unknown class Session\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Actions/Catalog/Checkout/SaveOrderMetaAction.php
+
+		-
+			message: '#^Call to method get\(\) on an unknown class Registry\.$#'
+			identifier: class.notFound
+			count: 5
+			path: ../upload/system/library/cdek_official/src/Actions/Catalog/Checkout/ValidateOfficeCodeAction.php
+
+		-
+			message: '#^Access to an undefined property CDEK\\Controllers\\AdminController\:\:\$registry\.$#'
+			identifier: property.notFound
+			count: 4
+			path: ../upload/system/library/cdek_official/src/Controllers/AdminController.php
+
+		-
+			message: '#^Access to property \$get on an unknown class Request\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Controllers/AdminController.php
+
+		-
+			message: '#^Access to property \$post on an unknown class Request\.$#'
+			identifier: class.notFound
+			count: 4
+			path: ../upload/system/library/cdek_official/src/Controllers/AdminController.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$request contains unknown class Request\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Controllers/AdminController.php
+
+		-
+			message: '#^Call to method convert\(\) on an unknown class Cart\\Length\.$#'
+			identifier: class.notFound
+			count: 3
+			path: ../upload/system/library/cdek_official/src/Helpers/DeliveryCalculator.php
+
+		-
+			message: '#^Call to method convert\(\) on an unknown class Cart\\Weight\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Helpers/DeliveryCalculator.php
+
+		-
+			message: '#^Call to method get\(\) on an unknown class Registry\.$#'
+			identifier: class.notFound
+			count: 13
+			path: ../upload/system/library/cdek_official/src/Helpers/DeliveryCalculator.php
+
+		-
+			message: '#^Instantiated class Cart\\Length not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Helpers/DeliveryCalculator.php
+
+		-
+			message: '#^Instantiated class Cart\\Weight not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Helpers/DeliveryCalculator.php
+
+		-
+			message: '#^Call to method addEvent\(\) on an unknown class ModelSettingEvent\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Helpers/EventsHelper.php
+
+		-
+			message: '#^Call to method deleteEventByCode\(\) on an unknown class ModelSettingEvent\.$#'
+			identifier: class.notFound
+			count: 2
+			path: ../upload/system/library/cdek_official/src/Helpers/EventsHelper.php
+
+		-
+			message: '#^Call to method get\(\) on an unknown class Registry\.$#'
+			identifier: class.notFound
+			count: 4
+			path: ../upload/system/library/cdek_official/src/Helpers/EventsHelper.php
+
+		-
+			message: '#^Call to method getEventByCode\(\) on an unknown class ModelSettingEvent\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Helpers/EventsHelper.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$eventModel contains unknown class ModelSettingEvent\.$#'
+			identifier: class.notFound
+			count: 2
+			path: ../upload/system/library/cdek_official/src/Helpers/EventsHelper.php
+
+		-
+			message: '#^Call to method get\(\) on an unknown class Registry\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Helpers/LogHelper.php
+
+		-
+			message: '#^Call to method escape\(\) on an unknown class DB\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Models/OrderMetaRepository.php
+
+		-
+			message: '#^Call to method get\(\) on an unknown class Registry\.$#'
+			identifier: class.notFound
+			count: 7
+			path: ../upload/system/library/cdek_official/src/Models/OrderMetaRepository.php
+
+		-
+			message: '#^Call to method query\(\) on an unknown class DB\.$#'
+			identifier: class.notFound
+			count: 11
+			path: ../upload/system/library/cdek_official/src/Models/OrderMetaRepository.php
+
+		-
+			message: '#^Constant DB_PREFIX not found\.$#'
+			identifier: constant.notFound
+			count: 8
+			path: ../upload/system/library/cdek_official/src/Models/OrderMetaRepository.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$db contains unknown class DB\.$#'
+			identifier: class.notFound
+			count: 7
+			path: ../upload/system/library/cdek_official/src/Models/OrderMetaRepository.php
+
+		-
+			message: '#^Access to an undefined property CDEK\\Models\\Tariffs\:\:\$data\.$#'
+			identifier: property.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Models/Tariffs.php
+
+		-
+			message: '#^Call to method get\(\) on an unknown class Registry\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Models/Tariffs.php
+
+		-
+			message: '#^Method CDEK\\RegistrySingleton\:\:getInstance\(\) has invalid return type Registry\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/RegistrySingleton.php
+
+		-
+			message: '#^Parameter \$registry of method CDEK\\RegistrySingleton\:\:__construct\(\) has invalid type Registry\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/RegistrySingleton.php
+
+		-
+			message: '#^Property CDEK\\RegistrySingleton\:\:\$registry has unknown class Registry as its type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/RegistrySingleton.php
+
+		-
+			message: '#^Call to method editSetting\(\) on an unknown class ModelSettingSetting\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/SettingsSingleton.php
+
+		-
+			message: '#^Call to method get\(\) on an unknown class Registry\.$#'
+			identifier: class.notFound
+			count: 4
+			path: ../upload/system/library/cdek_official/src/SettingsSingleton.php
+
+		-
+			message: '#^Call to method getSetting\(\) on an unknown class ModelSettingSetting\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/SettingsSingleton.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$settingsModel contains unknown class ModelSettingSetting\.$#'
+			identifier: class.notFound
+			count: 2
+			path: ../upload/system/library/cdek_official/src/SettingsSingleton.php
+
+		-
+			message: '#^Call to method get\(\) on an unknown class Registry\.$#'
+			identifier: class.notFound
+			count: 1
+			path: ../upload/system/library/cdek_official/src/Transport/HttpClient.php
