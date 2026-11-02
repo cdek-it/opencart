@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<ruleset name="CDEK OpenCart">
+    <description>Coding standard for CDEK OpenCart module</description>
+
+    <file>../upload</file>
+
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+
+    <arg value="sp"/>
+    <arg name="colors"/>
+    <arg name="extensions" value="php"/>
+
+    <rule ref="PSR12"/>
+
+    <exclude-pattern>../upload/admin/controller/extension/shipping/cdek_official.php</exclude-pattern>
+    <exclude-pattern>../upload/admin/language/en-gb/extension/shipping/cdek_official.php</exclude-pattern>
+    <exclude-pattern>../upload/admin/language/ru-ru/extension/shipping/cdek_official.php</exclude-pattern>
+    <exclude-pattern>../upload/catalog/controller/extension/shipping/cdek_official.php</exclude-pattern>
+    <exclude-pattern>../upload/catalog/language/en-gb/extension/shipping/cdek_official.php</exclude-pattern>
+    <exclude-pattern>../upload/catalog/language/ru-ru/extension/shipping/cdek_official.php</exclude-pattern>
+    <exclude-pattern>../upload/catalog/model/extension/shipping/cdek_official.php</exclude-pattern>
+    <exclude-pattern>../upload/system/library/cdek_official/src/Actions/Admin/Order/CreateOrderAction.php</exclude-pattern>
+    <exclude-pattern>../upload/system/library/cdek_official/src/Actions/Admin/Order/DeleteOrderAction.php</exclude-pattern>
+    <exclude-pattern>../upload/system/library/cdek_official/src/Actions/Admin/Order/GetOrderInfoTabAction.php</exclude-pattern>
+    <exclude-pattern>../upload/system/library/cdek_official/src/Actions/Admin/Order/GetWaybillAction.php</exclude-pattern>
+    <exclude-pattern>../upload/system/library/cdek_official/src/Actions/Admin/Settings/GetOfficesAction.php</exclude-pattern>
+    <exclude-pattern>../upload/system/library/cdek_official/src/Actions/Admin/Settings/RenderSettingsPageAction.php</exclude-pattern>
+    <exclude-pattern>../upload/system/library/cdek_official/src/Actions/Admin/Settings/SaveSettingsAction.php</exclude-pattern>
+    <exclude-pattern>../upload/system/library/cdek_official/src/Actions/Catalog/Checkout/CacheOfficeCodeAction.php</exclude-pattern>
+    <exclude-pattern>../upload/system/library/cdek_official/src/Actions/Catalog/Checkout/ValidateOfficeCodeAction.php</exclude-pattern>
+    <exclude-pattern>../upload/system/library/cdek_official/src/Contracts/ControllerContract.php</exclude-pattern>
+    <exclude-pattern>../upload/system/library/cdek_official/src/Contracts/ExceptionContract.php</exclude-pattern>
+    <exclude-pattern>../upload/system/library/cdek_official/src/Contracts/ModelContract.php</exclude-pattern>
+    <exclude-pattern>../upload/system/library/cdek_official/src/Controllers/AdminController.php</exclude-pattern>
+    <exclude-pattern>../upload/system/library/cdek_official/src/Controllers/CatalogController.php</exclude-pattern>
+    <exclude-pattern>../upload/system/library/cdek_official/src/Exceptions/DecodeException.php</exclude-pattern>
+    <exclude-pattern>../upload/system/library/cdek_official/src/Exceptions/HttpServerException.php</exclude-pattern>
+    <exclude-pattern>../upload/system/library/cdek_official/src/Helpers/DeliveryCalculator.php</exclude-pattern>
+    <exclude-pattern>../upload/system/library/cdek_official/src/Helpers/EventsHelper.php</exclude-pattern>
+    <exclude-pattern>../upload/system/library/cdek_official/src/Helpers/LogHelper.php</exclude-pattern>
+    <exclude-pattern>../upload/system/library/cdek_official/src/Models/OrderMetaRepository.php</exclude-pattern>
+    <exclude-pattern>../upload/system/library/cdek_official/src/Models/Settings/SettingsLogger.php</exclude-pattern>
+    <exclude-pattern>../upload/system/library/cdek_official/src/Models/Settings/SettingsShipping.php</exclude-pattern>
+    <exclude-pattern>../upload/system/library/cdek_official/src/Models/Tariffs.php</exclude-pattern>
+    <exclude-pattern>../upload/system/library/cdek_official/src/RegistrySingleton.php</exclude-pattern>
+    <exclude-pattern>../upload/system/library/cdek_official/src/SettingsSingleton.php</exclude-pattern>
+    <exclude-pattern>../upload/system/library/cdek_official/src/Transport/CdekApi.php</exclude-pattern>
+    <exclude-pattern>../upload/system/library/cdek_official/src/Transport/HttpClient.php</exclude-pattern>
+</ruleset>
