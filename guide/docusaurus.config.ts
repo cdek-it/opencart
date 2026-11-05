@@ -94,7 +94,7 @@ const config: Config = {
     },
     navbar: {
       hideOnScroll: true,
-      title: 'Delivery',
+      title: 'Opencart',
       logo: {
         alt: 'Логотип CDEKDelivery',
         src: 'img/logo.svg',
