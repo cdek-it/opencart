@@ -34,4 +34,3 @@
 ```bash
 ./delete.sh {route_to_opencart_folder}
 ```
-
