@@ -54,6 +54,6 @@ class CatalogController extends ControllerContract
     /** @noinspection PhpUnused */
     final public function addCheckoutHeaderScript(string &$route, array &$data): void
     {
-        $data['scripts'][] = 'catalog/view/javascript/shipping/cdek_official.js';
+        $data['scripts'][] = 'catalog/view/javascript/shipping/cdek_official.js?v=20261123-atelier-pvz-v1';
     }
 }

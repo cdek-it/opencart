@@ -1,7 +1,7 @@
 <?php
 $_['text_title']                      = 'СДЭК';
 $_['text_description']                = 'СДЭК доставка';
-$_['cdek_pvz_not_found']              = 'ПВЗ не найден, выберите ПВЗ на карте';
+$_['cdek_pvz_not_found']              = 'Укажите пункт выдачи СДЭК.';
 $_['cdek_pvz_not_from_selected_city']
                                       = 'Город выбранного пункта выдачи отличается от города доставки. Измените город доставки на предыдущем шаге.';
 $_['cdek_shipping__tariff_name_plug'] = 'CDEK плагин';
