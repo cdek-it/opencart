@@ -21,20 +21,29 @@ variables:
       - "none"
       - "migrate-tag-to-github"
       - "release"
+      - "deploy-preprod"
     description: "Выберите запуск job"
 
   MIGRATE_TAG:
     value: ""
-    description: "Тег для переноса из GitLab в GitHub. Например: v4.2.5"
+    description: "migrate-tag-to-github: тег для переноса из GitLab в GitHub. Например: v2.2.5"
 
   RELEASE_TAG:
     value: ""
-    description: "Тег для публикации релиза (GitLab Release + миграция в GitHub + GitHub Release). Например: v4.2.5"
+    description: "release: тег для публикации релиза (GitLab Release + миграция в GitHub + GitHub Release). Например: v2.2.5"
+
+  PREPROD_PLUGIN_VERSION:
+    value: ""
+    description: "deploy-preprod: тег релиза для выкатки на препрод. Например: v2.2.5"
+
+  PREPROD_ARCHIVE_URL:
+    value: ""
+    description: "deploy-preprod: прямой URL архива плагина, приоритетнее PREPROD_PLUGIN_VERSION. Например: https://…/opencart_cdek_2_2_5.ocmod.zip"
+
+  PREPROD_STAND_BRANCH: "master"
 
 .checks_rules: &checks_rules
-  - if: $SELECT_JOB == "migrate-tag-to-github"
-    when: never
-  - if: $SELECT_JOB == "release"
+  - if: $SELECT_JOB != "none"
     when: never
   - if: $CI_COMMIT_TAG
     when: always
@@ -169,8 +178,10 @@ build_tag:
   stage: build
   tags:
     - docker
-  only:
-    - tags
+  rules:
+    - if: $SELECT_JOB != "none"
+      when: never
+    - if: $CI_COMMIT_TAG
   before_script:
     - export RELEASE_VERSION=$(echo "${CI_COMMIT_TAG}" | sed 's/v//')
   script:
@@ -185,13 +196,11 @@ build_tag:
 
 build-custom:
   rules:
-    - if: $SELECT_JOB == "migrate-tag-to-github"
+    - if: $SELECT_JOB != "none"
       when: never
-    - if: $SELECT_JOB == "release"
-      when: never
-    - if: $CI_COMMIT_TAG
-      when: never
-    - when: manual
+    - if: $CI_COMMIT_BRANCH
+      when: on_success
+    - when: never
   stage: build
   tags:
     - docker
@@ -213,8 +222,10 @@ upload:
   needs:
     - job: build_tag
       artifacts: true
-  only:
-    - tags
+  rules:
+    - if: $SELECT_JOB != "none"
+      when: never
+    - if: $CI_COMMIT_TAG
   before_script:
     - export RELEASE_VERSION=$(echo "${CI_COMMIT_TAG}" | sed 's/v//')
     - export ARCHIVE_VERSION=$(echo "${RELEASE_VERSION}" | sed 's/\./_/g')
@@ -229,15 +240,100 @@ upload:
         *) echo "ERROR: Nexus upload failed (HTTP ${HTTP_CODE})"; exit 1 ;;
       esac
 
+upload-preprod:
+  stage: upload
+  tags:
+    - docker
+  needs:
+    - job: build-custom
+      artifacts: true
+  rules:
+    - if: $SELECT_JOB != "none"
+      when: never
+    - if: $CI_COMMIT_BRANCH
+      when: manual
+      allow_failure: true
+    - when: never
+  variables:
+    PREPROD_ARCHIVE_PATH: "${CI_PROJECT_NAME}/builds/${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}/opencart_cdek_${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}.ocmod.zip"
+  script:
+    - zip -qr cdek.zip upload install.xml
+    - |
+      HTTP_CODE=$(curl -sS -o nexus-response.txt -w "%{http_code}" -u "${NEXUS_LOGIN}":"${NEXUS_PASS}" \
+        --upload-file cdek.zip "${ARTIFACTORY_REPO}/${PREPROD_ARCHIVE_PATH}")
+      cat nexus-response.txt
+      case "$HTTP_CODE" in
+        2??) echo "Uploaded ${PREPROD_ARCHIVE_PATH} (HTTP ${HTTP_CODE})" ;;
+        *) echo "ERROR: Nexus upload failed (HTTP ${HTTP_CODE})"; exit 1 ;;
+      esac
+    - |
+      PUBLIC_URL="${PREPROD_PUBLIC_REPO}/${PREPROD_ARCHIVE_PATH}"
+      if ! curl -fsI "${PUBLIC_URL}" >/dev/null; then
+        echo "ERROR: archive is not publicly available: ${PUBLIC_URL}"
+        exit 1
+      fi
+      echo "Public URL: ${PUBLIC_URL}"
+
+deploy-preprod:
+  stage: deploy
+  needs:
+    - job: upload-preprod
+  rules:
+    - if: $SELECT_JOB != "none"
+      when: never
+    - if: $CI_COMMIT_BRANCH
+      when: on_success
+    - when: never
+  variables:
+    PLUGIN_ARCHIVE_URL: "${PREPROD_PUBLIC_REPO}/${CI_PROJECT_NAME}/builds/${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}/opencart_cdek_${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}.ocmod.zip"
+    PLUGIN_REF: $CI_COMMIT_REF_NAME
+    PLUGIN_SHA: $CI_COMMIT_SHORT_SHA
+  trigger:
+    project: $PREPROD_STAND_PROJECT
+    branch: $PREPROD_STAND_BRANCH
+    strategy: depend
+
+deploy-preprod-tag:
+  stage: deploy
+  needs:
+    - job: upload
+  rules:
+    - if: $SELECT_JOB != "none"
+      when: never
+    - if: $CI_COMMIT_TAG
+      when: manual
+      allow_failure: true
+    - when: never
+  variables:
+    PLUGIN_VERSION: $CI_COMMIT_TAG
+    PLUGIN_SHA: $CI_COMMIT_SHORT_SHA
+  trigger:
+    project: $PREPROD_STAND_PROJECT
+    branch: $PREPROD_STAND_BRANCH
+    strategy: depend
+
+deploy-preprod-manual:
+  stage: deploy
+  needs: []
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "web" && $SELECT_JOB == "deploy-preprod"'
+      when: on_success
+    - when: never
+  variables:
+    PLUGIN_VERSION: $PREPROD_PLUGIN_VERSION
+    PLUGIN_ARCHIVE_URL: $PREPROD_ARCHIVE_URL
+  trigger:
+    project: $PREPROD_STAND_PROJECT
+    branch: $PREPROD_STAND_BRANCH
+    strategy: depend
+
 github:
   image: ${DOCKER_PROXY_HOST}/bitnami/git:latest
   stage: sync
   tags:
     - docker
   rules:
-    - if: $SELECT_JOB == "migrate-tag-to-github"
-      when: never
-    - if: $SELECT_JOB == "release"
+    - if: $SELECT_JOB != "none"
       when: never
     - if: $CI_COMMIT_REF_PROTECTED != "true"
       when: never
@@ -311,7 +407,7 @@ release:
         -H "JOB-TOKEN: ${CI_JOB_TOKEN}" -H "Content-Type: application/json" \
         "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/releases" \
         -d "$(jq -n --arg tag "${RELEASE_TAG}" --arg desc "${RELEASE_DESCRIPTION}" --arg url "${ARCHIVE_URL}" \
-              '{name: $tag, tag_name: $tag, description: $desc, assets: {links: [{name: "Архив", url: $url, link_type: "package"}]}}')")
+              '{name: $tag, tag_name: $tag, description: $desc, assets: {links: [{name: "Архив", url: $url, direct_asset_path: "/archive", link_type: "package"}]}}')")
       cat gitlab-release.txt
       case "$HTTP_CODE" in
         201) echo "GitLab Release ${RELEASE_TAG} created" ;;
@@ -386,9 +482,7 @@ sonarqube-check:
     - sonar-scanner -Dproject.settings=.ci/sonar-project.properties -Dsonar.projectBaseDir=.
   allow_failure: true
   rules:
-    - if: $SELECT_JOB == "migrate-tag-to-github"
-      when: never
-    - if: $SELECT_JOB == "release"
+    - if: $SELECT_JOB != "none"
       when: never
     - if: $CI_COMMIT_BRANCH == "main"
 
